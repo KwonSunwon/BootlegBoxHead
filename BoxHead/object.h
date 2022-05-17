@@ -1,6 +1,6 @@
 #include "head_library.h"
 
-typedef class _Object
+class Object
 {
 protected:
     POINT location;
@@ -9,5 +9,12 @@ protected:
     int speed;
     HBITMAP image;
     BITMAP info;
+public:
+    Object(int hp, int atk, int sp);
+};
 
-} Object;
+Object::Object(int hp, int atk, int sp) {
+    health = hp;
+    attack = atk;
+    speed = sp;
+}
