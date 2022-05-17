@@ -5,6 +5,6 @@
 class Player : public Object
 {
 public:
-	Player(int hp, int atk, int sp) : Object(hp, atk, sp) {}
+	Player(int _health, int _attack, int _speed, POINT firstLocation) : Object(_health, _attack,_speed,firstLocation) {}
 };
 

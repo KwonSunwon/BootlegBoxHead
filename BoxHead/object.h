@@ -10,11 +10,12 @@ protected:
     HBITMAP image;
     BITMAP info;
 public:
-    Object(int hp, int atk, int sp);
+    Object(int _health, int _attack, int _speed, POINT firstLocation);
 };
 
-Object::Object(int hp, int atk, int sp) {
-    health = hp;
-    attack = atk;
-    speed = sp;
+Object::Object(int _health, int _attack, int _speed, POINT firstLocation) {
+    location = firstLocation;
+    health = _health;
+    attack = _attack;
+    speed = _speed;
 }

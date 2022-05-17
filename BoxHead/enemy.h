@@ -5,5 +5,5 @@ class Enemy : public Object
 {
 private:
 public:
-	Enemy(int hp, int atk, int sp) : Object(hp, atk, sp) {}
+	Enemy(int _health, int _attack, int _speed, POINT firstLocation) : Object(_health, _attack, _speed, firstLocation) {}
 };
