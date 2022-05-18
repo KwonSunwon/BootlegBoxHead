@@ -12,19 +12,23 @@ protected:
 public:
     Object(int _health, int _attack, int _speed, POINT firstLocation);
 
-    virtual void Move_left() = 0;
+    void Move_left() {}
+    void Move_right() {}
+    void Move_up() {}
+    void Move_down() {}
 
-    virtual void Move_right() = 0;
-
-    virtual void Move_up() = 0;
-
-    virtual void Move_down() = 0;
+    void Set_Image(HBITMAP);
 };
 
-Object::Object(int _health, int _attack, int _speed, POINT firstLocation) 
+Object::Object(int _health, int _attack, int _speed, POINT firstLocation)
 {
-    location = firstLocation;
     health = _health;
     attack = _attack;
     speed = _speed;
+    image = NULL;
+    location = firstLocation;
+}
+
+void Object::Set_Image(HBITMAP Bitmap) {
+    image = Bitmap;
 }

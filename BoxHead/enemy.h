@@ -7,11 +7,13 @@ private:
 public:
 	Enemy(int _health, int _attack, int _speed, POINT firstLocation) : Object(_health, _attack, _speed, firstLocation) {}
 
-    virtual void Move_left() { location.x -= speed; }
-
-    virtual void Move_right() { location.x += speed; }
-
-    virtual void Move_up() { location.y -= speed; }
-
-    virtual void Move_down() { location.y += speed; }
+    void Move_left();
+    void Move_right();
+    void Move_up();
+    void Move_down();
 };
+
+void Enemy::Move_left() { location.x -= speed; }
+void Enemy::Move_right() { location.x += speed; }
+void Enemy::Move_up() { location.y -= speed; }
+void Enemy::Move_down() { location.y += speed; }
