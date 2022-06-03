@@ -147,7 +147,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="enemy.h" />
-    <ClInclude Include="head_library.h" />
+    <ClInclude Include="map.h" />
+    <ClInclude Include="stdafx.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="tower.h" />

@@ -1,4 +1,4 @@
-#include "head_library.h"
+#include "stdafx.h"
 
 class Object
 {

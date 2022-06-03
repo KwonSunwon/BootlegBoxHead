@@ -4,3 +4,4 @@
 #include <tchar.h>
 #include <windows.h>
 #include <fstream>
+#include <vector>

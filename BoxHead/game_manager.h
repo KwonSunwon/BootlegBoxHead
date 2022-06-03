@@ -1,4 +1,4 @@
-#include "head_library.h"
+#include "stdafx.h"
 #include "object.h"
 #include "player.h"
 #include "enemy.h"

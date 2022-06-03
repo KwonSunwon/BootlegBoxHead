@@ -1,5 +1,5 @@
 #pragma once
-#include "head_library.h"
+#include "stdafx.h"
 #include "object.h"
 
 class Tower : Object
