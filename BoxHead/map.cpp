@@ -10,6 +10,9 @@ Map::Map()
     playerSpawn = {0, 0};
     enemySpawn.resize(0);
 
+    for (int i = 0; i < 4; ++i)
+        spawnEnemyType[i] = FALSE;
+
     size = {0, 0};
     isEditMode = FALSE;
 }
@@ -123,6 +126,11 @@ int Map::load(int _id)
             temp.y = stoi(in);
             enemySpawn.push_back(temp);
         }
+        for (int i = 0; i < 4; ++i)
+        {
+            mapFile >> in;
+            spawnEnemyType[i] = stoi(in);
+        }
 
         map.clear();
         map.resize(count.y);
@@ -204,6 +212,10 @@ int Map::save()
         {
             out += to_string(enemySpawn[i].x) + " " + to_string(enemySpawn[i].y) + "\n"; // 적들 스폰 위치
         }
+        for (int i = 0; i < 4; ++i)
+        {
+            out += to_string(spawnEnemyType[i]) + "\n";
+        }
         for (int i = 0; i < count.y; ++i)
         {
             for (int j = 0; j < count.x; ++j)
@@ -227,6 +239,8 @@ void Map::test_print_file()
     cout << playerSpawn.x << ", " << playerSpawn.y << "\n";
     for (int i = 0; i < enemySpawn.size(); ++i)
         cout << enemySpawn[i].x << ", " << enemySpawn[i].y << "\n";
+    for (int i = 0; i < 4; ++i)
+        cout << spawnEnemyType[i] << "\n";
     for (int i = 0; i < count.y; ++i)
     {
         for (int j = 0; j < count.x; ++j)
@@ -247,6 +261,8 @@ void Map::test_out_content()
     enemySpawn.push_back({2, 2});
     enemySpawn.push_back({3, 3});
     enemySpawn.push_back({4, 5});
+    for (int i = 0; i < 4; ++i)
+        spawnEnemyType[i] = TRUE;
     map.clear();
     map.resize(count.y);
     for (int i = 0; i < count.y; ++i)

@@ -1,0 +1,126 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 한국어(대한민국) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
+LANGUAGE LANG_KOREAN, SUBLANG_DEFAULT
+#pragma code_page(949)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_MAPEDIT DIALOGEX 0, 0, 301, 176
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Floor",IDC_STATIC,7,7,191,53
+    PUSHBUTTON      "F1",IDC_FLOOR1,21,16,40,37,BS_BITMAP
+    PUSHBUTTON      "F2",IDC_FLOOR2,80,16,40,37,BS_BITMAP
+    PUSHBUTTON      "F3",IDC_FLOOR3,139,16,40,37,BS_BITMAP
+    GROUPBOX        "Wall",IDC_STATIC,7,64,191,53
+    PUSHBUTTON      "W1",IDC_WALL1,21,73,40,37,BS_BITMAP
+    PUSHBUTTON      "W2",IDC_WALL2,81,73,40,37,BS_BITMAP
+    PUSHBUTTON      "W3",IDC_WALL3,137,73,40,37,BS_BITMAP
+    GROUPBOX        "Spawn Point",IDC_STATIC,212,7,82,110
+    PUSHBUTTON      "player",IDC_PLAYER,227,21,51,23
+    PUSHBUTTON      "enemy",IDC_ENEMY,227,50,51,23
+    PUSHBUTTON      "remove",IDC_REMOVE,227,84,51,23
+    GROUPBOX        "Monster Type",IDC_STATIC,7,121,117,46
+    CONTROL         "type1",IDC_TYPE1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,133,39,10
+    CONTROL         "type2",IDC_TYPE2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,75,133,35,10
+    CONTROL         "type3",IDC_TYPE3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,148,35,10
+    CONTROL         "type4",IDC_TYPE4,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,75,148,35,10
+    PUSHBUTTON      "불러오기",IDC_LOAD,185,155,50,14
+    DEFPUSHBUTTON   "저장",IDOK,127,155,50,14
+    PUSHBUTTON      "취소",IDCANCEL,243,155,50,14
+    EDITTEXT        IDC_INPUT,145,134,130,14,ES_AUTOHSCROLL
+    LTEXT           "Map ID 입력",IDC_STATIC,149,127,40,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_MAPEDIT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 294
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 169
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_MAPEDIT AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // 한국어(대한민국) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

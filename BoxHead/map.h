@@ -16,6 +16,11 @@
 #define MAP_WALL_TYPE2 301
 #define MAP_WALL_TYPE3 302
 
+// 수정모드 선택
+#define MAP_PLAYER_SPAWN_POINT 400;
+#define MAP_ENEMY_SPAWN_POINT 401;
+#define MAP_REMOVE 402
+
 using namespace std;
 
 class Map
@@ -26,6 +31,7 @@ private:
     vector<vector<int>> map;
     POINT playerSpawn;        // 한 개 지점만 사용
     vector<POINT> enemySpawn; // 여러곳 지정 가능?
+    BOOL spawnEnemyType[4];   // 등장 시킬 적의 종류
 
     POINT size; // 맵 크기 - 따로 저장하지 않고 정해진 사이즈 사용할듯?
     BOOL isEditMode;
@@ -39,6 +45,7 @@ public:
     int get_tile_type(POINT);
     POINT get_player_spawn();
     vector<POINT> get_enemy_spawn();
+    BOOL *get_enemy_type();
 
     // if on EditMode
     void on_editMode();

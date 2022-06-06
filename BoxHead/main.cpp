@@ -3,12 +3,14 @@
 #include <stdio.h>
 
 #include "game_manager.h"
+#include "resource.h"
 
 HINSTANCE g_hInst;
 LPCTSTR lpszClass = L"Window Class Name";
 LPCTSTR lpszWindowName = L"Window Programming Lab";
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow)
 {
@@ -51,12 +53,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
     static HBITMAP backBit;
     static RECT bufferRT;
 
+    static HWND hDlg;
+
     static Map map;
+    static BOOL isEditMode;
 
     switch (iMessage)
     {
     case WM_CREATE:
-        map.load(100);
+        isEditMode = FALSE;
+
+        break;
+
+    case WM_KEYDOWN:
+        switch (wParam)
+        {
+        case VK_RETURN: // 1 key 임시 맵 수정모드 불러오기
+            isEditMode = TRUE;
+            if (!IsWindow(hDlg))
+            {
+                hDlg = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_MAPEDIT), hWnd, (DLGPROC)MapEditProc);
+                ShowWindow(hDlg, SW_SHOW);
+            }
+        }
+        InvalidateRect(hWnd, NULL, FALSE);
         break;
 
     case WM_LBUTTONDOWN:
@@ -92,4 +112,76 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         return 0;
     }
     return (DefWindowProc(hWnd, iMessage, wParam, lParam));
+}
+
+BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
+{
+    HWND hWnd = GetParent(hDlg);
+
+    int selector;
+
+    switch (iMsg)
+    {
+    case WM_INITDIALOG:
+        selector = MAP_NONE;
+        break;
+
+    case WM_COMMAND:
+        switch (LOWORD(wParam))
+        {
+        case IDOK:
+            break;
+        case IDCANCEL:
+            DestroyWindow(hDlg);
+            break;
+
+        case IDC_FLOOR1:
+            selector = MAP_FLOOR_TYPE1;
+            break;
+        case IDC_FLOOR2:
+            selector = MAP_FLOOR_TYPE2;
+            break;
+        case IDC_FLOOR3:
+            break;
+        case IDC_WALL1:
+            selector = MAP_WALL_TYPE1;
+            break;
+        case IDC_WALL2:
+            selector = MAP_WALL_TYPE2;
+            break;
+        case IDC_WALL3:
+            selector = MAP_WALL_TYPE3;
+            break;
+        case IDC_PLAYER:
+            selector = MAP_PLAYER_SPAWN_POINT;
+            break;
+        case IDC_ENEMY:
+            selector = MAP_ENEMY_SPAWN_POINT;
+            break;
+        case IDC_REMOVE:
+            selector = MAP_REMOVE;
+            break;
+
+        case IDC_TYPE1:
+            break;
+        case IDC_TYPE2:
+            break;
+        case IDC_TYPE3:
+            break;
+        case IDC_TYPE4:
+            break;
+
+        case IDC_INPUT:
+            break;
+
+        case IDC_LOAD:
+            break;
+        }
+        break;
+
+    case WM_CLOSE:
+        DestroyWindow(hDlg);
+        break;
+    }
+    return 0;
 }
