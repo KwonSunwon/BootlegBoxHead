@@ -142,6 +142,7 @@
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="game_manager.h" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="map.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="player.cpp" />
   </ItemGroup>

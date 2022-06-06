@@ -19,10 +19,23 @@ using namespace std;
 class Map
 {
 private:
-    int id;
-    POINT size; // 맵 크기
-    int count;  // 맵 타일의 갯수
+    int id;      // 저장되는 파일 이름이랑 동일
+    POINT size;  // 맵 크기
+    POINT count; // 맵 타일의 갯수
     vector<vector<int>> map;
+    BOOL isEditMode;
 
 public:
+    Map();
+    void draw(HDC);
+
+    int load(int);
+
+    int get_tile_type(POINT);
+
+    // if on EditMode
+    void on_editMode();
+    BOOL get_isEditMode();
+    void tile_change(POINT, int);
+    int save();
 };
