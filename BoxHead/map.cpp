@@ -15,13 +15,69 @@ Map::Map()
 }
 void Map::draw(HDC hdc)
 {
-    if (isEditMode) // 수정모드일 때 출력
+    CImage img;
+    int width;
+    int height;
+
+    RECT drawRt = {0, 0, TILE_SIZE, TILE_SIZE};
+
+    for (int i = 0; i < count.y; ++i)
     {
-    }
-    else // 인 게임 출력
-    {
-        if (id != -1) // -1 아무것도 선택 안된 상태 불러오면 오류 발생
+        for (int j = 0; j < count.x; ++j)
         {
+            if (map[i][j] == MAP_NONE)
+            {
+            }
+            else if (map[i][j] == MAP_FLOOR_TYPE1)
+            {
+                img.Load(TEXT("Floor1.png"));
+                if (img.IsNull())
+                    continue;
+                width = img.GetWidth();
+                height = img.GetHeight();
+                img.Draw(hdc, drawRt.right * j, drawRt.bottom * i, TILE_SIZE, TILE_SIZE, 0, 0, width, height);
+                img.Destroy();
+            }
+            else if (map[i][j] == MAP_FLOOR_TYPE2)
+            {
+                img.Load(TEXT("Floor2.png"));
+                if (img.IsNull())
+                    continue;
+                width = img.GetWidth();
+                height = img.GetHeight();
+                img.Draw(hdc, drawRt.right * j, drawRt.bottom * i, TILE_SIZE, TILE_SIZE, 0, 0, width, height);
+                img.Destroy();
+            }
+            else if (map[i][j] == MAP_WALL_TYPE1)
+            {
+                img.Load(TEXT("Wall.png"));
+                if (img.IsNull())
+                    continue;
+                width = img.GetWidth();
+                height = img.GetHeight();
+                img.Draw(hdc, drawRt.right * j, drawRt.bottom * i, TILE_SIZE, TILE_SIZE, 0, 0, width, height);
+                img.Destroy();
+            }
+            else if (map[i][j] == MAP_WALL_TYPE2)
+            {
+                img.Load(TEXT("BarrelA.png"));
+                if (img.IsNull())
+                    continue;
+                width = img.GetWidth();
+                height = img.GetHeight();
+                img.Draw(hdc, drawRt.right * j, drawRt.bottom * i, TILE_SIZE, TILE_SIZE, 0, 0, width, height);
+                img.Destroy();
+            }
+            else if (map[i][j] == MAP_WALL_TYPE3)
+            {
+                img.Load(TEXT("120px-Small_altar.png"));
+                if (img.IsNull())
+                    continue;
+                width = img.GetWidth();
+                height = img.GetHeight();
+                img.Draw(hdc, drawRt.right * j, drawRt.bottom * i, TILE_SIZE, TILE_SIZE, 0, 0, width, height);
+                img.Destroy();
+            }
         }
     }
 }

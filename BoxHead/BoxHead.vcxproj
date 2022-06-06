@@ -168,6 +168,13 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="120px-Small_altar.png" />
+    <Image Include="BarrelA.png" />
+    <Image Include="Floor1.png" />
+    <Image Include="Floor2.png" />
+    <Image Include="Wall.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -56,6 +56,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
     switch (iMessage)
     {
     case WM_CREATE:
+        map.load(100);
+        break;
+
+    case WM_LBUTTONDOWN:
+        map.load(100);
+        InvalidateRect(hWnd, NULL, FALSE);
+        break;
+
+    case WM_RBUTTONDOWN:
+        map.load(200);
+        InvalidateRect(hWnd, NULL, FALSE);
         break;
 
     case WM_PAINT:
@@ -67,6 +78,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         PatBlt(mdc, 0, 0, bufferRT.right, bufferRT.bottom, WHITENESS);
 
         // Draw, using mdc
+        map.draw(mdc);
 
         GetClientRect(hWnd, &bufferRT);
         BitBlt(hdc, 0, 0, bufferRT.right, bufferRT.bottom, mdc, 0, 0, SRCCOPY);
