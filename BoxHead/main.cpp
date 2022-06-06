@@ -45,19 +45,81 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
     return Message.wParam;
 }
 
+Player p;
+
+int phase;
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
     PAINTSTRUCT ps;
-    HDC hdc;
+    HDC hdc,MemDC;
+    HBITMAP BackBit, oldBackBit;
+
+    HFONT hFont, oldFont;
+    POINT mouse_pos;
+
+    static RECT rc, message_box;
+    static TCHAR name[10] = L"BoxLike";
+    static TCHAR start_message[11] = L"Start Game";
 
     switch (iMessage)
     {
     case WM_CREATE:
+        p.Set_Attack(PLAYER_STDATTACK); p.Set_Health(PLAYER_STDHEALTH); p.Set_Speed(PLAYER_STDSPEED);
+        GetClientRect(hWnd, &rc);
+        phase = PHASE_MENU;
+        break;
+
+    case WM_LBUTTONDOWN:
+        mouse_pos.x = LOWORD(lParam); mouse_pos.y = HIWORD(lParam);
+
+        if (phase == PHASE_MENU) 
+        {
+            if (message_box.left < mouse_pos.x && message_box.top < mouse_pos.y && message_box.right > mouse_pos.x && message_box.bottom > mouse_pos.y)
+            {
+                phase = PHASE_LOAD;
+                InvalidateRect(hWnd, NULL, FALSE);
+            }
+        }
+
         break;
 
     case WM_PAINT:
         hdc = BeginPaint(hWnd, &ps);
+        MemDC = CreateCompatibleDC(hdc);
+        BackBit = CreateCompatibleBitmap(hdc, rc.right, rc.bottom);
 
+        oldBackBit = (HBITMAP)SelectObject(MemDC, BackBit);
+
+        PatBlt(MemDC, 0, 0, rc.right, rc.bottom, WHITENESS);
+
+        if (phase == PHASE_MENU) 
+        {
+            hFont = CreateFont(120, 90, 0, 0, FW_BOLD, 0, 0, 0, NULL, 0, 0, 0, 0, NULL);
+            oldFont = (HFONT)SelectObject(MemDC, hFont);
+
+            TextOut(MemDC, 25, 50, name, lstrlen(name));
+
+            SelectObject(MemDC, oldFont);
+            DeleteObject(hFont);
+
+            hFont = CreateFont(50, 30, 0, 0, FW_BOLD, 0, 0, 0, NULL, 0, 0, 0, 0, NULL);
+            oldFont = (HFONT)SelectObject(MemDC, hFont);
+
+            message_box.left = 200; message_box.top = 200; message_box.right = 600; message_box.bottom = 260;
+
+            Rectangle(MemDC, 200, 200, 600, 260);
+            DrawText(MemDC, start_message, lstrlen(start_message), &message_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+            SelectObject(MemDC, oldFont);
+            DeleteObject(hFont);
+        }
+
+        //더블 버퍼링
+        BitBlt(hdc, 0, 0, rc.right, rc.bottom, MemDC, 0, 0, SRCCOPY);
+
+        SelectObject(MemDC, oldBackBit);
+        DeleteDC(MemDC); DeleteObject(BackBit);
         EndPaint(hWnd, &ps);
         break;
 

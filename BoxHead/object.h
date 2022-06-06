@@ -1,6 +1,7 @@
+#pragma once
 #include "stdafx.h"
 
-class Object
+class Object 
 {
 protected:
     POINT location;
@@ -17,8 +18,11 @@ public:
     void Move_down() {}
 
     void Set_Image(HBITMAP);
-
     void Set_Info();
+    void Set_Location(POINT);
+    void Set_Health(int);
+    void Set_Attack(int);
+    void Set_Speed(int);
 
     int Get_Health();
     int Get_Attack();
