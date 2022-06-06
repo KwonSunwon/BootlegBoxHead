@@ -11,6 +11,8 @@ LPCTSTR lpszClass = L"Window Class Name";
 LPCTSTR lpszWindowName = L"Window Programming Lab";
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
+void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
+void Player_move();
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow)
 {
@@ -47,20 +49,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 
 Player p;
 
-int phase;
+int phase, spawn_count, difficulty;
+BOOL key_buffer[4];
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
     PAINTSTRUCT ps;
-    HDC hdc,MemDC;
+    HDC hdc,MemDC,PrintDC;
     HBITMAP BackBit, oldBackBit;
 
     HFONT hFont, oldFont;
     POINT mouse_pos;
-
-    static RECT rc, message_box;
+    
+    static RECT message_box, edit_box;
+    static RECT rc;
     static TCHAR name[10] = L"BoxLike";
     static TCHAR start_message[11] = L"Start Game";
+    static TCHAR Select[17] = L"Select Character";
+    static TCHAR edit_button[11] = L"Map Editer";
 
     switch (iMessage)
     {
@@ -68,6 +74,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         p.Set_Attack(PLAYER_STDATTACK); p.Set_Health(PLAYER_STDHEALTH); p.Set_Speed(PLAYER_STDSPEED);
         GetClientRect(hWnd, &rc);
         phase = PHASE_MENU;
+
+        message_box.left = 200; message_box.top = 200; message_box.right = 600; message_box.bottom = 260;
+
+        edit_box.left = 200; edit_box.top = 300; edit_box.right = 600; edit_box.bottom = 360;
+
         break;
 
     case WM_LBUTTONDOWN:
@@ -80,13 +91,64 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 phase = PHASE_LOAD;
                 InvalidateRect(hWnd, NULL, FALSE);
             }
+
+            if (edit_box.left < mouse_pos.x && edit_box.top < mouse_pos.y && edit_box.right > mouse_pos.x && edit_box.bottom > mouse_pos.y)
+            {
+                phase = PHASE_EDIT;
+
+                InvalidateRect(hWnd, NULL, FALSE);
+            }
         }
 
         break;
 
+    case WM_CHAR:
+        if (phase == PHASE_LOAD) 
+        {
+            if (wParam == 'p' || wParam == 'P') 
+            {
+                spawn_count = 0;
+                SetTimer(hWnd, ENEMY_TIMER, ENEMY_TIMELAB, Enemy_spawn);
+                phase = PHASE_PLAY;
+            }
+        }
+
+        if (phase == PHASE_PLAY)
+        {
+            if (wParam == 'w' || wParam == 'W') 
+            {
+                key_buffer[UP] = TRUE;
+            }
+
+            if (wParam == 's' || wParam == 'S')
+            {
+                key_buffer[DOWN] = TRUE;
+            }
+
+            if (wParam == 'a' || wParam == 'A')
+            {
+                key_buffer[LEFT] = TRUE;
+            }
+
+            if (wParam == 'd' || wParam == 'D')
+            {
+                key_buffer[RIGHT] = TRUE;
+            }
+
+            InvalidateRect(hWnd, NULL, FALSE);
+        }
+        break;
+
+    case WM_KEYUP:
+        for (int i = 0;i < 4 ; i++) 
+        {
+            key_buffer[i] = FALSE;
+        }
+        break;
+
     case WM_PAINT:
         hdc = BeginPaint(hWnd, &ps);
-        MemDC = CreateCompatibleDC(hdc);
+        MemDC = CreateCompatibleDC(hdc); PrintDC = CreateCompatibleDC(hdc);
         BackBit = CreateCompatibleBitmap(hdc, rc.right, rc.bottom);
 
         oldBackBit = (HBITMAP)SelectObject(MemDC, BackBit);
@@ -106,13 +168,35 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             hFont = CreateFont(50, 30, 0, 0, FW_BOLD, 0, 0, 0, NULL, 0, 0, 0, 0, NULL);
             oldFont = (HFONT)SelectObject(MemDC, hFont);
 
-            message_box.left = 200; message_box.top = 200; message_box.right = 600; message_box.bottom = 260;
-
-            Rectangle(MemDC, 200, 200, 600, 260);
+            //게임 시작 버튼
+            Rectangle(MemDC, message_box.left, message_box.top, message_box.right, message_box.bottom);
             DrawText(MemDC, start_message, lstrlen(start_message), &message_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+            //맵 에디터 버튼
+            Rectangle(MemDC, edit_box.left, edit_box.top, edit_box.right, edit_box.bottom);
+            DrawText(MemDC, edit_button, lstrlen(edit_button), &edit_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
             SelectObject(MemDC, oldFont);
             DeleteObject(hFont);
+        }
+
+        if (phase == PHASE_LOAD) 
+        {
+            hFont = CreateFont(60, 40, 0, 0, FW_BOLD, 0, 0, 0, NULL, 0, 0, 0, 0, NULL);
+            oldFont = (HFONT)SelectObject(MemDC, hFont);
+
+            TextOut(MemDC, 25, 50, Select, lstrlen(Select));
+
+            SelectObject(MemDC, oldFont);
+            DeleteObject(hFont);
+        }
+
+        if (phase == PHASE_PLAY) 
+        {
+            Player_move();
+
+            SelectObject(PrintDC, p.Get_Image());
+            StretchBlt(MemDC, p.Get_Location().x - OBJECT_X_SIZE / 2, p.Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, p.Get_Info().bmWidth, p.Get_Info().bmHeight, SRCCOPY);
         }
 
         //더블 버퍼링
@@ -128,4 +212,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         return 0;
     }
     return (DefWindowProc(hWnd, iMessage, wParam, lParam));
+}
+
+void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime) 
+{
+    spawn_count++;
+
+    if (spawn_count % ENEMY_SPAWN == 0) //적 스폰
+    {
+
+    }
+}
+
+void Player_move()
+{
+    if (key_buffer[UP])
+    {
+        p.Move_up();
+    }
+
+    if (key_buffer[DOWN])
+    {
+        p.Move_down();
+    }
+
+    if (key_buffer[LEFT])
+    {
+        p.Move_left();
+    }
+
+    if (key_buffer[RIGHT])
+    {
+        p.Move_right();
+    }
 }

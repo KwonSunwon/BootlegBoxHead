@@ -1,6 +1,9 @@
 #pragma once
 #include "stdafx.h"
 
+#define OBJECT_X_SIZE 32
+#define OBJECT_Y_SIZE 64
+
 class Object 
 {
 protected:
@@ -28,4 +31,6 @@ public:
     int Get_Attack();
     int Get_Speed();
     POINT Get_Location();
+    HBITMAP Get_Image();
+    BITMAP Get_Info();
 };

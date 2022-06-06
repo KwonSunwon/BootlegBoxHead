@@ -31,6 +31,17 @@ POINT Object::Get_Location()
     return location;
 }
 
+
+HBITMAP Object::Get_Image()
+{
+    return image;
+}
+
+BITMAP Object::Get_Info()
+{
+    return info;
+}
+
 void Object::Set_Location(POINT _location ) 
 {
     location = _location;
