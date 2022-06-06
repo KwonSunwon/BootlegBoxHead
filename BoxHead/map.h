@@ -20,9 +20,12 @@ class Map
 {
 private:
     int id;      // 저장되는 파일 이름이랑 동일
-    POINT size;  // 맵 크기
     POINT count; // 맵 타일의 갯수
     vector<vector<int>> map;
+    POINT playerSpawn;        // 한 개 지점만 사용
+    vector<POINT> enemySpawn; // 여러곳 지정 가능?
+
+    POINT size; // 맵 크기 - 따로 저장하지 않고 정해진 사이즈 사용할듯?
     BOOL isEditMode;
 
 public:
@@ -32,10 +35,16 @@ public:
     int load(int);
 
     int get_tile_type(POINT);
+    POINT get_player_spawn();
+    vector<POINT> get_enemy_spawn();
 
     // if on EditMode
     void on_editMode();
     BOOL get_isEditMode();
     void tile_change(POINT, int);
     int save();
+
+    // test
+    void test_print_file();
+    void test_out_content();
 };

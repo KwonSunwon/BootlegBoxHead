@@ -2,8 +2,6 @@
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 #include <stdio.h>
 
-#include <Windows.h>
-
 #include "game_manager.h"
 
 HINSTANCE g_hInst;
@@ -49,6 +47,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
     PAINTSTRUCT ps;
     HDC hdc;
+    static HDC mdc, tmpDc;
+    static HBITMAP backBit;
+    static RECT bufferRT;
+
+    static Map map;
 
     switch (iMessage)
     {
@@ -57,7 +60,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
     case WM_PAINT:
         hdc = BeginPaint(hWnd, &ps);
+        GetClientRect(hWnd, &bufferRT);
+        mdc = CreateCompatibleDC(hdc);
+        backBit = CreateCompatibleBitmap(hdc, bufferRT.right, bufferRT.bottom);
+        SelectObject(mdc, (HBITMAP)backBit);
+        PatBlt(mdc, 0, 0, bufferRT.right, bufferRT.bottom, WHITENESS);
 
+        // Draw, using mdc
+
+        GetClientRect(hWnd, &bufferRT);
+        BitBlt(hdc, 0, 0, bufferRT.right, bufferRT.bottom, mdc, 0, 0, SRCCOPY);
+        DeleteObject(backBit);
+        DeleteDC(mdc);
         EndPaint(hWnd, &ps);
         break;
 
