@@ -52,6 +52,8 @@ Player p;
 int phase, spawn_count, difficulty;
 BOOL key_buffer[4];
 
+EnemyType e;
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
     PAINTSTRUCT ps;
@@ -78,6 +80,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         message_box.left = 200; message_box.top = 200; message_box.right = 600; message_box.bottom = 260;
 
         edit_box.left = 200; edit_box.top = 300; edit_box.right = 600; edit_box.bottom = 360;
+
+        e.link = NULL; e.enemy_count = 0;
 
         break;
 
@@ -117,6 +121,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         {
             if (wParam == 'w' || wParam == 'W') 
             {
+
                 key_buffer[UP] = TRUE;
             }
 
@@ -220,7 +225,22 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
     if (spawn_count % ENEMY_SPAWN == 0) //적 스폰
     {
+        if(e.enemy_count < ENEMY_MAXCOUNT) 
+        {
+            Enemy* newnode = (Enemy*)malloc(sizeof(Enemy));
+            Enemy* tmp = e.link;
 
+            //newnode의 set 함수를 이용해 초기화 
+            newnode->Set_link(NULL);
+
+            newnode->Init_enemy(MOB1);
+
+            while (tmp != NULL) tmp = tmp->Get_link();
+
+            tmp = newnode;
+
+            e.enemy_count++;
+        }
     }
 }
 
