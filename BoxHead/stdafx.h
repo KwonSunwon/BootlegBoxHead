@@ -6,3 +6,4 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <atlImage.h>
