@@ -170,14 +170,15 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="120px-Small_altar.png" />
-    <Image Include="BarrelA.png" />
-    <Image Include="Floor1.png" />
-    <Image Include="Floor2.png" />
-    <Image Include="Wall.png" />
+    <ResourceCompile Include="BoxHead.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="BoxHead.rc" />
+    <Image Include="120px-Small_altar.bmp" />
+    <Image Include="BarrelA.bmp" />
+    <Image Include="Floor1.bmp" />
+    <Image Include="Floor1.png" />
+    <Image Include="Floor2.bmp" />
+    <Image Include="Wall.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

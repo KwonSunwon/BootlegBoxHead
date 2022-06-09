@@ -65,6 +65,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
         break;
 
+    case WM_COMMAND:
+
     case WM_KEYDOWN:
         switch (wParam)
         {
@@ -118,18 +120,41 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
     HWND hWnd = GetParent(hDlg);
 
-    int selector;
+    HBITMAP hBit;
+    HWND hButton;
+
+    static int selector;
+    static BOOL typeSelector[4];
 
     switch (iMsg)
     {
     case WM_INITDIALOG:
         selector = MAP_NONE;
+        for (int i = 0; i < 4; ++i)
+            typeSelector[i] = FALSE;
+
+        hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_FLOOR1));
+        hButton = GetDlgItem(hDlg, IDC_FLOOR1);
+        SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)hBit);
+        hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_FLOOR2));
+        hButton = GetDlgItem(hDlg, IDC_FLOOR2);
+        SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)hBit);
+        hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_WALL));
+        hButton = GetDlgItem(hDlg, IDC_WALL1);
+        SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)hBit);
+        hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_WALL2));
+        hButton = GetDlgItem(hDlg, IDC_WALL3);
+        SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)hBit);
+        hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BARREL));
+        hButton = GetDlgItem(hDlg, IDC_WALL2);
+        SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)hBit);
         break;
 
     case WM_COMMAND:
         switch (LOWORD(wParam))
         {
-        case IDOK:
+        case IDOK: // Save
+
             break;
         case IDCANCEL:
             DestroyWindow(hDlg);

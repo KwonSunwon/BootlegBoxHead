@@ -3,6 +3,13 @@
 // BoxHead.rc에서 사용되고 있습니다.
 //
 #define IDD_MAPEDIT                     101
+#define IDB_PNG1                        103
+#define IDB_FLOOR1                      103
+#define IDB_BITMAP2                     105
+#define IDB_WALL2                       105
+#define IDB_BARREL                      106
+#define IDB_FLOOR2                      107
+#define IDB_WALL                        108
 #define IDC_FLOOR2                      1001
 #define IDC_FLOOR3                      1002
 #define IDC_PLAYER                      1003
@@ -27,7 +34,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        103
+#define _APS_NEXT_RESOURCE_VALUE        109
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1016
 #define _APS_NEXT_SYMED_VALUE           101

@@ -45,7 +45,7 @@ public:
     int get_tile_type(POINT);
     POINT get_player_spawn();
     vector<POINT> get_enemy_spawn();
-    BOOL *get_enemy_type();
+    //BOOL *get_enemy_type();
 
     // if on EditMode
     void on_editMode();

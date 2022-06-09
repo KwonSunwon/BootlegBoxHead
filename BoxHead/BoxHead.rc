@@ -76,7 +76,7 @@ BEGIN
     DEFPUSHBUTTON   "저장",IDOK,127,155,50,14
     PUSHBUTTON      "취소",IDCANCEL,243,155,50,14
     EDITTEXT        IDC_INPUT,145,134,130,14,ES_AUTOHSCROLL
-    LTEXT           "Map ID 입력",IDC_STATIC,149,127,40,8
+    LTEXT           "Map ID 입력",IDC_STATIC,149,123,40,8
 END
 
 
@@ -108,6 +108,22 @@ IDD_MAPEDIT AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_FLOOR1              BITMAP                  "Floor1.bmp"
+
+IDB_WALL2               BITMAP                  "120px-Small_altar.bmp"
+
+IDB_BARREL              BITMAP                  "BarrelA.bmp"
+
+IDB_FLOOR2              BITMAP                  "Floor2.bmp"
+
+IDB_WALL                BITMAP                  "Wall.bmp"
 
 #endif    // 한국어(대한민국) resources
 /////////////////////////////////////////////////////////////////////////////
