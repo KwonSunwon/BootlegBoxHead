@@ -12,6 +12,7 @@ LPCTSTR lpszWindowName = L"Window Programming Lab";
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
 void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
+void CALLBACK MOB1_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 void Player_move();
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow)
@@ -48,6 +49,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 }
 
 Player p;
+Map temp; //알고리즘 구현을 위한 임시 맵
 
 int phase, spawn_count, difficulty;
 BOOL key_buffer[4];
@@ -121,23 +123,50 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         {
             if (wParam == 'w' || wParam == 'W') 
             {
+                POINT Virtual_pos = p.Get_Location();
 
-                key_buffer[UP] = TRUE;
+                Virtual_pos.y -= p.Get_Speed();
+
+                if (temp.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || temp.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
+                {
+                    key_buffer[UP] = TRUE;
+                }
             }
 
             if (wParam == 's' || wParam == 'S')
             {
-                key_buffer[DOWN] = TRUE;
+                POINT Virtual_pos = p.Get_Location();
+
+                Virtual_pos.y += p.Get_Speed();
+
+                if (temp.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || temp.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
+                {
+                    key_buffer[DOWN] = TRUE;
+                }
             }
 
             if (wParam == 'a' || wParam == 'A')
             {
-                key_buffer[LEFT] = TRUE;
+                POINT Virtual_pos = p.Get_Location();
+
+                Virtual_pos.x -= p.Get_Speed();
+
+                if (temp.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || temp.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
+                {
+                    key_buffer[LEFT] = TRUE;
+                }
             }
 
             if (wParam == 'd' || wParam == 'D')
             {
-                key_buffer[RIGHT] = TRUE;
+                POINT Virtual_pos = p.Get_Location();
+
+                Virtual_pos.x += p.Get_Speed();
+
+                if (temp.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || temp.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
+                {
+                    key_buffer[RIGHT] = TRUE;
+                }
             }
 
             InvalidateRect(hWnd, NULL, FALSE);
@@ -222,13 +251,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime) 
 {
     spawn_count++;
+    Enemy* tmp;
 
     if (spawn_count % ENEMY_SPAWN == 0) //적 스폰
     {
-        if(e.enemy_count < ENEMY_MAXCOUNT) 
+        if(e.enemy_count < ENEMY_MAXCOUNT)
         {
             Enemy* newnode = (Enemy*)malloc(sizeof(Enemy));
-            Enemy* tmp = e.link;
+            tmp = e.link;
 
             //newnode의 set 함수를 이용해 초기화 
             newnode->Set_link(NULL);
@@ -265,4 +295,8 @@ void Player_move()
     {
         p.Move_right();
     }
+}
+
+void CALLBACK MOB1_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime) {
+
 }
