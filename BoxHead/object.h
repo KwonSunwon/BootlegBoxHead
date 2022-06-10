@@ -33,4 +33,7 @@ public:
     POINT Get_Location();
     HBITMAP Get_Image();
     BITMAP Get_Info();
+
+    void Get_Damage(int);
+    void Attack(Object);
 };

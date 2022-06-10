@@ -16,6 +16,7 @@ Map::Map()
     size = {0, 0};
     isEditMode = FALSE;
 }
+
 void Map::draw(HDC hdc)
 {
     CImage img;

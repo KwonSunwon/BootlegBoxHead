@@ -61,3 +61,13 @@ void Object::Set_Speed(int _speed)
 {
     speed = _speed;
 }
+
+void Object::Get_Damage(int _damage)
+{
+    health -= _damage;
+}
+
+void Object::Attack(Object _target)
+{
+    _target.Get_Damage(attack);
+}

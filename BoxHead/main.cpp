@@ -16,8 +16,8 @@ void CALLBACK MOB2_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 void CALLBACK MOB3_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 void CALLBACK MOB4_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 void CALLBACK BOSS_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
-void Player_move();
 BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
+void Player_move();
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow)
 {
@@ -53,7 +53,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 }
 
 Player p;
-Map temp; //알고리즘 구현을 위한 임시 맵
 
 int phase, spawn_count, difficulty;
 BOOL key_buffer[4];
@@ -75,10 +74,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
     static TCHAR start_message[11] = L"Start Game";
     static TCHAR Select[17] = L"Select Character";
     static TCHAR edit_button[11] = L"Map Editer";
-    HDC hdc;
-    static HDC mdc, tmpDc;
-    static HBITMAP backBit;
-    static RECT bufferRT;
 
     static HWND hDlg;
 
@@ -119,6 +114,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             }
         }
 
+        //이거 뭘 위해 있는건지 물어보기
+        map.load(100);
+        InvalidateRect(hWnd, NULL, FALSE);
+
         break;
 
     case WM_CHAR:
@@ -140,7 +139,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
                 Virtual_pos.y -= p.Get_Speed();
 
-                if (temp.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || temp.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
+                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
                 {
                     key_buffer[UP] = TRUE;
                 }
@@ -152,7 +151,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
                 Virtual_pos.y += p.Get_Speed();
 
-                if (temp.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || temp.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
+                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
                 {
                     key_buffer[DOWN] = TRUE;
                 }
@@ -164,7 +163,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
                 Virtual_pos.x -= p.Get_Speed();
 
-                if (temp.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || temp.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
+                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
                 {
                     key_buffer[LEFT] = TRUE;
                 }
@@ -176,7 +175,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
                 Virtual_pos.x += p.Get_Speed();
 
-                if (temp.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || temp.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
+                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
                 {
                     key_buffer[RIGHT] = TRUE;
                 }
@@ -197,6 +196,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
     case WM_COMMAND:
 
+        break;
+
     case WM_KEYDOWN:
         switch (wParam)
         {
@@ -208,11 +209,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 ShowWindow(hDlg, SW_SHOW);
             }
         }
-        InvalidateRect(hWnd, NULL, FALSE);
-        break;
-
-    case WM_LBUTTONDOWN:
-        map.load(100);
         InvalidateRect(hWnd, NULL, FALSE);
         break;
 
@@ -268,6 +264,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
         if (phase == PHASE_PLAY) 
         {
+            // Draw, using mdc
+            map.draw(MemDC);
+
             Player_move();
 
             SelectObject(PrintDC, p.Get_Image());
@@ -279,20 +278,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
         SelectObject(MemDC, oldBackBit);
         DeleteDC(MemDC); DeleteObject(BackBit);
-        GetClientRect(hWnd, &bufferRT);
-        mdc = CreateCompatibleDC(hdc);
-        backBit = CreateCompatibleBitmap(hdc, bufferRT.right, bufferRT.bottom);
-        SelectObject(mdc, (HBITMAP)backBit);
-        PatBlt(mdc, 0, 0, bufferRT.right, bufferRT.bottom, WHITENESS);
-
-        // Draw, using mdc
-        map.draw(mdc);
-
-        GetClientRect(hWnd, &bufferRT);
-        BitBlt(hdc, 0, 0, bufferRT.right, bufferRT.bottom, mdc, 0, 0, SRCCOPY);
-        DeleteObject(backBit);
-        DeleteDC(mdc);
-        EndPaint(hWnd, &ps);
         break;
 
     case WM_DESTROY:
@@ -479,6 +464,8 @@ void CALLBACK BOSS_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
         e_mob = e_mob->Get_link();
     }
+}
+
 BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
     HWND hWnd = GetParent(hDlg);
