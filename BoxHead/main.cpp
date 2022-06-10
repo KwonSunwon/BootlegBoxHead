@@ -13,6 +13,10 @@ LPCTSTR lpszWindowName = L"Window Programming Lab";
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
 void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 void CALLBACK MOB1_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
+void CALLBACK MOB2_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
+void CALLBACK MOB3_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
+void CALLBACK MOB4_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
+void CALLBACK BOSS_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 void Player_move();
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow)
@@ -297,6 +301,132 @@ void Player_move()
     }
 }
 
-void CALLBACK MOB1_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime) {
+void CALLBACK MOB1_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime) 
+{
+    POINT p_pos = p.Get_Location();
+    POINT e_pos;
+    Enemy* e_mob = e.link;
 
+    while (e_mob != NULL)
+    {
+        if (e_mob->Get_id() == MOB1)
+        {
+            e_pos = e_mob->Get_Location();
+
+            if (p_pos.y > e_pos.y) { e_mob->Move_down(); }
+
+            if (p_pos.y < e_pos.y) { e_mob->Move_up(); }
+
+            if (p_pos.x > e_pos.x) { e_mob->Move_right(); }
+
+            if (p_pos.x < e_pos.x) { e_mob->Move_left(); }
+        }
+
+
+        e_mob = e_mob->Get_link();
+    }
+}
+
+void CALLBACK MOB2_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
+{
+    POINT p_pos = p.Get_Location();
+    POINT e_pos;
+    Enemy* e_mob = e.link;
+
+    while (e_mob != NULL)
+    {
+        if (e_mob->Get_id() == MOB2)
+        {
+            e_pos = e_mob->Get_Location();
+
+            if (p_pos.y > e_pos.y) { e_mob->Move_down(); }
+
+            if (p_pos.y < e_pos.y) { e_mob->Move_up(); }
+
+            if (p_pos.x > e_pos.x) { e_mob->Move_right(); }
+
+            if (p_pos.x < e_pos.x) { e_mob->Move_left(); }
+        }
+
+
+        e_mob = e_mob->Get_link();
+    }
+}
+
+void CALLBACK MOB3_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
+{
+    POINT p_pos = p.Get_Location();
+    POINT e_pos;
+    Enemy* e_mob = e.link;
+
+    while (e_mob != NULL)
+    {
+        if (e_mob->Get_id() == MOB3)
+        {
+            e_pos = e_mob->Get_Location();
+
+            if (p_pos.y > e_pos.y) { e_mob->Move_down(); }
+
+            if (p_pos.y < e_pos.y) { e_mob->Move_up(); }
+
+            if (p_pos.x > e_pos.x) { e_mob->Move_right(); }
+
+            if (p_pos.x < e_pos.x) { e_mob->Move_left(); }
+        }
+
+
+        e_mob = e_mob->Get_link();
+    }
+}
+
+void CALLBACK MOB4_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
+{
+    POINT p_pos = p.Get_Location();
+    POINT e_pos;
+    Enemy* e_mob = e.link;
+
+    while (e_mob != NULL)
+    {
+        if (e_mob->Get_id() == MOB4)
+        {
+            e_pos = e_mob->Get_Location();
+
+            if (p_pos.y > e_pos.y) { e_mob->Move_down(); }
+
+            if (p_pos.y < e_pos.y) { e_mob->Move_up(); }
+
+            if (p_pos.x > e_pos.x) { e_mob->Move_right(); }
+
+            if (p_pos.x < e_pos.x) { e_mob->Move_left(); }
+        }
+
+
+        e_mob = e_mob->Get_link();
+    }
+}
+
+void CALLBACK BOSS_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
+{
+    POINT p_pos = p.Get_Location();
+    POINT e_pos;
+    Enemy* e_mob = e.link;
+
+    while (e_mob != NULL)
+    {
+        if (e_mob->Get_id() == BOSS)
+        {
+            e_pos = e_mob->Get_Location();
+
+            if (p_pos.y > e_pos.y) { e_mob->Move_down(); }
+
+            if (p_pos.y < e_pos.y) { e_mob->Move_up(); }
+
+            if (p_pos.x > e_pos.x) { e_mob->Move_right(); }
+
+            if (p_pos.x < e_pos.x) { e_mob->Move_left(); }
+        }
+
+
+        e_mob = e_mob->Get_link();
+    }
 }

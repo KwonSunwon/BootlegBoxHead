@@ -2,6 +2,8 @@
 #include "stdafx.h"
 #include "object.h"
 
+#define ENEMY_STD_SPEED 3
+
 #define ENEMY_TIMER 404
 #define ENEMY_TIMELAB 100
 #define ENEMY_SPAWN 300
@@ -22,11 +24,11 @@
 #define BOSS_HP 800
 
 //¸÷ º° ¼Óµµ
-#define M1_SP 5
-#define M2_SP 3
-#define M3_SP 8
-#define M4_SP 5
-#define BOSS_SP 1
+#define M1_SP 200
+#define M2_SP 180
+#define M3_SP 200
+#define M4_SP 170
+#define BOSS_SP 500
 
 //¸÷ º° °ø°Ý·Â
 #define M1_ATK 5
