@@ -6,6 +6,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <atlImage.h>
 
 #define PHASE_MENU 0
 #define PHASE_LOAD 1

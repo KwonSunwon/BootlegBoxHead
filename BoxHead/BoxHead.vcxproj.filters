@@ -53,5 +53,33 @@
     <ClInclude Include="map.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="BoxHead.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Floor1.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Floor1.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="120px-Small_altar.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="BarrelA.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Floor2.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Wall.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
   </ItemGroup>
 </Project>

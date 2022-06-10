@@ -5,13 +5,84 @@ using namespace std;
 Map::Map()
 {
     id = -1;
-    size = {0, 0};
     count = {0, 0};
     map.resize(0);
+    playerSpawn = {0, 0};
+    enemySpawn.resize(0);
+
+    for (int i = 0; i < 4; ++i)
+        spawnEnemyType[i] = FALSE;
+
+    size = {0, 0};
     isEditMode = FALSE;
 }
 void Map::draw(HDC hdc)
 {
+    CImage img;
+    int width;
+    int height;
+
+    RECT drawRt = {0, 0, TILE_SIZE, TILE_SIZE};
+
+    for (int i = 0; i < count.y; ++i)
+    {
+        for (int j = 0; j < count.x; ++j)
+        {
+            if (map[i][j] == MAP_NONE)
+            {
+            }
+            else if (map[i][j] == MAP_FLOOR_TYPE1)
+            {
+                img.Load(TEXT("Floor1.png"));
+                if (img.IsNull())
+                    continue;
+                width = img.GetWidth();
+                height = img.GetHeight();
+                img.Draw(hdc, drawRt.right * j, drawRt.bottom * i, TILE_SIZE, TILE_SIZE, 0, 0, width, height);
+                img.Destroy();
+            }
+            else if (map[i][j] == MAP_FLOOR_TYPE2)
+            {
+                img.Load(TEXT("Floor2.png"));
+                if (img.IsNull())
+                    continue;
+                width = img.GetWidth();
+                height = img.GetHeight();
+                img.Draw(hdc, drawRt.right * j, drawRt.bottom * i, TILE_SIZE, TILE_SIZE, 0, 0, width, height);
+                img.Destroy();
+            }
+            else if (map[i][j] == MAP_WALL_TYPE1)
+            {
+                img.Load(TEXT("Wall.png"));
+                if (img.IsNull())
+                    continue;
+                width = img.GetWidth();
+                height = img.GetHeight();
+                img.Draw(hdc, drawRt.right * j, drawRt.bottom * i, TILE_SIZE, TILE_SIZE, 0, 0, width, height);
+                img.Destroy();
+            }
+            else if (map[i][j] == MAP_WALL_TYPE2)
+            {
+                img.Load(TEXT("BarrelA.png"));
+                if (img.IsNull())
+                    continue;
+                width = img.GetWidth();
+                height = img.GetHeight();
+                img.Draw(hdc, drawRt.right * j, drawRt.bottom * i, TILE_SIZE, TILE_SIZE, 0, 0, width, height);
+                img.Destroy();
+            }
+            else if (map[i][j] == MAP_WALL_TYPE3)
+            {
+                img.Load(TEXT("120px-Small_altar.png"));
+                if (img.IsNull())
+                    continue;
+                width = img.GetWidth();
+                height = img.GetHeight();
+                img.Draw(hdc, drawRt.right * j, drawRt.bottom * i, TILE_SIZE, TILE_SIZE, 0, 0, width, height);
+                img.Destroy();
+            }
+        }
+    }
 }
 
 int Map::load(int _id)
@@ -37,12 +108,38 @@ int Map::load(int _id)
         count.x = stoi(in);
         mapFile >> in;
         count.y = stoi(in);
+
+        mapFile >> in;
+        playerSpawn.x = stoi(in);
+        mapFile >> in;
+        playerSpawn.y = stoi(in);
+
+        mapFile >> in;
+        enemySpawn.clear();
+        int enemySpawnSize = stoi(in);
+        for (int i = 0; i < enemySpawnSize; ++i)
+        {
+            POINT temp;
+            mapFile >> in;
+            temp.x = stoi(in);
+            mapFile >> in;
+            temp.y = stoi(in);
+            enemySpawn.push_back(temp);
+        }
+        for (int i = 0; i < 4; ++i)
+        {
+            mapFile >> in;
+            spawnEnemyType[i] = stoi(in);
+        }
+
+        map.clear();
+        map.resize(count.y);
         for (int i = 0; i < count.y; ++i)
         {
             for (int j = 0; j < count.x; ++j)
             {
                 mapFile >> in;
-                map[i][j] = stoi(in);
+                map[i].push_back(stoi(in));
             }
         }
     }
@@ -51,12 +148,21 @@ int Map::load(int _id)
         // 파일이 존재하지 않음
         return -1;
     }
+    mapFile.close();
     return id;
 }
 
 int Map::get_tile_type(POINT _pos)
 {
     return map[_pos.y][_pos.x];
+}
+POINT Map::get_player_spawn()
+{
+    return playerSpawn;
+}
+vector<POINT> Map::get_enemy_spawn()
+{
+    return enemySpawn;
 }
 
 // if on EditMode
@@ -66,7 +172,7 @@ BOOL Map::get_isEditMode()
 }
 void Map::on_editMode()
 {
-    ~isEditMode;
+    isEditMode = TRUE;
 }
 void Map::tile_change(POINT _pos, int _type)
 {
@@ -98,17 +204,70 @@ int Map::save()
     newMapFile.open(fileName, ios_base::out);
     if (newMapFile.is_open())
     {
-        out = to_string(id) + "\n";
-        out += to_string(count.x) + " " + to_string(count.y) + "\n";
+        out = to_string(id) + "\n";                                              // 맵 고유번호
+        out += to_string(count.x) + " " + to_string(count.y) + "\n";             // 가로세로 칸 개수
+        out += to_string(playerSpawn.x) + " " + to_string(playerSpawn.y) + "\n"; // 플레이어 시작 위치
+        out += to_string(enemySpawn.size()) + "\n";                              // 적 스폰 위치 개수
+        for (int i = 0; i < enemySpawn.size(); ++i)
+        {
+            out += to_string(enemySpawn[i].x) + " " + to_string(enemySpawn[i].y) + "\n"; // 적들 스폰 위치
+        }
+        for (int i = 0; i < 4; ++i)
+        {
+            out += to_string(spawnEnemyType[i]) + "\n";
+        }
         for (int i = 0; i < count.y; ++i)
         {
             for (int j = 0; j < count.x; ++j)
             {
-                out += to_string(map[i][j]) + " ";
+                out += to_string(map[i][j]) + " "; // 맵 파일
             }
             out += "\n";
         }
         newMapFile.write(out.c_str(), out.size());
         newMapFile.close();
+    }
+
+    return id;
+}
+
+// test func
+void Map::test_print_file()
+{
+    cout << id << "\n";
+    cout << count.x << ", " << count.y << "\n";
+    cout << playerSpawn.x << ", " << playerSpawn.y << "\n";
+    for (int i = 0; i < enemySpawn.size(); ++i)
+        cout << enemySpawn[i].x << ", " << enemySpawn[i].y << "\n";
+    for (int i = 0; i < 4; ++i)
+        cout << spawnEnemyType[i] << "\n";
+    for (int i = 0; i < count.y; ++i)
+    {
+        for (int j = 0; j < count.x; ++j)
+        {
+            cout << map[i][j] << ", ";
+        }
+        cout << "\n";
+    }
+}
+
+void Map::test_out_content()
+{
+    isEditMode = TRUE;
+    id = 200;
+    count = {6, 4};
+    playerSpawn = {3, 3};
+    enemySpawn.push_back({1, 1});
+    enemySpawn.push_back({2, 2});
+    enemySpawn.push_back({3, 3});
+    enemySpawn.push_back({4, 5});
+    for (int i = 0; i < 4; ++i)
+        spawnEnemyType[i] = TRUE;
+    map.clear();
+    map.resize(count.y);
+    for (int i = 0; i < count.y; ++i)
+    {
+        for (int j = 0; j < count.x; ++j)
+            map[i].push_back(MAP_FLOOR_TYPE1);
     }
 }
