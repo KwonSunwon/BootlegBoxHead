@@ -3,6 +3,7 @@
 
 #define OBJECT_X_SIZE 32
 #define OBJECT_Y_SIZE 64
+#define MAX_OBJECT_HEALTH 100
 
 class Object 
 {
@@ -34,6 +35,7 @@ public:
     HBITMAP Get_Image();
     BITMAP Get_Info();
 
+    void Get_Heal(int);
     void Get_Damage(int);
     void Attack(Object);
 };

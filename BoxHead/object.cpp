@@ -71,3 +71,16 @@ void Object::Attack(Object _target)
 {
     _target.Get_Damage(attack);
 }
+
+void Object::Get_Heal(int _heal)
+{
+    if ((health + _heal) <= MAX_OBJECT_HEALTH)
+    {
+        health += _heal;
+    }
+
+    else
+    {
+        health = MAX_OBJECT_HEALTH;
+    }
+}
