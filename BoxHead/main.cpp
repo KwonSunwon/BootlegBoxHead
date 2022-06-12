@@ -60,7 +60,7 @@ Player p;
 int phase, spawn_count, difficulty;
 BOOL key_buffer[4];
 
-EnemyType e;
+EnemyType Mob1, Mob2, Mob3, Mob4, Boss;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
@@ -105,8 +105,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         edit_box.right = 600;
         edit_box.bottom = 360;
 
-        e.link = NULL;
-        e.enemy_count = 0;
+        Mob1.enemy_count = 0; Mob2.enemy_count = 0; Mob3.enemy_count = 0; Mob4.enemy_count = 0;
+        Mob1.link = NULL; Mob2.link = NULL; Mob3.link = NULL; Mob4.link = NULL;
 
         break;
 
@@ -335,11 +335,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             hFont = CreateFont(50, 30, 0, 0, FW_BOLD, 0, 0, 0, NULL, 0, 0, 0, 0, NULL);
             oldFont = (HFONT)SelectObject(MemDC, hFont);
 
-            //Í≤åÏûÑ ?ãú?ûë Î≤ÑÌäº
+            //start ∏ﬁ¥∫ πˆ∆∞
             Rectangle(MemDC, message_box.left, message_box.top, message_box.right, message_box.bottom);
             DrawText(MemDC, start_message, lstrlen(start_message), &message_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
-            //Îß? ?óê?îî?Ñ∞ Î≤ÑÌäº
+            //∏  ø°µ∆Æ πˆ∆∞
             Rectangle(MemDC, edit_box.left, edit_box.top, edit_box.right, edit_box.bottom);
             DrawText(MemDC, edit_button, lstrlen(edit_button), &edit_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
@@ -392,25 +392,79 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
     spawn_count++;
     Enemy *tmp;
+    int all_mob_amount = Mob1.enemy_count + Mob2.enemy_count + Mob3.enemy_count + Mob4.enemy_count;
 
-    if (spawn_count % ENEMY_SPAWN == 0) //?†Å ?ä§?è∞
+
+    if (spawn_count % ENEMY_SPAWN == 0)
     {
-        if (e.enemy_count < ENEMY_MAXCOUNT)
+        if (all_mob_amount < ENEMY_MAXCOUNT)
         {
             Enemy *newnode = (Enemy *)malloc(sizeof(Enemy));
-            tmp = e.link;
+            vector<BOOL> v = map.get_enemy_type();
+            
+            int selec;
 
-            // newnode?ùò set ?ï®?àòÎ•? ?ù¥?ö©?ï¥ Ï¥àÍ∏∞?ôî
-            newnode->Set_link(NULL);
+            while (1)
+            {
+                selec = rand() % 4;
+                if (v[0] && selec == 0)
+                {
+                    printf("∏˜ 1 Ω∫∆˘\n");
+                    tmp = Mob1.link;
 
-            newnode->Init_enemy(MOB1);
+                    newnode->Set_link(NULL);
+
+                    newnode->Init_enemy(MOB1);
+
+                    Mob1.enemy_count++;
+                    break;
+                }
+
+                if (v[1] && selec == 1)
+                {
+                    printf("∏˜ 2 Ω∫∆˘\n");
+                    tmp = Mob2.link;
+
+                    newnode->Set_link(NULL);
+
+                    newnode->Init_enemy(MOB2);
+
+                    Mob2.enemy_count++;
+                    break;
+                }
+
+                if (v[2] && selec == 2)
+                {
+                    printf("∏˜ 3 Ω∫∆˘\n");
+                    tmp = Mob3.link;
+
+                    newnode->Set_link(NULL);
+
+                    newnode->Init_enemy(MOB3);
+
+                    Mob3.enemy_count++;
+                    break;
+                }
+
+                if (v[3] && selec == 3)
+                {
+                    printf("∏˜ 4 Ω∫∆˘\n");
+                    tmp = Mob4.link;
+
+                    newnode->Set_link(NULL);
+
+                    newnode->Init_enemy(MOB4);
+
+                    Mob4.enemy_count++;
+                    break;
+                }
+            }
 
             while (tmp != NULL)
                 tmp = tmp->Get_link();
 
             tmp = newnode;
 
-            e.enemy_count++;
         }
     }
 }
@@ -442,34 +496,32 @@ void CALLBACK MOB1_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
     POINT p_pos = p.Get_Location();
     POINT e_pos;
-    Enemy *e_mob = e.link;
+    Enemy *e_mob = Mob1.link;
 
     while (e_mob != NULL)
     {
-        if (e_mob->Get_id() == MOB1)
+        e_pos = e_mob->Get_Location();
+
+        if (p_pos.y > e_pos.y)
         {
-            e_pos = e_mob->Get_Location();
-
-            if (p_pos.y > e_pos.y)
-            {
-                e_mob->Move_down();
-            }
-
-            if (p_pos.y < e_pos.y)
-            {
-                e_mob->Move_up();
-            }
-
-            if (p_pos.x > e_pos.x)
-            {
-                e_mob->Move_right();
-            }
-
-            if (p_pos.x < e_pos.x)
-            {
-                e_mob->Move_left();
-            }
+            e_mob->Move_down();
         }
+
+        if (p_pos.y < e_pos.y)
+        {
+            e_mob->Move_up();
+        }
+
+        if (p_pos.x > e_pos.x)
+        {
+            e_mob->Move_right();
+        }
+
+        if (p_pos.x < e_pos.x)
+        {
+            e_mob->Move_left();
+        }
+
 
         e_mob = e_mob->Get_link();
     }
@@ -479,34 +531,33 @@ void CALLBACK MOB2_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
     POINT p_pos = p.Get_Location();
     POINT e_pos;
-    Enemy *e_mob = e.link;
+    Enemy *e_mob = Mob2.link;
 
     while (e_mob != NULL)
     {
-        if (e_mob->Get_id() == MOB2)
+
+        e_pos = e_mob->Get_Location();
+
+        if (p_pos.y > e_pos.y)
         {
-            e_pos = e_mob->Get_Location();
-
-            if (p_pos.y > e_pos.y)
-            {
-                e_mob->Move_down();
-            }
-
-            if (p_pos.y < e_pos.y)
-            {
-                e_mob->Move_up();
-            }
-
-            if (p_pos.x > e_pos.x)
-            {
-                e_mob->Move_right();
-            }
-
-            if (p_pos.x < e_pos.x)
-            {
-                e_mob->Move_left();
-            }
+            e_mob->Move_down();
         }
+
+        if (p_pos.y < e_pos.y)
+        {
+            e_mob->Move_up();
+        }
+
+        if (p_pos.x > e_pos.x)
+        {
+            e_mob->Move_right();
+        }
+
+        if (p_pos.x < e_pos.x)
+        {
+            e_mob->Move_left();
+        }
+
 
         e_mob = e_mob->Get_link();
     }
@@ -516,34 +567,33 @@ void CALLBACK MOB3_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
     POINT p_pos = p.Get_Location();
     POINT e_pos;
-    Enemy *e_mob = e.link;
+    Enemy *e_mob = Mob3.link;
 
     while (e_mob != NULL)
     {
-        if (e_mob->Get_id() == MOB3)
+
+        e_pos = e_mob->Get_Location();
+
+        if (p_pos.y > e_pos.y)
         {
-            e_pos = e_mob->Get_Location();
-
-            if (p_pos.y > e_pos.y)
-            {
-                e_mob->Move_down();
-            }
-
-            if (p_pos.y < e_pos.y)
-            {
-                e_mob->Move_up();
-            }
-
-            if (p_pos.x > e_pos.x)
-            {
-                e_mob->Move_right();
-            }
-
-            if (p_pos.x < e_pos.x)
-            {
-                e_mob->Move_left();
-            }
+            e_mob->Move_down();
         }
+
+        if (p_pos.y < e_pos.y)
+        {
+            e_mob->Move_up();
+        }
+
+        if (p_pos.x > e_pos.x)
+        {
+            e_mob->Move_right();
+        }
+
+        if (p_pos.x < e_pos.x)
+        {
+            e_mob->Move_left();
+        }
+
 
         e_mob = e_mob->Get_link();
     }
@@ -553,7 +603,7 @@ void CALLBACK MOB4_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
     POINT p_pos = p.Get_Location();
     POINT e_pos;
-    Enemy *e_mob = e.link;
+    Enemy *e_mob = Mob4.link;
 
     while (e_mob != NULL)
     {
@@ -590,34 +640,33 @@ void CALLBACK BOSS_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
     POINT p_pos = p.Get_Location();
     POINT e_pos;
-    Enemy *e_mob = e.link;
+    Enemy *e_mob = Boss.link;
 
     while (e_mob != NULL)
     {
-        if (e_mob->Get_id() == BOSS)
+
+        e_pos = e_mob->Get_Location();
+
+        if (p_pos.y > e_pos.y)
         {
-            e_pos = e_mob->Get_Location();
-
-            if (p_pos.y > e_pos.y)
-            {
-                e_mob->Move_down();
-            }
-
-            if (p_pos.y < e_pos.y)
-            {
-                e_mob->Move_up();
-            }
-
-            if (p_pos.x > e_pos.x)
-            {
-                e_mob->Move_right();
-            }
-
-            if (p_pos.x < e_pos.x)
-            {
-                e_mob->Move_left();
-            }
+            e_mob->Move_down();
         }
+
+        if (p_pos.y < e_pos.y)
+        {
+            e_mob->Move_up();
+        }
+
+        if (p_pos.x > e_pos.x)
+        {
+            e_mob->Move_right();
+        }
+
+        if (p_pos.x < e_pos.x)
+        {
+            e_mob->Move_left();
+        }
+
 
         e_mob = e_mob->Get_link();
     }
