@@ -43,7 +43,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
     WndClass.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
     RegisterClassEx(&WndClass);
 
-    hWnd = CreateWindow(lpszClass, lpszWindowName, WS_OVERLAPPEDWINDOW, 0, 0, 800, 600, NULL, (HMENU)NULL, hInstance, NULL);
+    hWnd = CreateWindow(lpszClass, lpszWindowName, WS_OVERLAPPEDWINDOW, 0, 0, 1280, 960, NULL, (HMENU)NULL, hInstance, NULL);
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
 
@@ -84,9 +84,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
     static BOOL RBClick;
     static POINT mouse;
 
+    RECT ClientRT = {0, 0, 1280, 960};
+
     switch (iMessage)
     {
     case WM_CREATE:
+        AdjustWindowRect(&ClientRT, WS_OVERLAPPEDWINDOW, FALSE);
+        SetWindowPos(hWnd, NULL, 0, 0, ClientRT.right - ClientRT.left, ClientRT.bottom - ClientRT.top, NULL);
+
         p.Set_Attack(PLAYER_STDATTACK);
         p.Set_Health(PLAYER_STDHEALTH);
         p.Set_Speed(PLAYER_STDSPEED);
@@ -139,7 +144,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         {
             mouse_pos.x = mouse_pos.x / TILE_SIZE;
             mouse_pos.y = mouse_pos.y / TILE_SIZE;
-            map.tile_change(mouse_pos, g_mapEditSelector);
+            if (g_mapEditSelector == MAP_PLAYER_SPAWN_POINT)
+            {
+                map.set_player_spawn(mouse_pos);
+            }
+            else if (g_mapEditSelector == MAP_ENEMY_SPAWN_POINT)
+            {
+                if (map.set_enemy_spawn(mouse_pos) == 4)
+                {
+                    // ¿˚ Ω∫∆˘ ¿ßƒ° 4∞≥ √ ∞˙ ¡ˆ¡§ ∫“∞°¥…
+                }
+            }
+            else if (g_mapEditSelector == MAP_REMOVE)
+            {
+                map.remove_spawn_point(mouse_pos);
+            }
+            else
+            {
+                map.tile_change(mouse_pos, g_mapEditSelector);
+            }
             InvalidateRect(hWnd, NULL, FALSE);
         }
 
@@ -335,11 +358,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             hFont = CreateFont(50, 30, 0, 0, FW_BOLD, 0, 0, 0, NULL, 0, 0, 0, 0, NULL);
             oldFont = (HFONT)SelectObject(MemDC, hFont);
 
-            //Í≤åÏûÑ ?ãú?ûë Î≤ÑÌäº
             Rectangle(MemDC, message_box.left, message_box.top, message_box.right, message_box.bottom);
             DrawText(MemDC, start_message, lstrlen(start_message), &message_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
-            //Îß? ?óê?îî?Ñ∞ Î≤ÑÌäº
             Rectangle(MemDC, edit_box.left, edit_box.top, edit_box.right, edit_box.bottom);
             DrawText(MemDC, edit_button, lstrlen(edit_button), &edit_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
@@ -642,7 +663,7 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
         for (int i = 0; i < 4; ++i)
             typeSelector.push_back(FALSE);
 
-        size = {50, 50};
+        size = {20, 15};
         map.make_new_map(size);
 
         mapId = -1;
@@ -653,13 +674,16 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
         hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_FLOOR2));
         hButton = GetDlgItem(hDlg, IDC_FLOOR2);
         SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)hBit);
+        hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_FLOOR3));
+        hButton = GetDlgItem(hDlg, IDC_FLOOR3);
+        SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)hBit);
         hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_WALL));
         hButton = GetDlgItem(hDlg, IDC_WALL1);
         SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)hBit);
         hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_WALL2));
         hButton = GetDlgItem(hDlg, IDC_WALL3);
         SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)hBit);
-        hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BARREL));
+        hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_WALL3));
         hButton = GetDlgItem(hDlg, IDC_WALL2);
         SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)hBit);
 
@@ -692,6 +716,7 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
             g_mapEditSelector = MAP_FLOOR_TYPE2;
             break;
         case IDC_FLOOR3:
+            g_mapEditSelector = MAP_FLOOR_TYPE3;
             break;
         case IDC_WALL1:
             g_mapEditSelector = MAP_WALL_TYPE1;

@@ -117,13 +117,15 @@ END
 
 IDB_FLOOR1              BITMAP                  "Floor1.bmp"
 
-IDB_WALL2               BITMAP                  "120px-Small_altar.bmp"
+IDB_WALL2               BITMAP                  "Wall2.bmp"
 
-IDB_BARREL              BITMAP                  "BarrelA.bmp"
+IDB_WALL3               BITMAP                  "Wall3.bmp"
 
 IDB_FLOOR2              BITMAP                  "Floor2.bmp"
 
 IDB_WALL                BITMAP                  "Wall.bmp"
+
+IDB_FLOOR3              BITMAP                  "Floor3.bmp"
 
 #endif    // 한국어(대한민국) resources
 /////////////////////////////////////////////////////////////////////////////
