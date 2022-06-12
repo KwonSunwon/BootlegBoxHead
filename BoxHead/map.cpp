@@ -11,7 +11,7 @@ Map::Map()
     enemySpawn.resize(0);
 
     for (int i = 0; i < 4; ++i)
-        spawnEnemyType[i] = FALSE;
+        spawnEnemyType.push_back(FALSE);
 
     size = {0, 0};
     isEditMode = FALSE;
@@ -19,6 +19,7 @@ Map::Map()
 
 void Map::draw(HDC hdc)
 {
+    HBRUSH hBrush, oldBrush;
     CImage img;
     int width;
     int height;
@@ -81,6 +82,15 @@ void Map::draw(HDC hdc)
                 height = img.GetHeight();
                 img.Draw(hdc, drawRt.right * j, drawRt.bottom * i, TILE_SIZE, TILE_SIZE, 0, 0, width, height);
                 img.Destroy();
+            }
+
+            if (isEditMode)
+            {
+                RECT temp = drawRt;
+                OffsetRect(&temp, drawRt.right * j, drawRt.bottom * i);
+                hBrush = CreateSolidBrush(RGB(255, 0, 0));
+                FrameRect(hdc, &temp, hBrush);
+                DeleteObject(hBrush);
             }
         }
     }
@@ -165,6 +175,10 @@ vector<POINT> Map::get_enemy_spawn()
 {
     return enemySpawn;
 }
+vector<BOOL> Map::get_enemy_type()
+{
+    return spawnEnemyType;
+}
 
 // if on EditMode
 BOOL Map::get_isEditMode()
@@ -175,6 +189,10 @@ void Map::on_editMode()
 {
     isEditMode = TRUE;
 }
+void Map::off_editMode()
+{
+    isEditMode = FALSE;
+}
 void Map::tile_change(POINT _pos, int _type)
 {
     if (!isEditMode)
@@ -182,14 +200,39 @@ void Map::tile_change(POINT _pos, int _type)
         // ÇöÀç ¼öÁ¤¸ðµå°¡ ¾Æ´Ô
         return;
     }
-    if (_pos.x > count.x || _pos.y > count.y)
+    if (_pos.x > count.y || _pos.y > count.x)
     {
         // ¸Ê Å©±â ¹üÀ§ ¹þ¾î³­ ÁÂÇ¥
         return;
     }
     map[_pos.y][_pos.x] = _type;
 }
-int Map::save()
+void Map::enemy_type_change(vector<BOOL> _type)
+{
+    spawnEnemyType = _type;
+}
+
+void Map::make_new_map(POINT _count)
+{
+    id = -1;
+    count = _count;
+    map.clear();
+    map.resize(count.y);
+    for (int i = 0; i < count.y; ++i)
+    {
+        for (int j = 0; j < count.x; ++j)
+            map[i].push_back(MAP_NONE);
+    }
+    playerSpawn = {0, 0};
+
+    enemySpawn.clear();
+    for (int i = 0; i < 4; ++i)
+        spawnEnemyType[i] = FALSE;
+
+    size = {0, 0};
+}
+
+int Map::save(int _id)
 {
     if (!isEditMode)
     {
@@ -199,6 +242,8 @@ int Map::save()
 
     string fileName;
     string out;
+
+    id = _id;
 
     fileName = to_string(id) + ".txt";
     ofstream newMapFile;

@@ -1,9 +1,13 @@
 #define _CRT_SECURE_NO_WARNINGS
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 #include <stdio.h>
-
 #include "game_manager.h"
 #include "resource.h"
+
+// map global
+Map map;
+int g_mapEditSelector;
+BOOL isEditMode;
 
 HINSTANCE g_hInst;
 LPCTSTR lpszClass = L"Window Class Name";
@@ -75,15 +79,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
     static TCHAR Select[17] = L"Select Character";
     static TCHAR edit_button[11] = L"Map Editer";
 
+    HFONT hFont, oldFont;
+    POINT mouse_pos;
+    
+    static RECT message_box, edit_box;
+    static RECT rc;
+    static TCHAR name[10] = L"BoxLike";
+    static TCHAR start_message[11] = L"Start Game";
+    static TCHAR Select[17] = L"Select Character";
+    static TCHAR edit_button[11] = L"Map Editer";
+
     static HWND hDlg;
 
-    static Map map;
-    static BOOL isEditMode;
+    static BOOL LBClick;
+    static BOOL RBClick;
+    static POINT mouse;
 
     switch (iMessage)
     {
     case WM_CREATE:
         p.Set_Attack(PLAYER_STDATTACK); p.Set_Health(PLAYER_STDHEALTH); p.Set_Speed(PLAYER_STDSPEED); p.Set_Weapon(PISTOL);
+
         GetClientRect(hWnd, &rc);
         phase = PHASE_MENU;
 
@@ -114,9 +130,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             }
         }
 
-        //Lbuttondown¿¡ ÀÖ¾úÀ½
-        map.load(100);
-        InvalidateRect(hWnd, NULL, FALSE);
+        //TODO
+        mouse = {LOWORD(lParam), HIWORD(lParam)};
+        if (isEditMode)
+        {
+            mouse.x = mouse.x / TILE_SIZE;
+            mouse.y = mouse.y / TILE_SIZE;
+            map.tile_change(mouse, g_mapEditSelector);
+            InvalidateRect(hWnd, NULL, FALSE);
+        }
 
         break;
 
@@ -194,16 +216,96 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
         break;
 
+    case WM_CHAR:
+        if (phase == PHASE_LOAD) 
+        {
+            if (wParam == 'p' || wParam == 'P') 
+            {
+                spawn_count = 0;
+                SetTimer(hWnd, ENEMY_TIMER, ENEMY_TIMELAB, Enemy_spawn);
+                phase = PHASE_PLAY;
+            }
+        }
+
+        if (phase == PHASE_PLAY)
+        {
+            if (wParam == 'w' || wParam == 'W') 
+            {
+                POINT Virtual_pos = p.Get_Location();
+
+                Virtual_pos.y -= p.Get_Speed();
+
+                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
+                {
+                    key_buffer[UP] = TRUE;
+                }
+            }
+
+            if (wParam == 's' || wParam == 'S')
+            {
+                POINT Virtual_pos = p.Get_Location();
+
+                Virtual_pos.y += p.Get_Speed();
+
+                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
+                {
+                    key_buffer[DOWN] = TRUE;
+                }
+            }
+
+            if (wParam == 'a' || wParam == 'A')
+            {
+                POINT Virtual_pos = p.Get_Location();
+
+                Virtual_pos.x -= p.Get_Speed();
+
+                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
+                {
+                    key_buffer[LEFT] = TRUE;
+                }
+            }
+
+            if (wParam == 'd' || wParam == 'D')
+            {
+                POINT Virtual_pos = p.Get_Location();
+
+                Virtual_pos.x += p.Get_Speed();
+
+                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
+                {
+                    key_buffer[RIGHT] = TRUE;
+                }
+            }
+
+            InvalidateRect(hWnd, NULL, FALSE);
+        }
+        break;
+
+    case WM_KEYUP:
+        for (int i = 0;i < 4 ; i++) 
+        {
+            key_buffer[i] = FALSE;
+        }
+        isEditMode = FALSE;
+        LBClick = FALSE;
+        RBClick = FALSE;
+        break;
+
     case WM_COMMAND:
+        InvalidateRect(hWnd, NULL, FALSE);
+        break;
+
+        break;
 
         break;
 
     case WM_KEYDOWN:
-        //ÀÌ ºÎºÐ keydown¿¡ ÀÖ¾î¼­ ÀÏ´Ü ¿©±â µÒ
+        //ï¿½ï¿½ ï¿½Îºï¿½ keydownï¿½ï¿½ ï¿½Ö¾î¼­ ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
         switch (wParam)
         {
-        case VK_RETURN: // 1 key ÀÓ½Ã ¸Ê ¼öÁ¤¸ðµå ºÒ·¯¿À±â
+        case VK_RETURN: // 1 key ìž„ì‹œ ë§µ ìˆ˜ì •ëª¨ë“œ ë¶ˆëŸ¬ì˜¤ê¸°
             isEditMode = TRUE;
+            map.on_editMode();
             if (!IsWindow(hDlg))
             {
                 hDlg = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_MAPEDIT), hWnd, (DLGPROC)MapEditProc);
@@ -291,11 +393,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         }
 
         InvalidateRect(hWnd, NULL, FALSE);
+
         break;
 
+
     case WM_RBUTTONDOWN:
-        map.load(200);
-        InvalidateRect(hWnd, NULL, FALSE);
+
+        break;
+
+    case WM_MOUSEMOVE:
         break;
 
     case WM_PAINT:
@@ -320,11 +426,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             hFont = CreateFont(50, 30, 0, 0, FW_BOLD, 0, 0, 0, NULL, 0, 0, 0, 0, NULL);
             oldFont = (HFONT)SelectObject(MemDC, hFont);
 
-            //°ÔÀÓ ½ÃÀÛ ¹öÆ°
+
+            //ê²Œìž„ ì‹œìž‘ ë²„íŠ¼
             Rectangle(MemDC, message_box.left, message_box.top, message_box.right, message_box.bottom);
             DrawText(MemDC, start_message, lstrlen(start_message), &message_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
-            //¸Ê ¿¡µðÅÍ ¹öÆ°
+            //ë§µ ì—ë””í„° ë²„íŠ¼
             Rectangle(MemDC, edit_box.left, edit_box.top, edit_box.right, edit_box.bottom);
             DrawText(MemDC, edit_button, lstrlen(edit_button), &edit_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
@@ -354,7 +461,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             StretchBlt(MemDC, p.Get_Location().x - OBJECT_X_SIZE / 2, p.Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, p.Get_Info().bmWidth, p.Get_Info().bmHeight, SRCCOPY);
         }
 
-        //´õºí ¹öÆÛ¸µ
+        //ë”ë¸” ë²„í¼ë§
         BitBlt(hdc, 0, 0, rc.right, rc.bottom, MemDC, 0, 0, SRCCOPY);
 
         SelectObject(MemDC, oldBackBit);
@@ -373,14 +480,14 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
     spawn_count++;
     Enemy* tmp;
 
-    if (spawn_count % ENEMY_SPAWN == 0) //Àû ½ºÆù
+    if (spawn_count % ENEMY_SPAWN == 0) //ì  ìŠ¤í°
     {
         if(e.enemy_count < ENEMY_MAXCOUNT)
         {
             Enemy* newnode = (Enemy*)malloc(sizeof(Enemy));
             tmp = e.link;
 
-            //newnodeÀÇ set ÇÔ¼ö¸¦ ÀÌ¿ëÇØ ÃÊ±âÈ­ 
+            //newnodeì˜ set í•¨ìˆ˜ë¥¼ ì´ìš©í•´ ì´ˆê¸°í™” 
             newnode->Set_link(NULL);
 
             newnode->Init_enemy(MOB1);
@@ -553,16 +660,23 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
     HBITMAP hBit;
     HWND hButton;
+    static HWND hCheck[4];
 
-    static int selector;
-    static BOOL typeSelector[4];
+    static POINT size;
+    static int mapId;
+    static vector<BOOL> typeSelector;
 
     switch (iMsg)
     {
     case WM_INITDIALOG:
-        selector = MAP_NONE;
+        g_mapEditSelector = MAP_NONE;
         for (int i = 0; i < 4; ++i)
-            typeSelector[i] = FALSE;
+            typeSelector.push_back(FALSE);
+
+        size = {50, 50};
+        map.make_new_map(size);
+
+        mapId = -1;
 
         hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_FLOOR1));
         hButton = GetDlgItem(hDlg, IDC_FLOOR1);
@@ -579,63 +693,82 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
         hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BARREL));
         hButton = GetDlgItem(hDlg, IDC_WALL2);
         SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)hBit);
+
+        hCheck[0] = GetDlgItem(hDlg, IDC_TYPE1);
+        hCheck[1] = GetDlgItem(hDlg, IDC_TYPE2);
+        hCheck[2] = GetDlgItem(hDlg, IDC_TYPE3);
+        hCheck[3] = GetDlgItem(hDlg, IDC_TYPE4);
         break;
 
     case WM_COMMAND:
         switch (LOWORD(wParam))
         {
         case IDOK: // Save
-
+            map.enemy_type_change(typeSelector);
+            mapId = GetDlgItemInt(hDlg, IDC_INPUT, NULL, TRUE);
+            map.save(mapId);
             break;
+
         case IDCANCEL:
+            isEditMode = FALSE;
+            map.off_editMode();
             DestroyWindow(hDlg);
             break;
 
         case IDC_FLOOR1:
-            selector = MAP_FLOOR_TYPE1;
+            g_mapEditSelector = MAP_FLOOR_TYPE1;
             break;
         case IDC_FLOOR2:
-            selector = MAP_FLOOR_TYPE2;
+            g_mapEditSelector = MAP_FLOOR_TYPE2;
             break;
         case IDC_FLOOR3:
             break;
         case IDC_WALL1:
-            selector = MAP_WALL_TYPE1;
+            g_mapEditSelector = MAP_WALL_TYPE1;
             break;
         case IDC_WALL2:
-            selector = MAP_WALL_TYPE2;
+            g_mapEditSelector = MAP_WALL_TYPE2;
             break;
         case IDC_WALL3:
-            selector = MAP_WALL_TYPE3;
+            g_mapEditSelector = MAP_WALL_TYPE3;
             break;
         case IDC_PLAYER:
-            selector = MAP_PLAYER_SPAWN_POINT;
+            g_mapEditSelector = MAP_PLAYER_SPAWN_POINT;
             break;
         case IDC_ENEMY:
-            selector = MAP_ENEMY_SPAWN_POINT;
+            g_mapEditSelector = MAP_ENEMY_SPAWN_POINT;
             break;
         case IDC_REMOVE:
-            selector = MAP_REMOVE;
+            g_mapEditSelector = MAP_REMOVE;
             break;
 
         case IDC_TYPE1:
+            typeSelector[0] = 1 - typeSelector[0];
             break;
         case IDC_TYPE2:
+            typeSelector[1] = 1 - typeSelector[1];
             break;
         case IDC_TYPE3:
+            typeSelector[2] = 1 - typeSelector[2];
             break;
         case IDC_TYPE4:
-            break;
-
-        case IDC_INPUT:
+            typeSelector[3] = 1 - typeSelector[3];
             break;
 
         case IDC_LOAD:
+            mapId = GetDlgItemInt(hDlg, IDC_INPUT, NULL, TRUE);
+            map.load(mapId);
+            typeSelector = map.get_enemy_type();
+            for (int i = 0; i < 4; ++i)
+                SendMessage(hCheck[i], BM_SETCHECK, typeSelector[i], 0);
+            SendMessage(hWnd, WM_COMMAND, 0, 0);
             break;
         }
         break;
 
     case WM_CLOSE:
+        isEditMode = FALSE;
+        map.off_editMode();
         DestroyWindow(hDlg);
         break;
     }
