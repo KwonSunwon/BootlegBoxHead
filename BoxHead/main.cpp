@@ -83,7 +83,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
     switch (iMessage)
     {
     case WM_CREATE:
-        p.Set_Attack(PLAYER_STDATTACK); p.Set_Health(PLAYER_STDHEALTH); p.Set_Speed(PLAYER_STDSPEED);
+        p.Set_Attack(PLAYER_STDATTACK); p.Set_Health(PLAYER_STDHEALTH); p.Set_Speed(PLAYER_STDSPEED); p.Set_Weapon(PISTOL);
         GetClientRect(hWnd, &rc);
         phase = PHASE_MENU;
 
@@ -114,7 +114,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             }
         }
 
-        //이거 뭘 위해 있는건지 물어보기
+        //Lbuttondown에 있었음
         map.load(100);
         InvalidateRect(hWnd, NULL, FALSE);
 
@@ -199,6 +199,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_KEYDOWN:
+        //이 부분 keydown에 있어서 일단 여기 둠
         switch (wParam)
         {
         case VK_RETURN: // 1 key 임시 맵 수정모드 불러오기
@@ -209,6 +210,86 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 ShowWindow(hDlg, SW_SHOW);
             }
         }
+
+        if (phase == PHASE_PLAY)
+        {
+            if (wParam == VK_LEFT)
+            {
+                switch (p.Get_Weapon_id())
+                {
+                case PISTOL:
+                    p.Shot_Pistol(IDB_LEFT);
+                    break;
+                case RIFLE:
+                    p.Shot_Rifle(IDB_LEFT);
+                    break;
+                case SHOTGUN:
+                    p.Shot_Shotgun(IDB_LEFT);
+                    break;
+                case SNIPER:
+                    p.Shot_Sniper(IDB_LEFT);
+                    break;
+                }
+            }
+
+            if (wParam == VK_RIGHT)
+            {
+                switch (p.Get_Weapon_id())
+                {
+                case PISTOL:
+                    p.Shot_Pistol(IDB_RIGHT);
+                    break;
+                case RIFLE:
+                    p.Shot_Rifle(IDB_RIGHT);
+                    break;
+                case SHOTGUN:
+                    p.Shot_Shotgun(IDB_RIGHT);
+                    break;
+                case SNIPER:
+                    p.Shot_Sniper(IDB_RIGHT);
+                    break;
+                }
+            }
+
+            if (wParam == VK_UP)
+            {
+                switch (p.Get_Weapon_id())
+                {
+                case PISTOL:
+                    p.Shot_Pistol(IDB_UP);
+                    break;
+                case RIFLE:
+                    p.Shot_Rifle(IDB_UP);
+                    break;
+                case SHOTGUN:
+                    p.Shot_Shotgun(IDB_UP);
+                    break;
+                case SNIPER:
+                    p.Shot_Sniper(IDB_UP);
+                    break;
+                }
+            }
+
+            if (wParam == VK_DOWN)
+            {
+                switch (p.Get_Weapon_id())
+                {
+                case PISTOL:
+                    p.Shot_Pistol(IDB_DOWN);
+                    break;
+                case RIFLE:
+                    p.Shot_Rifle(IDB_DOWN);
+                    break;
+                case SHOTGUN:
+                    p.Shot_Shotgun(IDB_DOWN);
+                    break;
+                case SNIPER:
+                    p.Shot_Sniper(IDB_DOWN);
+                    break;
+                }
+            }
+        }
+
         InvalidateRect(hWnd, NULL, FALSE);
         break;
 

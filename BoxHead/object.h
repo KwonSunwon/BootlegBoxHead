@@ -5,6 +5,11 @@
 #define OBJECT_Y_SIZE 64
 #define MAX_OBJECT_HEALTH 100
 
+#define IDB_LEFT 202
+#define IDB_RIGHT 203
+#define IDB_UP 204
+#define IDB_DOWN 205
+
 class Object 
 {
 protected:
