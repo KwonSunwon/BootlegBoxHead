@@ -4,6 +4,11 @@
 #include "game_manager.h"
 #include "resource.h"
 
+// map global
+Map map;
+int g_mapEditSelector;
+BOOL isEditMode;
+
 HINSTANCE g_hInst;
 LPCTSTR lpszClass = L"Window Class Name";
 LPCTSTR lpszWindowName = L"Window Programming Lab";
@@ -78,8 +83,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
     static HWND hDlg;
 
-    static Map map;
-    static BOOL isEditMode;
+    static BOOL LBClick;
+    static BOOL RBClick;
+    static POINT mouse;
 
     switch (iMessage)
     {
@@ -115,7 +121,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             }
         }
 
-        //¿Ã∞≈ πª ¿ß«ÿ ¿÷¥¬∞«¡ˆ π∞æÓ∫∏±‚
+        //Ïù¥Í±∞ Î≠ò ÏúÑÌï¥ ÏûàÎäîÍ±¥ÏßÄ Î¨ºÏñ¥Î≥¥Í∏∞
         map.load(100);
         InvalidateRect(hWnd, NULL, FALSE);
 
@@ -192,18 +198,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             key_buffer[i] = FALSE;
         }
         isEditMode = FALSE;
-
+        LBClick = FALSE;
+        RBClick = FALSE;
         break;
 
     case WM_COMMAND:
+        InvalidateRect(hWnd, NULL, FALSE);
+        break;
 
         break;
 
     case WM_KEYDOWN:
         switch (wParam)
         {
-        case VK_RETURN: // 1 key ¿”Ω√ ∏  ºˆ¡§∏µÂ ∫“∑Øø¿±‚
+        case VK_RETURN: // 1 key ÏûÑÏãú Îßµ ÏàòÏ†ïÎ™®Îìú Î∂àÎü¨Ïò§Í∏∞
             isEditMode = TRUE;
+            map.on_editMode();
             if (!IsWindow(hDlg))
             {
                 hDlg = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_MAPEDIT), hWnd, (DLGPROC)MapEditProc);
@@ -213,9 +223,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         InvalidateRect(hWnd, NULL, FALSE);
         break;
 
+    case WM_LBUTTONDOWN:
+        mouse = {LOWORD(lParam), HIWORD(lParam)};
+        if (isEditMode)
+        {
+            mouse.x = mouse.x / TILE_SIZE;
+            mouse.y = mouse.y / TILE_SIZE;
+            map.tile_change(mouse, g_mapEditSelector);
+            InvalidateRect(hWnd, NULL, FALSE);
+        }
+        break;
+
+
     case WM_RBUTTONDOWN:
-        map.load(200);
-        InvalidateRect(hWnd, NULL, FALSE);
+
+        break;
+
+    case WM_MOUSEMOVE:
         break;
 
     case WM_PAINT:
@@ -240,11 +264,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             hFont = CreateFont(50, 30, 0, 0, FW_BOLD, 0, 0, 0, NULL, 0, 0, 0, 0, NULL);
             oldFont = (HFONT)SelectObject(MemDC, hFont);
 
-            //∞‘¿” Ω√¿€ πˆ∆∞
+            //Í≤åÏûÑ ÏãúÏûë Î≤ÑÌäº
             Rectangle(MemDC, message_box.left, message_box.top, message_box.right, message_box.bottom);
             DrawText(MemDC, start_message, lstrlen(start_message), &message_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
-            //∏  ø°µ≈Õ πˆ∆∞
+            //Îßµ ÏóêÎîîÌÑ∞ Î≤ÑÌäº
             Rectangle(MemDC, edit_box.left, edit_box.top, edit_box.right, edit_box.bottom);
             DrawText(MemDC, edit_button, lstrlen(edit_button), &edit_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
@@ -267,7 +291,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         {
             // Draw, using mdc
             map.draw(MemDC);
-            //¿Ã∞≈ ∏  √‚∑¬«œ¥¬ «‘ºˆ∂Ûº≠ ¿œ¥‹ ø©±‚ø° ≥÷æÓµ“
+            //Ïù¥Í±∞ Îßµ Ï∂úÎ†•ÌïòÎäî Ìï®ÏàòÎùºÏÑú ÏùºÎã® Ïó¨Í∏∞Ïóê ÎÑ£Ïñ¥Îë†
 
             Player_move();
 
@@ -275,7 +299,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             StretchBlt(MemDC, p.Get_Location().x - OBJECT_X_SIZE / 2, p.Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, p.Get_Info().bmWidth, p.Get_Info().bmHeight, SRCCOPY);
         }
 
-        //¥ı∫Ì πˆ∆€∏µ
+        //ÎçîÎ∏î Î≤ÑÌçºÎßÅ
         BitBlt(hdc, 0, 0, rc.right, rc.bottom, MemDC, 0, 0, SRCCOPY);
 
         SelectObject(MemDC, oldBackBit);
@@ -294,14 +318,14 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
     spawn_count++;
     Enemy* tmp;
 
-    if (spawn_count % ENEMY_SPAWN == 0) //¿˚ Ω∫∆˘
+    if (spawn_count % ENEMY_SPAWN == 0) //Ï†Å Ïä§Ìè∞
     {
         if(e.enemy_count < ENEMY_MAXCOUNT)
         {
             Enemy* newnode = (Enemy*)malloc(sizeof(Enemy));
             tmp = e.link;
 
-            //newnode¿« set «‘ºˆ∏¶ ¿ÃøÎ«ÿ √ ±‚»≠ 
+            //newnodeÏùò set Ìï®ÏàòÎ•º Ïù¥Ïö©Ìï¥ Ï¥àÍ∏∞Ìôî 
             newnode->Set_link(NULL);
 
             newnode->Init_enemy(MOB1);
@@ -474,16 +498,23 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
     HBITMAP hBit;
     HWND hButton;
+    static HWND hCheck[4];
 
-    static int selector;
-    static BOOL typeSelector[4];
+    static POINT size;
+    static int mapId;
+    static vector<BOOL> typeSelector;
 
     switch (iMsg)
     {
     case WM_INITDIALOG:
-        selector = MAP_NONE;
+        g_mapEditSelector = MAP_NONE;
         for (int i = 0; i < 4; ++i)
-            typeSelector[i] = FALSE;
+            typeSelector.push_back(FALSE);
+
+        size = {50, 50};
+        map.make_new_map(size);
+
+        mapId = -1;
 
         hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_FLOOR1));
         hButton = GetDlgItem(hDlg, IDC_FLOOR1);
@@ -500,63 +531,82 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
         hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BARREL));
         hButton = GetDlgItem(hDlg, IDC_WALL2);
         SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)hBit);
+
+        hCheck[0] = GetDlgItem(hDlg, IDC_TYPE1);
+        hCheck[1] = GetDlgItem(hDlg, IDC_TYPE2);
+        hCheck[2] = GetDlgItem(hDlg, IDC_TYPE3);
+        hCheck[3] = GetDlgItem(hDlg, IDC_TYPE4);
         break;
 
     case WM_COMMAND:
         switch (LOWORD(wParam))
         {
         case IDOK: // Save
-
+            map.enemy_type_change(typeSelector);
+            mapId = GetDlgItemInt(hDlg, IDC_INPUT, NULL, TRUE);
+            map.save(mapId);
             break;
+
         case IDCANCEL:
+            isEditMode = FALSE;
+            map.off_editMode();
             DestroyWindow(hDlg);
             break;
 
         case IDC_FLOOR1:
-            selector = MAP_FLOOR_TYPE1;
+            g_mapEditSelector = MAP_FLOOR_TYPE1;
             break;
         case IDC_FLOOR2:
-            selector = MAP_FLOOR_TYPE2;
+            g_mapEditSelector = MAP_FLOOR_TYPE2;
             break;
         case IDC_FLOOR3:
             break;
         case IDC_WALL1:
-            selector = MAP_WALL_TYPE1;
+            g_mapEditSelector = MAP_WALL_TYPE1;
             break;
         case IDC_WALL2:
-            selector = MAP_WALL_TYPE2;
+            g_mapEditSelector = MAP_WALL_TYPE2;
             break;
         case IDC_WALL3:
-            selector = MAP_WALL_TYPE3;
+            g_mapEditSelector = MAP_WALL_TYPE3;
             break;
         case IDC_PLAYER:
-            selector = MAP_PLAYER_SPAWN_POINT;
+            g_mapEditSelector = MAP_PLAYER_SPAWN_POINT;
             break;
         case IDC_ENEMY:
-            selector = MAP_ENEMY_SPAWN_POINT;
+            g_mapEditSelector = MAP_ENEMY_SPAWN_POINT;
             break;
         case IDC_REMOVE:
-            selector = MAP_REMOVE;
+            g_mapEditSelector = MAP_REMOVE;
             break;
 
         case IDC_TYPE1:
+            typeSelector[0] = 1 - typeSelector[0];
             break;
         case IDC_TYPE2:
+            typeSelector[1] = 1 - typeSelector[1];
             break;
         case IDC_TYPE3:
+            typeSelector[2] = 1 - typeSelector[2];
             break;
         case IDC_TYPE4:
-            break;
-
-        case IDC_INPUT:
+            typeSelector[3] = 1 - typeSelector[3];
             break;
 
         case IDC_LOAD:
+            mapId = GetDlgItemInt(hDlg, IDC_INPUT, NULL, TRUE);
+            map.load(mapId);
+            typeSelector = map.get_enemy_type();
+            for (int i = 0; i < 4; ++i)
+                SendMessage(hCheck[i], BM_SETCHECK, typeSelector[i], 0);
+            SendMessage(hWnd, WM_COMMAND, 0, 0);
             break;
         }
         break;
 
     case WM_CLOSE:
+        isEditMode = FALSE;
+        map.off_editMode();
         DestroyWindow(hDlg);
         break;
     }
