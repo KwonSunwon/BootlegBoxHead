@@ -66,10 +66,18 @@ EnemyType e;
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
     PAINTSTRUCT ps;
-    HDC hdc;
-    static HDC mdc, tmpDc;
-    static HBITMAP backBit;
-    static RECT bufferRT;
+    HDC hdc,MemDC,PrintDC;
+    HBITMAP BackBit, oldBackBit;
+
+    HFONT hFont, oldFont;
+    POINT mouse_pos;
+    
+    static RECT message_box, edit_box;
+    static RECT rc;
+    static TCHAR name[10] = L"BoxLike";
+    static TCHAR start_message[11] = L"Start Game";
+    static TCHAR Select[17] = L"Select Character";
+    static TCHAR edit_button[11] = L"Map Editer";
 
     HFONT hFont, oldFont;
     POINT mouse_pos;
@@ -90,7 +98,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
     switch (iMessage)
     {
     case WM_CREATE:
-        p.Set_Attack(PLAYER_STDATTACK); p.Set_Health(PLAYER_STDHEALTH); p.Set_Speed(PLAYER_STDSPEED);
+        p.Set_Attack(PLAYER_STDATTACK); p.Set_Health(PLAYER_STDHEALTH); p.Set_Speed(PLAYER_STDSPEED); p.Set_Weapon(PISTOL);
+
         GetClientRect(hWnd, &rc);
         phase = PHASE_MENU;
 
@@ -121,9 +130,89 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             }
         }
 
-        //이거 뭘 위해 있는건지 물어보기
-        map.load(100);
-        InvalidateRect(hWnd, NULL, FALSE);
+        //TODO
+        mouse = {LOWORD(lParam), HIWORD(lParam)};
+        if (isEditMode)
+        {
+            mouse.x = mouse.x / TILE_SIZE;
+            mouse.y = mouse.y / TILE_SIZE;
+            map.tile_change(mouse, g_mapEditSelector);
+            InvalidateRect(hWnd, NULL, FALSE);
+        }
+
+        break;
+
+    case WM_CHAR:
+        if (phase == PHASE_LOAD) 
+        {
+            if (wParam == 'p' || wParam == 'P') 
+            {
+                spawn_count = 0;
+                SetTimer(hWnd, ENEMY_TIMER, ENEMY_TIMELAB, Enemy_spawn);
+                phase = PHASE_PLAY;
+            }
+        }
+
+        if (phase == PHASE_PLAY)
+        {
+            if (wParam == 'w' || wParam == 'W') 
+            {
+                POINT Virtual_pos = p.Get_Location();
+
+                Virtual_pos.y -= p.Get_Speed();
+
+                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
+                {
+                    key_buffer[UP] = TRUE;
+                }
+            }
+
+            if (wParam == 's' || wParam == 'S')
+            {
+                POINT Virtual_pos = p.Get_Location();
+
+                Virtual_pos.y += p.Get_Speed();
+
+                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
+                {
+                    key_buffer[DOWN] = TRUE;
+                }
+            }
+
+            if (wParam == 'a' || wParam == 'A')
+            {
+                POINT Virtual_pos = p.Get_Location();
+
+                Virtual_pos.x -= p.Get_Speed();
+
+                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
+                {
+                    key_buffer[LEFT] = TRUE;
+                }
+            }
+
+            if (wParam == 'd' || wParam == 'D')
+            {
+                POINT Virtual_pos = p.Get_Location();
+
+                Virtual_pos.x += p.Get_Speed();
+
+                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
+                {
+                    key_buffer[RIGHT] = TRUE;
+                }
+            }
+
+            InvalidateRect(hWnd, NULL, FALSE);
+        }
+        break;
+
+    case WM_KEYUP:
+        for (int i = 0;i < 4 ; i++) 
+        {
+            key_buffer[i] = FALSE;
+        }
+        isEditMode = FALSE;
 
         break;
 
@@ -208,7 +297,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
         break;
 
+        break;
+
     case WM_KEYDOWN:
+        //�� �κ� keydown�� �־ �ϴ� ���� ��
         switch (wParam)
         {
         case VK_RETURN: // 1 key 임시 맵 수정모드 불러오기
@@ -220,18 +312,88 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 ShowWindow(hDlg, SW_SHOW);
             }
         }
-        InvalidateRect(hWnd, NULL, FALSE);
-        break;
 
-    case WM_LBUTTONDOWN:
-        mouse = {LOWORD(lParam), HIWORD(lParam)};
-        if (isEditMode)
+        if (phase == PHASE_PLAY)
         {
-            mouse.x = mouse.x / TILE_SIZE;
-            mouse.y = mouse.y / TILE_SIZE;
-            map.tile_change(mouse, g_mapEditSelector);
-            InvalidateRect(hWnd, NULL, FALSE);
+            if (wParam == VK_LEFT)
+            {
+                switch (p.Get_Weapon_id())
+                {
+                case PISTOL:
+                    p.Shot_Pistol(IDB_LEFT);
+                    break;
+                case RIFLE:
+                    p.Shot_Rifle(IDB_LEFT);
+                    break;
+                case SHOTGUN:
+                    p.Shot_Shotgun(IDB_LEFT);
+                    break;
+                case SNIPER:
+                    p.Shot_Sniper(IDB_LEFT);
+                    break;
+                }
+            }
+
+            if (wParam == VK_RIGHT)
+            {
+                switch (p.Get_Weapon_id())
+                {
+                case PISTOL:
+                    p.Shot_Pistol(IDB_RIGHT);
+                    break;
+                case RIFLE:
+                    p.Shot_Rifle(IDB_RIGHT);
+                    break;
+                case SHOTGUN:
+                    p.Shot_Shotgun(IDB_RIGHT);
+                    break;
+                case SNIPER:
+                    p.Shot_Sniper(IDB_RIGHT);
+                    break;
+                }
+            }
+
+            if (wParam == VK_UP)
+            {
+                switch (p.Get_Weapon_id())
+                {
+                case PISTOL:
+                    p.Shot_Pistol(IDB_UP);
+                    break;
+                case RIFLE:
+                    p.Shot_Rifle(IDB_UP);
+                    break;
+                case SHOTGUN:
+                    p.Shot_Shotgun(IDB_UP);
+                    break;
+                case SNIPER:
+                    p.Shot_Sniper(IDB_UP);
+                    break;
+                }
+            }
+
+            if (wParam == VK_DOWN)
+            {
+                switch (p.Get_Weapon_id())
+                {
+                case PISTOL:
+                    p.Shot_Pistol(IDB_DOWN);
+                    break;
+                case RIFLE:
+                    p.Shot_Rifle(IDB_DOWN);
+                    break;
+                case SHOTGUN:
+                    p.Shot_Shotgun(IDB_DOWN);
+                    break;
+                case SNIPER:
+                    p.Shot_Sniper(IDB_DOWN);
+                    break;
+                }
+            }
         }
+
+        InvalidateRect(hWnd, NULL, FALSE);
+
         break;
 
 
@@ -264,6 +426,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             hFont = CreateFont(50, 30, 0, 0, FW_BOLD, 0, 0, 0, NULL, 0, 0, 0, 0, NULL);
             oldFont = (HFONT)SelectObject(MemDC, hFont);
 
+
             //게임 시작 버튼
             Rectangle(MemDC, message_box.left, message_box.top, message_box.right, message_box.bottom);
             DrawText(MemDC, start_message, lstrlen(start_message), &message_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
@@ -291,7 +454,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         {
             // Draw, using mdc
             map.draw(MemDC);
-            //이거 맵 출력하는 함수라서 일단 여기에 넣어둠
 
             Player_move();
 
