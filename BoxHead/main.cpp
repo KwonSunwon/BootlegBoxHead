@@ -21,6 +21,7 @@ void CALLBACK MOB4_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 void CALLBACK BOSS_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
 void Player_move();
+void BOMB_target(Tower,Enemy);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow)
 {
@@ -43,7 +44,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
     WndClass.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
     RegisterClassEx(&WndClass);
 
-    hWnd = CreateWindow(lpszClass, lpszWindowName, WS_OVERLAPPEDWINDOW, 0, 0, 800, 600, NULL, (HMENU)NULL, hInstance, NULL);
+    hWnd = CreateWindow(lpszClass, lpszWindowName, WS_OVERLAPPEDWINDOW, 0, 0, 1280, 960, NULL, (HMENU)NULL, hInstance, NULL);
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
 
@@ -793,4 +794,88 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
         break;
     }
     return 0;
+}
+
+void BOMB_target(Tower _tower,Enemy _target) //실행한 타워도 인수로 받아야 함
+{
+    POINT Bomb_pos = _target.Get_Location();
+    vector<BOOL> v = map.get_enemy_type();
+    Enemy* tmp;
+
+    _target.Get_Damage(BOMB_DAMAGE);
+
+    if (v[0])
+    {
+        tmp = Mob1.link;
+
+        while (tmp != NULL)
+        {
+            if (Get_distance(tmp->Get_Location(), _tower.Get_Location()) < BOMB_RANGE)
+            {
+                tmp->Get_Damage(BOMB_SPLASH);
+            }
+
+            tmp = tmp->Get_link();
+        }
+    }
+
+    if (v[1])
+    {
+        tmp = Mob2.link;
+
+        while (tmp != NULL)
+        {
+            if (Get_distance(tmp->Get_Location(), _tower.Get_Location()) < BOMB_RANGE)
+            {
+                tmp->Get_Damage(BOMB_SPLASH);
+            }
+
+            tmp = tmp->Get_link();
+        }
+    }
+
+    if (v[2])
+    {
+        while (tmp != NULL)
+        {
+            if (Get_distance(tmp->Get_Location(), _tower.Get_Location()) < BOMB_RANGE)
+            {
+                tmp->Get_Damage(BOMB_SPLASH);
+            }
+
+            tmp = tmp->Get_link();
+        }
+    }
+
+    if (v[3])
+    {
+        while (tmp != NULL)
+        {
+            if (Get_distance(tmp->Get_Location(), _tower.Get_Location()) < BOMB_RANGE)
+            {
+                tmp->Get_Damage(BOMB_SPLASH);
+            }
+
+            tmp = tmp->Get_link();
+        }
+    }
+
+    if (v[4])
+    {
+        while (tmp != NULL)
+        {
+            if (Get_distance(tmp->Get_Location(), _tower.Get_Location()) < BOMB_RANGE)
+            {
+                tmp->Get_Damage(BOMB_SPLASH);
+            }
+
+            tmp = tmp->Get_link();
+        }
+    }
+
+}
+
+int Get_distance(POINT a, POINT b)
+{
+    return fabs(sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y)));
 }

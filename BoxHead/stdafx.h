@@ -18,3 +18,5 @@
 #define DOWN 1
 #define LEFT 2
 #define RIGHT 3
+
+int Get_distance(POINT a, POINT b);
