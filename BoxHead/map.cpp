@@ -7,7 +7,7 @@ Map::Map()
     id = -1;
     count = {0, 0};
     map.resize(0);
-    playerSpawn = {0, 0};
+    playerSpawn = {-1, -1};
     enemySpawn.resize(0);
 
     for (int i = 0; i < 4; ++i)
@@ -19,7 +19,7 @@ Map::Map()
 
 void Map::draw(HDC hdc)
 {
-    HBRUSH hBrush;
+    HBRUSH hBrush, oldBrush;
     CImage img;
     int width;
     int height;
@@ -32,10 +32,18 @@ void Map::draw(HDC hdc)
         {
             if (map[i][j] == MAP_NONE)
             {
+                RECT temp = drawRt;
+                OffsetRect(&temp, drawRt.right * j, drawRt.bottom * i);
+                hBrush = CreateSolidBrush(RGB(30, 30, 30));
+                oldBrush = (HBRUSH)SelectObject(hdc, hBrush);
+                Rectangle(hdc, temp.left, temp.top, temp.right, temp.bottom);
+                SelectObject(hdc, oldBrush);
+                DeleteObject(hBrush);
             }
-            else if (map[i][j] == MAP_FLOOR_TYPE1)
+
+            if (map[i][j] == MAP_FLOOR_TYPE1)
             {
-                img.Load(TEXT("Floor1.png"));
+                img.Load(TEXT("Floor1.bmp"));
                 if (img.IsNull())
                     continue;
                 width = img.GetWidth();
@@ -45,7 +53,17 @@ void Map::draw(HDC hdc)
             }
             else if (map[i][j] == MAP_FLOOR_TYPE2)
             {
-                img.Load(TEXT("Floor2.png"));
+                img.Load(TEXT("Floor2.bmp"));
+                if (img.IsNull())
+                    continue;
+                width = img.GetWidth();
+                height = img.GetHeight();
+                img.Draw(hdc, drawRt.right * j, drawRt.bottom * i, TILE_SIZE, TILE_SIZE, 0, 0, width, height);
+                img.Destroy();
+            }
+            else if (map[i][j] == MAP_FLOOR_TYPE3)
+            {
+                img.Load(TEXT("Floor3.bmp"));
                 if (img.IsNull())
                     continue;
                 width = img.GetWidth();
@@ -55,7 +73,7 @@ void Map::draw(HDC hdc)
             }
             else if (map[i][j] == MAP_WALL_TYPE1)
             {
-                img.Load(TEXT("Wall.png"));
+                img.Load(TEXT("Wall.bmp"));
                 if (img.IsNull())
                     continue;
                 width = img.GetWidth();
@@ -65,7 +83,7 @@ void Map::draw(HDC hdc)
             }
             else if (map[i][j] == MAP_WALL_TYPE2)
             {
-                img.Load(TEXT("BarrelA.png"));
+                img.Load(TEXT("Wall2.bmp"));
                 if (img.IsNull())
                     continue;
                 width = img.GetWidth();
@@ -75,7 +93,7 @@ void Map::draw(HDC hdc)
             }
             else if (map[i][j] == MAP_WALL_TYPE3)
             {
-                img.Load(TEXT("120px-Small_altar.png"));
+                img.Load(TEXT("Wall3.bmp"));
                 if (img.IsNull())
                     continue;
                 width = img.GetWidth();
@@ -88,9 +106,39 @@ void Map::draw(HDC hdc)
             {
                 RECT temp = drawRt;
                 OffsetRect(&temp, drawRt.right * j, drawRt.bottom * i);
-                hBrush = CreateSolidBrush(RGB(255, 0, 0));
+                hBrush = CreateSolidBrush(RGB(200, 30, 30));
                 FrameRect(hdc, &temp, hBrush);
                 DeleteObject(hBrush);
+
+                if (playerSpawn.x == i && playerSpawn.y == j)
+                {
+                    temp = drawRt;
+                    OffsetRect(&temp, drawRt.right * j, drawRt.bottom * i);
+                    InflateRect(&temp, -10, -10);
+                    OffsetRect(&temp, 2, 2);
+                    hBrush = CreateSolidBrush(RGB(50, 50, 150));
+                    oldBrush = (HBRUSH)SelectObject(hdc, hBrush);
+                    Ellipse(hdc, temp.left, temp.top, temp.right, temp.bottom);
+                    SelectObject(hdc, oldBrush);
+                    DeleteObject(hBrush);
+                }
+
+                int size = enemySpawn.size();
+                for (int k = 0; k < size; ++k)
+                {
+                    if (enemySpawn[k].x == i && enemySpawn[k].y == j)
+                    {
+                        temp = drawRt;
+                        OffsetRect(&temp, drawRt.right * j, drawRt.bottom * i);
+                        InflateRect(&temp, -10, -10);
+                        OffsetRect(&temp, 2, 2);
+                        hBrush = CreateSolidBrush(RGB(150, 50, 150));
+                        oldBrush = (HBRUSH)SelectObject(hdc, hBrush);
+                        Ellipse(hdc, temp.left, temp.top, temp.right, temp.bottom);
+                        SelectObject(hdc, oldBrush);
+                        DeleteObject(hBrush);
+                    }
+                }
             }
         }
     }
@@ -200,7 +248,7 @@ void Map::tile_change(POINT _pos, int _type)
         // 현재 수정모드가 아님
         return;
     }
-    if (_pos.x > count.y || _pos.y > count.x)
+    if (_pos.x > count.x || _pos.y > count.y)
     {
         // 맵 크기 범위 벗어난 좌표
         return;
@@ -223,7 +271,7 @@ void Map::make_new_map(POINT _count)
         for (int j = 0; j < count.x; ++j)
             map[i].push_back(MAP_NONE);
     }
-    playerSpawn = {0, 0};
+    playerSpawn = {-1, -1};
 
     enemySpawn.clear();
     for (int i = 0; i < 4; ++i)
@@ -232,11 +280,72 @@ void Map::make_new_map(POINT _count)
     size = {0, 0};
 }
 
+void Map::set_player_spawn(POINT _pos)
+{
+    if (!isEditMode)
+        return;
+    if (_pos.x > count.x || _pos.y > count.y)
+        return;
+    for (int i = 0; i < enemySpawn.size(); ++i)
+        if (enemySpawn[i].x == _pos.y && enemySpawn[i].y == _pos.x)
+            return;
+    if (map[_pos.y][_pos.x] >= 300 || map[_pos.y][_pos.x] == 100)
+        return;
+    playerSpawn = {_pos.y, _pos.x};
+}
+
+BOOL Map::set_enemy_spawn(POINT _pos)
+{
+    if (!isEditMode)
+        return -1;
+    if (_pos.x > count.y || _pos.y > count.x)
+        return -1;
+    if (enemySpawn.size() == 4)
+        return 4;
+    if (map[_pos.y][_pos.x] >= 300 || map[_pos.y][_pos.x] == 100)
+        return -1;
+    enemySpawn.push_back({_pos.y, _pos.x});
+    return 1;
+}
+
+void Map::remove_spawn_point(POINT _pos)
+{
+    if (playerSpawn.x == _pos.y && playerSpawn.y == _pos.x)
+    {
+        playerSpawn = {-1, -1};
+        return;
+    }
+    else if (enemySpawn.size() == 0)
+        return;
+    else
+    {
+        int size = enemySpawn.size();
+        for (int i = 0; i < size; ++i)
+        {
+            if (enemySpawn[i].x == _pos.y && enemySpawn[i].y == _pos.x)
+            {
+                enemySpawn.erase(enemySpawn.begin() + i);
+                return;
+            }
+        }
+    }
+}
+
 int Map::save(int _id)
 {
     if (!isEditMode)
     {
         // 현재 수정모드가 아님
+        return -1;
+    }
+    if (playerSpawn.x == -1 || playerSpawn.y == -1)
+    {
+        // 플레이어 스폰 위치 지정 안됨
+        return -1;
+    }
+    if (enemySpawn.size() == 0)
+    {
+        // 적 스폰 위치 지정 안됨
         return -1;
     }
 

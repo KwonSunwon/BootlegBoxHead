@@ -1,11 +1,7 @@
 {
-    "files.associations": {
-        "vector": "cpp"
-    },
-    "cSpell.words": [
-        "Editer",
-        "newnode",
-        "STDHEALTH",
-        "STDSPEED"
-    ]
+  "files.associations": {
+    "vector": "cpp"
+  },
+  "cSpell.words": ["Editer", "newnode", "STDHEALTH", "STDSPEED"],
+  "C_Cpp.errorSquiggles": "Disabled"
 }

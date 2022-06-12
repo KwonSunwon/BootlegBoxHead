@@ -173,12 +173,12 @@
     <ResourceCompile Include="BoxHead.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="120px-Small_altar.bmp" />
-    <Image Include="BarrelA.bmp" />
     <Image Include="Floor1.bmp" />
-    <Image Include="Floor1.png" />
     <Image Include="Floor2.bmp" />
+    <Image Include="Floor3.bmp" />
     <Image Include="Wall.bmp" />
+    <Image Include="wall2.bmp" />
+    <Image Include="wall3.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
