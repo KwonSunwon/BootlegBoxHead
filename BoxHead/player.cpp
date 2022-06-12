@@ -17,6 +17,7 @@ int Player::Get_Weapon_id() { return weapon_id; }
 
 void Shot_Pistol(int way)
 {
+	//총알을 생각을 못했네..
 	switch (way)
 	{
 	case IDB_LEFT:
