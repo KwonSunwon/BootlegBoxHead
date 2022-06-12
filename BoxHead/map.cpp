@@ -206,9 +206,9 @@ void Map::tile_change(POINT _pos, int _type)
     }
     map[_pos.y][_pos.x] = _type;
 }
-void Map::enemy_type_change(int _type, BOOL check)
+void Map::enemy_type_change(vector<BOOL> _type)
 {
-    spawnEnemyType[_type] = check;
+    spawnEnemyType = _type;
 }
 
 void Map::make_new_map(POINT _count)

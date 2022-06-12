@@ -8,6 +8,7 @@
 // map global
 Map map;
 int g_mapEditSelector;
+BOOL isEditMode;
 
 HINSTANCE g_hInst;
 LPCTSTR lpszClass = L"Window Class Name";
@@ -58,8 +59,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
     static RECT bufferRT;
 
     static HWND hDlg;
-
-    static BOOL isEditMode;
 
     static BOOL LBClick;
     static BOOL RBClick;
@@ -141,6 +140,7 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
     HBITMAP hBit;
     HWND hButton;
+    static HWND hCheck[4];
 
     static POINT size;
     static int mapId;
@@ -173,19 +173,25 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
         hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BARREL));
         hButton = GetDlgItem(hDlg, IDC_WALL2);
         SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)hBit);
+
+        hCheck[0] = GetDlgItem(hDlg, IDC_TYPE1);
+        hCheck[1] = GetDlgItem(hDlg, IDC_TYPE2);
+        hCheck[2] = GetDlgItem(hDlg, IDC_TYPE3);
+        hCheck[3] = GetDlgItem(hDlg, IDC_TYPE4);
         break;
 
     case WM_COMMAND:
         switch (LOWORD(wParam))
         {
         case IDOK: // Save
-            for (int i = 0; i < 4; ++i)
-                map.enemy_type_change(i, typeSelector[i]);
+            map.enemy_type_change(typeSelector);
             mapId = GetDlgItemInt(hDlg, IDC_INPUT, NULL, TRUE);
             map.save(mapId);
             break;
 
         case IDCANCEL:
+            isEditMode = FALSE;
+            map.off_editMode();
             DestroyWindow(hDlg);
             break;
 
@@ -234,13 +240,15 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
             map.load(mapId);
             typeSelector = map.get_enemy_type();
             for (int i = 0; i < 4; ++i)
-                SendMessage(hDlg, IDC_TYPE1, BM_SETCHECK, typeSelector[i]);
+                SendMessage(hCheck[i], BM_SETCHECK, typeSelector[i], 0);
             SendMessage(hWnd, WM_COMMAND, 0, 0);
             break;
         }
         break;
 
     case WM_CLOSE:
+        isEditMode = FALSE;
+        map.off_editMode();
         DestroyWindow(hDlg);
         break;
     }

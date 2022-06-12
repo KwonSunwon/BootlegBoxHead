@@ -54,7 +54,7 @@ public:
 
     void make_new_map(POINT);
     void tile_change(POINT, int);
-    void enemy_type_change(int, BOOL);
+    void enemy_type_change(vector<int>);
     int save(int);
 
     // test
