@@ -5,6 +5,10 @@
 #include "game_manager.h"
 #include "resource.h"
 
+// map global
+Map map;
+int g_mapEditSelector;
+
 HINSTANCE g_hInst;
 LPCTSTR lpszClass = L"Window Class Name";
 LPCTSTR lpszWindowName = L"Window Programming Lab";
@@ -55,23 +59,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
     static HWND hDlg;
 
-    static Map map;
     static BOOL isEditMode;
+
+    static BOOL LBClick;
+    static BOOL RBClick;
+    static POINT mouse;
 
     switch (iMessage)
     {
     case WM_CREATE:
         isEditMode = FALSE;
-
+        LBClick = FALSE;
+        RBClick = FALSE;
         break;
 
     case WM_COMMAND:
+        InvalidateRect(hWnd, NULL, FALSE);
+        break;
 
     case WM_KEYDOWN:
         switch (wParam)
         {
         case VK_RETURN: // 1 key 임시 맵 수정모드 불러오기
             isEditMode = TRUE;
+            map.on_editMode();
             if (!IsWindow(hDlg))
             {
                 hDlg = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_MAPEDIT), hWnd, (DLGPROC)MapEditProc);
@@ -82,13 +93,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_LBUTTONDOWN:
-        map.load(100);
-        InvalidateRect(hWnd, NULL, FALSE);
+        mouse = {LOWORD(lParam), HIWORD(lParam)};
+        if (isEditMode)
+        {
+            mouse.x = mouse.x / TILE_SIZE;
+            mouse.y = mouse.y / TILE_SIZE;
+            map.tile_change(mouse, g_mapEditSelector);
+            InvalidateRect(hWnd, NULL, FALSE);
+        }
         break;
 
     case WM_RBUTTONDOWN:
-        map.load(200);
-        InvalidateRect(hWnd, NULL, FALSE);
+
+        break;
+
+    case WM_MOUSEMOVE:
         break;
 
     case WM_PAINT:
@@ -123,15 +142,21 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
     HBITMAP hBit;
     HWND hButton;
 
-    static int selector;
-    static BOOL typeSelector[4];
+    static POINT size;
+    static int mapId;
+    static vector<BOOL> typeSelector;
 
     switch (iMsg)
     {
     case WM_INITDIALOG:
-        selector = MAP_NONE;
+        g_mapEditSelector = MAP_NONE;
         for (int i = 0; i < 4; ++i)
-            typeSelector[i] = FALSE;
+            typeSelector.push_back(FALSE);
+
+        size = {50, 50};
+        map.make_new_map(size);
+
+        mapId = -1;
 
         hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_FLOOR1));
         hButton = GetDlgItem(hDlg, IDC_FLOOR1);
@@ -154,52 +179,63 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
         switch (LOWORD(wParam))
         {
         case IDOK: // Save
-
+            for (int i = 0; i < 4; ++i)
+                map.enemy_type_change(i, typeSelector[i]);
+            mapId = GetDlgItemInt(hDlg, IDC_INPUT, NULL, TRUE);
+            map.save(mapId);
             break;
+
         case IDCANCEL:
             DestroyWindow(hDlg);
             break;
 
         case IDC_FLOOR1:
-            selector = MAP_FLOOR_TYPE1;
+            g_mapEditSelector = MAP_FLOOR_TYPE1;
             break;
         case IDC_FLOOR2:
-            selector = MAP_FLOOR_TYPE2;
+            g_mapEditSelector = MAP_FLOOR_TYPE2;
             break;
         case IDC_FLOOR3:
             break;
         case IDC_WALL1:
-            selector = MAP_WALL_TYPE1;
+            g_mapEditSelector = MAP_WALL_TYPE1;
             break;
         case IDC_WALL2:
-            selector = MAP_WALL_TYPE2;
+            g_mapEditSelector = MAP_WALL_TYPE2;
             break;
         case IDC_WALL3:
-            selector = MAP_WALL_TYPE3;
+            g_mapEditSelector = MAP_WALL_TYPE3;
             break;
         case IDC_PLAYER:
-            selector = MAP_PLAYER_SPAWN_POINT;
+            g_mapEditSelector = MAP_PLAYER_SPAWN_POINT;
             break;
         case IDC_ENEMY:
-            selector = MAP_ENEMY_SPAWN_POINT;
+            g_mapEditSelector = MAP_ENEMY_SPAWN_POINT;
             break;
         case IDC_REMOVE:
-            selector = MAP_REMOVE;
+            g_mapEditSelector = MAP_REMOVE;
             break;
 
         case IDC_TYPE1:
+            typeSelector[0] = 1 - typeSelector[0];
             break;
         case IDC_TYPE2:
+            typeSelector[1] = 1 - typeSelector[1];
             break;
         case IDC_TYPE3:
+            typeSelector[2] = 1 - typeSelector[2];
             break;
         case IDC_TYPE4:
-            break;
-
-        case IDC_INPUT:
+            typeSelector[3] = 1 - typeSelector[3];
             break;
 
         case IDC_LOAD:
+            mapId = GetDlgItemInt(hDlg, IDC_INPUT, NULL, TRUE);
+            map.load(mapId);
+            typeSelector = map.get_enemy_type();
+            for (int i = 0; i < 4; ++i)
+                SendMessage(hDlg, IDC_TYPE1, BM_SETCHECK, typeSelector[i]);
+            SendMessage(hWnd, WM_COMMAND, 0, 0);
             break;
         }
         break;
