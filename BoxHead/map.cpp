@@ -19,7 +19,7 @@ Map::Map()
 
 void Map::draw(HDC hdc)
 {
-    HBRUSH hBrush, oldBrush;
+    HBRUSH hBrush;
     CImage img;
     int width;
     int height;

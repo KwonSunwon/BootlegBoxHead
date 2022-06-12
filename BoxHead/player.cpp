@@ -15,7 +15,7 @@ void Player::Set_Weapon(int _weapon)
 
 int Player::Get_Weapon_id() { return weapon_id; }
 
-void Shot_Pistol(int way)
+void Player::Shot_Pistol(int way)
 {
 	//총알을 생각을 못했네..
 	switch (way)
@@ -31,7 +31,7 @@ void Shot_Pistol(int way)
 	}
 }
 
-void Shot_Rifle(int way)
+void Player::Shot_Rifle(int way)
 {
 	switch (way)
 	{
@@ -46,7 +46,7 @@ void Shot_Rifle(int way)
 	}
 }
 
-void Shot_Shotgun(int way)
+void Player::Shot_Shotgun(int way)
 {
 	switch (way)
 	{
@@ -61,7 +61,7 @@ void Shot_Shotgun(int way)
 	}
 }
 
-void Shot_Sniper(int way)
+void Player::Shot_Sniper(int way)
 {
 	switch (way)
 	{

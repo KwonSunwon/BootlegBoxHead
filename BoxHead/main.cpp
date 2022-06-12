@@ -7,7 +7,6 @@
 // map global
 Map map;
 int g_mapEditSelector;
-BOOL isEditMode;
 
 HINSTANCE g_hInst;
 LPCTSTR lpszClass = L"Window Class Name";
@@ -66,22 +65,12 @@ EnemyType e;
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
     PAINTSTRUCT ps;
-    HDC hdc,MemDC,PrintDC;
+    HDC hdc, MemDC, PrintDC;
     HBITMAP BackBit, oldBackBit;
 
     HFONT hFont, oldFont;
     POINT mouse_pos;
-    
-    static RECT message_box, edit_box;
-    static RECT rc;
-    static TCHAR name[10] = L"BoxLike";
-    static TCHAR start_message[11] = L"Start Game";
-    static TCHAR Select[17] = L"Select Character";
-    static TCHAR edit_button[11] = L"Map Editer";
 
-    HFONT hFont, oldFont;
-    POINT mouse_pos;
-    
     static RECT message_box, edit_box;
     static RECT rc;
     static TCHAR name[10] = L"BoxLike";
@@ -98,23 +87,34 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
     switch (iMessage)
     {
     case WM_CREATE:
-        p.Set_Attack(PLAYER_STDATTACK); p.Set_Health(PLAYER_STDHEALTH); p.Set_Speed(PLAYER_STDSPEED); p.Set_Weapon(PISTOL);
+        p.Set_Attack(PLAYER_STDATTACK);
+        p.Set_Health(PLAYER_STDHEALTH);
+        p.Set_Speed(PLAYER_STDSPEED);
+        p.Set_Weapon(PISTOL);
 
         GetClientRect(hWnd, &rc);
         phase = PHASE_MENU;
 
-        message_box.left = 200; message_box.top = 200; message_box.right = 600; message_box.bottom = 260;
+        message_box.left = 200;
+        message_box.top = 200;
+        message_box.right = 600;
+        message_box.bottom = 260;
 
-        edit_box.left = 200; edit_box.top = 300; edit_box.right = 600; edit_box.bottom = 360;
+        edit_box.left = 200;
+        edit_box.top = 300;
+        edit_box.right = 600;
+        edit_box.bottom = 360;
 
-        e.link = NULL; e.enemy_count = 0;
+        e.link = NULL;
+        e.enemy_count = 0;
 
         break;
 
     case WM_LBUTTONDOWN:
-        mouse_pos.x = LOWORD(lParam); mouse_pos.y = HIWORD(lParam);
+        mouse_pos.x = LOWORD(lParam);
+        mouse_pos.y = HIWORD(lParam);
 
-        if (phase == PHASE_MENU) 
+        if (phase == PHASE_MENU)
         {
             if (message_box.left < mouse_pos.x && message_box.top < mouse_pos.y && message_box.right > mouse_pos.x && message_box.bottom > mouse_pos.y)
             {
@@ -125,27 +125,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             if (edit_box.left < mouse_pos.x && edit_box.top < mouse_pos.y && edit_box.right > mouse_pos.x && edit_box.bottom > mouse_pos.y)
             {
                 phase = PHASE_EDIT;
-
+                map.on_editMode();
+                if (!IsWindow(hDlg))
+                {
+                    hDlg = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_MAPEDIT), hWnd, (DLGPROC)MapEditProc);
+                    ShowWindow(hDlg, SW_SHOW);
+                }
                 InvalidateRect(hWnd, NULL, FALSE);
             }
         }
 
-        //TODO
-        mouse = {LOWORD(lParam), HIWORD(lParam)};
-        if (isEditMode)
+        if (phase == PHASE_EDIT)
         {
-            mouse.x = mouse.x / TILE_SIZE;
-            mouse.y = mouse.y / TILE_SIZE;
-            map.tile_change(mouse, g_mapEditSelector);
+            mouse_pos.x = mouse_pos.x / TILE_SIZE;
+            mouse_pos.y = mouse_pos.y / TILE_SIZE;
+            map.tile_change(mouse_pos, g_mapEditSelector);
             InvalidateRect(hWnd, NULL, FALSE);
         }
 
         break;
 
     case WM_CHAR:
-        if (phase == PHASE_LOAD) 
+        if (phase == PHASE_LOAD)
         {
-            if (wParam == 'p' || wParam == 'P') 
+            if (wParam == 'p' || wParam == 'P')
             {
                 spawn_count = 0;
                 SetTimer(hWnd, ENEMY_TIMER, ENEMY_TIMELAB, Enemy_spawn);
@@ -155,7 +158,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
         if (phase == PHASE_PLAY)
         {
-            if (wParam == 'w' || wParam == 'W') 
+            if (wParam == 'w' || wParam == 'W')
             {
                 POINT Virtual_pos = p.Get_Location();
 
@@ -208,111 +211,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_KEYUP:
-        for (int i = 0;i < 4 ; i++) 
+        for (int i = 0; i < 4; i++)
         {
             key_buffer[i] = FALSE;
         }
-        isEditMode = FALSE;
-
-        break;
-
-    case WM_CHAR:
-        if (phase == PHASE_LOAD) 
-        {
-            if (wParam == 'p' || wParam == 'P') 
-            {
-                spawn_count = 0;
-                SetTimer(hWnd, ENEMY_TIMER, ENEMY_TIMELAB, Enemy_spawn);
-                phase = PHASE_PLAY;
-            }
-        }
-
-        if (phase == PHASE_PLAY)
-        {
-            if (wParam == 'w' || wParam == 'W') 
-            {
-                POINT Virtual_pos = p.Get_Location();
-
-                Virtual_pos.y -= p.Get_Speed();
-
-                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
-                {
-                    key_buffer[UP] = TRUE;
-                }
-            }
-
-            if (wParam == 's' || wParam == 'S')
-            {
-                POINT Virtual_pos = p.Get_Location();
-
-                Virtual_pos.y += p.Get_Speed();
-
-                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
-                {
-                    key_buffer[DOWN] = TRUE;
-                }
-            }
-
-            if (wParam == 'a' || wParam == 'A')
-            {
-                POINT Virtual_pos = p.Get_Location();
-
-                Virtual_pos.x -= p.Get_Speed();
-
-                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
-                {
-                    key_buffer[LEFT] = TRUE;
-                }
-            }
-
-            if (wParam == 'd' || wParam == 'D')
-            {
-                POINT Virtual_pos = p.Get_Location();
-
-                Virtual_pos.x += p.Get_Speed();
-
-                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
-                {
-                    key_buffer[RIGHT] = TRUE;
-                }
-            }
-
-            InvalidateRect(hWnd, NULL, FALSE);
-        }
-        break;
-
-    case WM_KEYUP:
-        for (int i = 0;i < 4 ; i++) 
-        {
-            key_buffer[i] = FALSE;
-        }
-        isEditMode = FALSE;
-        LBClick = FALSE;
-        RBClick = FALSE;
         break;
 
     case WM_COMMAND:
         InvalidateRect(hWnd, NULL, FALSE);
         break;
 
-        break;
-
-        break;
-
     case WM_KEYDOWN:
-        //ï¿½ï¿½ ï¿½Îºï¿½ keydownï¿½ï¿½ ï¿½Ö¾î¼­ ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
-        switch (wParam)
-        {
-        case VK_RETURN: // 1 key ìž„ì‹œ ë§µ ìˆ˜ì •ëª¨ë“œ ë¶ˆëŸ¬ì˜¤ê¸°
-            isEditMode = TRUE;
-            map.on_editMode();
-            if (!IsWindow(hDlg))
-            {
-                hDlg = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_MAPEDIT), hWnd, (DLGPROC)MapEditProc);
-                ShowWindow(hDlg, SW_SHOW);
-            }
-        }
-
         if (phase == PHASE_PLAY)
         {
             if (wParam == VK_LEFT)
@@ -396,7 +305,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
         break;
 
-
     case WM_RBUTTONDOWN:
 
         break;
@@ -406,14 +314,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
     case WM_PAINT:
         hdc = BeginPaint(hWnd, &ps);
-        MemDC = CreateCompatibleDC(hdc); PrintDC = CreateCompatibleDC(hdc);
+        MemDC = CreateCompatibleDC(hdc);
+        PrintDC = CreateCompatibleDC(hdc);
         BackBit = CreateCompatibleBitmap(hdc, rc.right, rc.bottom);
 
         oldBackBit = (HBITMAP)SelectObject(MemDC, BackBit);
 
         PatBlt(MemDC, 0, 0, rc.right, rc.bottom, WHITENESS);
 
-        if (phase == PHASE_MENU) 
+        if (phase == PHASE_MENU)
         {
             hFont = CreateFont(120, 90, 0, 0, FW_BOLD, 0, 0, 0, NULL, 0, 0, 0, 0, NULL);
             oldFont = (HFONT)SelectObject(MemDC, hFont);
@@ -426,12 +335,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             hFont = CreateFont(50, 30, 0, 0, FW_BOLD, 0, 0, 0, NULL, 0, 0, 0, 0, NULL);
             oldFont = (HFONT)SelectObject(MemDC, hFont);
 
-
-            //ê²Œìž„ ì‹œìž‘ ë²„íŠ¼
+            //ê²Œìž„ ?‹œ?ž‘ ë²„íŠ¼
             Rectangle(MemDC, message_box.left, message_box.top, message_box.right, message_box.bottom);
             DrawText(MemDC, start_message, lstrlen(start_message), &message_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
-            //ë§µ ì—ë””í„° ë²„íŠ¼
+            //ë§? ?—?””?„° ë²„íŠ¼
             Rectangle(MemDC, edit_box.left, edit_box.top, edit_box.right, edit_box.bottom);
             DrawText(MemDC, edit_button, lstrlen(edit_button), &edit_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
@@ -439,7 +347,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             DeleteObject(hFont);
         }
 
-        if (phase == PHASE_LOAD) 
+        if (phase == PHASE_LOAD)
         {
             hFont = CreateFont(60, 40, 0, 0, FW_BOLD, 0, 0, 0, NULL, 0, 0, 0, 0, NULL);
             oldFont = (HFONT)SelectObject(MemDC, hFont);
@@ -450,7 +358,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             DeleteObject(hFont);
         }
 
-        if (phase == PHASE_PLAY) 
+        if (phase == PHASE_PLAY)
         {
             // Draw, using mdc
             map.draw(MemDC);
@@ -461,11 +369,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             StretchBlt(MemDC, p.Get_Location().x - OBJECT_X_SIZE / 2, p.Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, p.Get_Info().bmWidth, p.Get_Info().bmHeight, SRCCOPY);
         }
 
-        //ë”ë¸” ë²„í¼ë§
+        if (phase == PHASE_EDIT)
+        {
+            map.draw(MemDC);
+        }
+
         BitBlt(hdc, 0, 0, rc.right, rc.bottom, MemDC, 0, 0, SRCCOPY);
 
         SelectObject(MemDC, oldBackBit);
-        DeleteDC(MemDC); DeleteObject(BackBit);
+        DeleteDC(MemDC);
+        DeleteObject(BackBit);
         break;
 
     case WM_DESTROY:
@@ -475,24 +388,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
     return (DefWindowProc(hWnd, iMessage, wParam, lParam));
 }
 
-void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime) 
+void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
     spawn_count++;
-    Enemy* tmp;
+    Enemy *tmp;
 
-    if (spawn_count % ENEMY_SPAWN == 0) //ì  ìŠ¤í°
+    if (spawn_count % ENEMY_SPAWN == 0) //?  ?Š¤?°
     {
-        if(e.enemy_count < ENEMY_MAXCOUNT)
+        if (e.enemy_count < ENEMY_MAXCOUNT)
         {
-            Enemy* newnode = (Enemy*)malloc(sizeof(Enemy));
+            Enemy *newnode = (Enemy *)malloc(sizeof(Enemy));
             tmp = e.link;
 
-            //newnodeì˜ set í•¨ìˆ˜ë¥¼ ì´ìš©í•´ ì´ˆê¸°í™” 
+            // newnode?˜ set ?•¨?ˆ˜ë¥? ?´?š©?•´ ì´ˆê¸°?™”
             newnode->Set_link(NULL);
 
             newnode->Init_enemy(MOB1);
 
-            while (tmp != NULL) tmp = tmp->Get_link();
+            while (tmp != NULL)
+                tmp = tmp->Get_link();
 
             tmp = newnode;
 
@@ -524,11 +438,11 @@ void Player_move()
     }
 }
 
-void CALLBACK MOB1_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime) 
+void CALLBACK MOB1_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
     POINT p_pos = p.Get_Location();
     POINT e_pos;
-    Enemy* e_mob = e.link;
+    Enemy *e_mob = e.link;
 
     while (e_mob != NULL)
     {
@@ -536,15 +450,26 @@ void CALLBACK MOB1_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
         {
             e_pos = e_mob->Get_Location();
 
-            if (p_pos.y > e_pos.y) { e_mob->Move_down(); }
+            if (p_pos.y > e_pos.y)
+            {
+                e_mob->Move_down();
+            }
 
-            if (p_pos.y < e_pos.y) { e_mob->Move_up(); }
+            if (p_pos.y < e_pos.y)
+            {
+                e_mob->Move_up();
+            }
 
-            if (p_pos.x > e_pos.x) { e_mob->Move_right(); }
+            if (p_pos.x > e_pos.x)
+            {
+                e_mob->Move_right();
+            }
 
-            if (p_pos.x < e_pos.x) { e_mob->Move_left(); }
+            if (p_pos.x < e_pos.x)
+            {
+                e_mob->Move_left();
+            }
         }
-
 
         e_mob = e_mob->Get_link();
     }
@@ -554,7 +479,7 @@ void CALLBACK MOB2_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
     POINT p_pos = p.Get_Location();
     POINT e_pos;
-    Enemy* e_mob = e.link;
+    Enemy *e_mob = e.link;
 
     while (e_mob != NULL)
     {
@@ -562,15 +487,26 @@ void CALLBACK MOB2_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
         {
             e_pos = e_mob->Get_Location();
 
-            if (p_pos.y > e_pos.y) { e_mob->Move_down(); }
+            if (p_pos.y > e_pos.y)
+            {
+                e_mob->Move_down();
+            }
 
-            if (p_pos.y < e_pos.y) { e_mob->Move_up(); }
+            if (p_pos.y < e_pos.y)
+            {
+                e_mob->Move_up();
+            }
 
-            if (p_pos.x > e_pos.x) { e_mob->Move_right(); }
+            if (p_pos.x > e_pos.x)
+            {
+                e_mob->Move_right();
+            }
 
-            if (p_pos.x < e_pos.x) { e_mob->Move_left(); }
+            if (p_pos.x < e_pos.x)
+            {
+                e_mob->Move_left();
+            }
         }
-
 
         e_mob = e_mob->Get_link();
     }
@@ -580,7 +516,7 @@ void CALLBACK MOB3_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
     POINT p_pos = p.Get_Location();
     POINT e_pos;
-    Enemy* e_mob = e.link;
+    Enemy *e_mob = e.link;
 
     while (e_mob != NULL)
     {
@@ -588,15 +524,26 @@ void CALLBACK MOB3_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
         {
             e_pos = e_mob->Get_Location();
 
-            if (p_pos.y > e_pos.y) { e_mob->Move_down(); }
+            if (p_pos.y > e_pos.y)
+            {
+                e_mob->Move_down();
+            }
 
-            if (p_pos.y < e_pos.y) { e_mob->Move_up(); }
+            if (p_pos.y < e_pos.y)
+            {
+                e_mob->Move_up();
+            }
 
-            if (p_pos.x > e_pos.x) { e_mob->Move_right(); }
+            if (p_pos.x > e_pos.x)
+            {
+                e_mob->Move_right();
+            }
 
-            if (p_pos.x < e_pos.x) { e_mob->Move_left(); }
+            if (p_pos.x < e_pos.x)
+            {
+                e_mob->Move_left();
+            }
         }
-
 
         e_mob = e_mob->Get_link();
     }
@@ -606,7 +553,7 @@ void CALLBACK MOB4_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
     POINT p_pos = p.Get_Location();
     POINT e_pos;
-    Enemy* e_mob = e.link;
+    Enemy *e_mob = e.link;
 
     while (e_mob != NULL)
     {
@@ -614,15 +561,26 @@ void CALLBACK MOB4_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
         {
             e_pos = e_mob->Get_Location();
 
-            if (p_pos.y > e_pos.y) { e_mob->Move_down(); }
+            if (p_pos.y > e_pos.y)
+            {
+                e_mob->Move_down();
+            }
 
-            if (p_pos.y < e_pos.y) { e_mob->Move_up(); }
+            if (p_pos.y < e_pos.y)
+            {
+                e_mob->Move_up();
+            }
 
-            if (p_pos.x > e_pos.x) { e_mob->Move_right(); }
+            if (p_pos.x > e_pos.x)
+            {
+                e_mob->Move_right();
+            }
 
-            if (p_pos.x < e_pos.x) { e_mob->Move_left(); }
+            if (p_pos.x < e_pos.x)
+            {
+                e_mob->Move_left();
+            }
         }
-
 
         e_mob = e_mob->Get_link();
     }
@@ -632,7 +590,7 @@ void CALLBACK BOSS_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
     POINT p_pos = p.Get_Location();
     POINT e_pos;
-    Enemy* e_mob = e.link;
+    Enemy *e_mob = e.link;
 
     while (e_mob != NULL)
     {
@@ -640,15 +598,26 @@ void CALLBACK BOSS_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
         {
             e_pos = e_mob->Get_Location();
 
-            if (p_pos.y > e_pos.y) { e_mob->Move_down(); }
+            if (p_pos.y > e_pos.y)
+            {
+                e_mob->Move_down();
+            }
 
-            if (p_pos.y < e_pos.y) { e_mob->Move_up(); }
+            if (p_pos.y < e_pos.y)
+            {
+                e_mob->Move_up();
+            }
 
-            if (p_pos.x > e_pos.x) { e_mob->Move_right(); }
+            if (p_pos.x > e_pos.x)
+            {
+                e_mob->Move_right();
+            }
 
-            if (p_pos.x < e_pos.x) { e_mob->Move_left(); }
+            if (p_pos.x < e_pos.x)
+            {
+                e_mob->Move_left();
+            }
         }
-
 
         e_mob = e_mob->Get_link();
     }
@@ -710,8 +679,9 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
             break;
 
         case IDCANCEL:
-            isEditMode = FALSE;
+            phase = PHASE_MENU;
             map.off_editMode();
+            SendMessage(hWnd, WM_COMMAND, 0, 0);
             DestroyWindow(hDlg);
             break;
 
@@ -767,8 +737,9 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_CLOSE:
-        isEditMode = FALSE;
+        phase = PHASE_MENU;
         map.off_editMode();
+        SendMessage(hWnd, WM_COMMAND, 0, 0);
         DestroyWindow(hDlg);
         break;
     }
