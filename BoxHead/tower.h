@@ -32,4 +32,7 @@ public:
 	int Get_id();
 	void Heal_target(Player);
 	void Tower_Oparate(Bullet*);
+
+	void Set_way(int);
+	void Set_id(int);
 };

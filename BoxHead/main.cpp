@@ -15,7 +15,7 @@ BOOL key_buffer[4];
 EnemyType Mob1, Mob2, Mob3, Mob4, Boss;
 Bullet* B;
 Tower T[MAX_TOWER_COUNT];
-int tower_count, tower_way_set;
+int tower_count, tower_way_set, tower_id_set;
 
 HINSTANCE g_hInst;
 LPCTSTR lpszClass = L"Window Class Name";
@@ -53,7 +53,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
     WndClass.lpszClassName = lpszClass;
     WndClass.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
     RegisterClassEx(&WndClass);
-
+    
     hWnd = CreateWindow(lpszClass, lpszWindowName, WS_OVERLAPPEDWINDOW, 0, 0, 1280, 960, NULL, (HMENU)NULL, hInstance, NULL);
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
@@ -75,6 +75,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
     HFONT hFont, oldFont;
     POINT mouse_pos;
+
+    vector<BOOL> v;
+    Enemy* e_tmp;
 
     static RECT message_box, edit_box;
     static RECT rc;
@@ -115,6 +118,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         Mob1.link = NULL; Mob2.link = NULL; Mob3.link = NULL; Mob4.link = NULL;
 
         tower_way_set = IDB_UP;
+        tower_id_set = ID_HEAL_TOWER;
 
         tower_count = 0;
         building = FALSE;
@@ -218,14 +222,45 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
             if (wParam == 't' || wParam == 'T')
             {
-                building = TRUE;
+                if (!building && tower_count < MAX_TOWER_COUNT) building = TRUE;
+
+                else if (building) building = FALSE;
+            }
+            
+            if (wParam == 'q' || wParam == 'Q')
+            {
+                if (building)
+                {
+                    if (tower_id_set == ID_HEAL_TOWER) tower_id_set = ID_STD_TOWER;
+
+                    else if (tower_id_set == ID_STD_TOWER) tower_id_set = ID_SNIPE_TOWER;
+
+                    else if (tower_id_set == ID_SNIPE_TOWER) tower_id_set = ID_BOMB_TOWER;
+
+                    else if (tower_id_set == ID_BOMB_TOWER) tower_id_set = ID_HEAL_TOWER;
+                }
             }
 
             if (wParam == 'r' || wParam == 'R')
             {
                 if (building)
                 {
+                    if (tower_way_set == IDB_UP) tower_way_set = IDB_RIGHT;
 
+                    else if (tower_way_set == IDB_RIGHT) tower_way_set = IDB_DOWN;
+
+                    else if (tower_way_set == IDB_DOWN) tower_way_set = IDB_LEFT;
+
+                    else if (tower_way_set == IDB_LEFT) tower_way_set = IDB_UP;
+                }
+            }
+
+            if (wParam == 'e' || wParam == 'E')
+            {
+                if (building)
+                {
+                    T[tower_count].Set_way(tower_way_set);
+                    T[tower_count].Set_id(tower_id_set);
                 }
             }
 
@@ -383,13 +418,97 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
         if (phase == PHASE_PLAY)
         {
-            // Draw, using mdc
+            // 맵 출력
             map.draw(MemDC);
 
+            //플레이어 출력
             Player_move();
 
             SelectObject(PrintDC, p.Get_Image());
             StretchBlt(MemDC, p.Get_Location().x - OBJECT_X_SIZE / 2, p.Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, p.Get_Info().bmWidth, p.Get_Info().bmHeight, SRCCOPY);
+
+            //적 출력
+            v = map.get_enemy_type();
+
+            if (v[0])
+            {
+                e_tmp = Mob1.link;
+
+                SelectObject(PrintDC, e_tmp->Get_Image());
+
+                while (e_tmp != NULL)
+                {
+                    StretchBlt(MemDC, e_tmp->Get_Location().x - OBJECT_X_SIZE / 2, e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, e_tmp->Get_Info().bmWidth, e_tmp->Get_Info().bmHeight, SRCCOPY);
+                    
+                    e_tmp = e_tmp->Get_link();
+                }
+            }
+
+            if (v[1])
+            {
+                e_tmp = Mob2.link;
+
+                SelectObject(PrintDC, e_tmp->Get_Image());
+
+                while (e_tmp != NULL)
+                {
+                    StretchBlt(MemDC, e_tmp->Get_Location().x - OBJECT_X_SIZE / 2, e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, e_tmp->Get_Info().bmWidth, e_tmp->Get_Info().bmHeight, SRCCOPY);
+
+                    e_tmp = e_tmp->Get_link();
+                }
+            }
+
+            if (v[2])
+            {
+                e_tmp = Mob3.link;
+
+                SelectObject(PrintDC, e_tmp->Get_Image());
+
+                while (e_tmp != NULL)
+                {
+                    StretchBlt(MemDC, e_tmp->Get_Location().x - OBJECT_X_SIZE / 2, e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, e_tmp->Get_Info().bmWidth, e_tmp->Get_Info().bmHeight, SRCCOPY);
+
+                    e_tmp = e_tmp->Get_link();
+                }
+            }
+
+            if (v[3])
+            {
+                e_tmp = Mob4.link;
+
+                SelectObject(PrintDC, e_tmp->Get_Image());
+
+                while (e_tmp != NULL)
+                {
+                    StretchBlt(MemDC, e_tmp->Get_Location().x - OBJECT_X_SIZE / 2, e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, e_tmp->Get_Info().bmWidth, e_tmp->Get_Info().bmHeight, SRCCOPY);
+
+                    e_tmp = e_tmp->Get_link();
+                }
+            }
+
+            if (v[4])
+            {
+                e_tmp = Boss.link;
+
+                SelectObject(PrintDC, e_tmp->Get_Image());
+
+                while (e_tmp != NULL)
+                {
+                    StretchBlt(MemDC, e_tmp->Get_Location().x - OBJECT_X_SIZE / 2, e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, e_tmp->Get_Info().bmWidth, e_tmp->Get_Info().bmHeight, SRCCOPY);
+
+                    e_tmp = e_tmp->Get_link();
+                }
+            }
+
+            //타워 출력
+            for (int i = 0; i < tower_count; i++)
+            {
+                SelectObject(PrintDC, T[i].Get_Image());
+
+                StretchBlt(MemDC, T[i].Get_Location().x - OBJECT_X_SIZE / 2, T[i].Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, T[i].Get_Info().bmWidth, T[i].Get_Info().bmHeight, SRCCOPY);
+            }
+
+
         }
 
         if (phase == PHASE_EDIT)
