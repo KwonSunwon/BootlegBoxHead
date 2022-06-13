@@ -6,8 +6,8 @@
 
 //TODO
 /*
-Å¸¿ö »ı¼º½Ã¿¡ À§Ä¡ ¼³Á¤ÇØÁÖ±â
-Àû ÀÌµ¿ Å¸ÀÌ¸Ó ¼öÁ¤ ¹× Àû ½ºÆù À§Ä¡ ¼³Á¤
+Ã…Â¸Â¿Ã¶ Â»Ã½Â¼ÂºÂ½ÃƒÂ¿Â¡ Ã€Â§Ã„Â¡ Â¼Â³ÃÂ¤Ã‡Ã˜ÃÃ–Â±Ã¢
+Ã€Ã» Ã€ÃŒÂµÂ¿ Ã…Â¸Ã€ÃŒÂ¸Ã“ Â¼Ã¶ÃÂ¤ Â¹Ã— Ã€Ã» Â½ÂºÃ†Ã¹ Ã€Â§Ã„Â¡ Â¼Â³ÃÂ¤
 */
 
 
@@ -61,7 +61,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
     WndClass.lpszClassName = lpszClass;
     WndClass.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
     RegisterClassEx(&WndClass);
-    
+
     hWnd = CreateWindow(lpszClass, lpszWindowName, WS_OVERLAPPEDWINDOW, 0, 0, 1280, 960, NULL, (HMENU)NULL, hInstance, NULL);
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
@@ -104,9 +104,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
     static BOOL building;
     static POINT mouse;
 
+    RECT ClientRT = {0, 0, 1280, 960};
+
     switch (iMessage)
     {
     case WM_CREATE:
+        AdjustWindowRect(&ClientRT, WS_OVERLAPPEDWINDOW, FALSE);
+        SetWindowPos(hWnd, NULL, 0, 0, ClientRT.right - ClientRT.left, ClientRT.bottom - ClientRT.top, NULL);
+
         p.Set_Attack(PLAYER_STDATTACK);
         p.Set_Health(PLAYER_STDHEALTH);
         p.Set_Speed(PLAYER_STDSPEED);
@@ -164,7 +169,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         {
             mouse_pos.x = mouse_pos.x / TILE_SIZE;
             mouse_pos.y = mouse_pos.y / TILE_SIZE;
-            map.tile_change(mouse_pos, g_mapEditSelector);
+            if (g_mapEditSelector == MAP_PLAYER_SPAWN_POINT)
+            {
+                map.set_player_spawn(mouse_pos);
+            }
+            else if (g_mapEditSelector == MAP_ENEMY_SPAWN_POINT)
+            {
+                if (map.set_enemy_spawn(mouse_pos) == 4)
+                {
+                    // Ã€Ã» Â½ÂºÃ†Ã¹ Ã€Â§Ã„Â¡ 4Â°Â³ ÃƒÃŠÂ°Ãº ÃÃ¶ÃÂ¤ ÂºÃ’Â°Â¡Â´Ã‰
+                }
+            }
+            else if (g_mapEditSelector == MAP_REMOVE)
+            {
+                map.remove_spawn_point(mouse_pos);
+            }
+            else
+            {
+                map.tile_change(mouse_pos, g_mapEditSelector);
+            }
             InvalidateRect(hWnd, NULL, FALSE);
         }
 
@@ -412,11 +435,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             hFont = CreateFont(50, 30, 0, 0, FW_BOLD, 0, 0, 0, NULL, 0, 0, 0, 0, NULL);
             oldFont = (HFONT)SelectObject(MemDC, hFont);
 
-            //start ¸Ş´º ¹öÆ°
+            //start Â¸ÃÂ´Âº Â¹Ã¶Ã†Â°
             Rectangle(MemDC, message_box.left, message_box.top, message_box.right, message_box.bottom);
             DrawText(MemDC, start_message, lstrlen(start_message), &message_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
-            //¸Ê ¿¡µğÆ® ¹öÆ°
+            //Â¸ÃŠ Â¿Â¡ÂµÃ°Ã†Â® Â¹Ã¶Ã†Â°
             Rectangle(MemDC, edit_box.left, edit_box.top, edit_box.right, edit_box.bottom);
             DrawText(MemDC, edit_button, lstrlen(edit_button), &edit_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
@@ -437,16 +460,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
         if (phase == PHASE_PLAY)
         {
-            // ¸Ê Ãâ·Â
+            // Â¸ÃŠ ÃƒÃ¢Â·Ã‚
             map.draw(MemDC);
 
-            //ÇÃ·¹ÀÌ¾î Ãâ·Â
+            //Ã‡ÃƒÂ·Â¹Ã€ÃŒÂ¾Ã® ÃƒÃ¢Â·Ã‚
             Player_move();
 
             SelectObject(PrintDC, p.Get_Image());
             StretchBlt(MemDC, p.Get_Location().x - OBJECT_X_SIZE / 2, p.Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, p.Get_Info().bmWidth, p.Get_Info().bmHeight, SRCCOPY);
 
-            //Àû Ãâ·Â
+            //Ã€Ã» ÃƒÃ¢Â·Ã‚
             v = map.get_enemy_type();
 
             if (v[0])
@@ -519,7 +542,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 }
             }
 
-            //Å¸¿ö Ãâ·Â
+            //Ã…Â¸Â¿Ã¶ ÃƒÃ¢Â·Ã‚
             for (int i = 0; i < tower_count; i++)
             {
                 SelectObject(PrintDC, T[i].Get_Image());
@@ -527,7 +550,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 StretchBlt(MemDC, T[i].Get_Location().x - OBJECT_X_SIZE / 2, T[i].Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, T[i].Get_Info().bmWidth, T[i].Get_Info().bmHeight, SRCCOPY);
             }
 
-            //ÃÑ¾Ë Ãâ·Â
+            //ÃƒÃ‘Â¾Ã‹ ÃƒÃ¢Â·Ã‚
             b_tmp = B;
 
             hBrush = CreateSolidBrush(RGB(255, 127, 0));
@@ -587,7 +610,7 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
                 selec = rand() % 4;
                 if (v[0] && selec == 0)
                 {
-                    printf("¸÷ 1 ½ºÆù\n");
+                    printf("Â¸Ã· 1 Â½ÂºÃ†Ã¹\n");
                     tmp = Mob1.link;
 
                     newnode->Set_link(NULL);
@@ -600,7 +623,7 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
                 if (v[1] && selec == 1)
                 {
-                    printf("¸÷ 2 ½ºÆù\n");
+                    printf("Â¸Ã· 2 Â½ÂºÃ†Ã¹\n");
                     tmp = Mob2.link;
 
                     newnode->Set_link(NULL);
@@ -613,7 +636,7 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
                 if (v[2] && selec == 2)
                 {
-                    printf("¸÷ 3 ½ºÆù\n");
+                    printf("Â¸Ã· 3 Â½ÂºÃ†Ã¹\n");
                     tmp = Mob3.link;
 
                     newnode->Set_link(NULL);
@@ -626,7 +649,7 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
                 if (v[3] && selec == 3)
                 {
-                    printf("¸÷ 4 ½ºÆù\n");
+                    printf("Â¸Ã· 4 Â½ÂºÃ†Ã¹\n");
                     tmp = Mob4.link;
 
                     newnode->Set_link(NULL);
@@ -824,7 +847,7 @@ void CALLBACK Tower_Oparate(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime
             T[i].Heal_target(p);
             break;
         case ID_BOMB_TOWER:
-            //ÀûÀ» Á¤ÇØ¾ß ÇÏ´Âµ¥..
+            //Ã€Ã»Ã€Â» ÃÂ¤Ã‡Ã˜Â¾ÃŸ Ã‡ÃÂ´Ã‚ÂµÂ¥..
             break;
         case ID_SNIPE_TOWER:
             T[i].Tower_Oparate(B);
@@ -904,7 +927,7 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
             break;
         }
 
-        //Àû°ú Ãæµ¹ÆÇÁ¤
+        //Ã€Ã»Â°Ãº ÃƒÃ¦ÂµÂ¹Ã†Ã‡ÃÂ¤
         if (map.get_enemy_type()[0])
         {
             e_tmp = Mob1.link;
@@ -915,7 +938,7 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
                 {
                     tmp->Deliver_damage(e_tmp);
 
-                    if (tmp->Get_type() != SNIPE_BULLET)    //½º³ªÀÌÆÛ´Â °üÅë
+                    if (tmp->Get_type() != SNIPE_BULLET)    //Â½ÂºÂ³ÂªÃ€ÃŒÃ†Ã›Â´Ã‚ Â°Ã¼Ã…Ã«
                     {
                         tmp->Get_Llink()->Set_Rlink(tmp->Get_Rlink());
                         tmp->Get_Rlink()->Set_Llink(tmp->Get_Llink());
@@ -1035,7 +1058,7 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
             }
         }
 
-        //¸Ê ¹ÛÀ¸·Î ³ª°¡¸é »èÁ¦
+        //Â¸ÃŠ Â¹Ã›Ã€Â¸Â·Ã Â³ÂªÂ°Â¡Â¸Ã© Â»Ã¨ÃÂ¦
         if (n_pos.x < 0 || n_pos.x > 1280 || n_pos.y < 0 || n_pos.y > 960)
         {
             tmp->Get_Llink()->Set_Rlink(tmp->Get_Rlink());
@@ -1070,7 +1093,7 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
         for (int i = 0; i < 4; ++i)
             typeSelector.push_back(FALSE);
 
-        size = {50, 50};
+        size = {20, 15};
         map.make_new_map(size);
 
         mapId = -1;
@@ -1081,13 +1104,16 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
         hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_FLOOR2));
         hButton = GetDlgItem(hDlg, IDC_FLOOR2);
         SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)hBit);
+        hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_FLOOR3));
+        hButton = GetDlgItem(hDlg, IDC_FLOOR3);
+        SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)hBit);
         hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_WALL));
         hButton = GetDlgItem(hDlg, IDC_WALL1);
         SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)hBit);
         hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_WALL2));
         hButton = GetDlgItem(hDlg, IDC_WALL3);
         SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)hBit);
-        hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BARREL));
+        hBit = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_WALL3));
         hButton = GetDlgItem(hDlg, IDC_WALL2);
         SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)hBit);
 
@@ -1120,6 +1146,7 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
             g_mapEditSelector = MAP_FLOOR_TYPE2;
             break;
         case IDC_FLOOR3:
+            g_mapEditSelector = MAP_FLOOR_TYPE3;
             break;
         case IDC_WALL1:
             g_mapEditSelector = MAP_WALL_TYPE1;
@@ -1174,7 +1201,7 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-void BOMB_target(Tower _tower,Enemy _target) //½ÇÇàÇÑ Å¸¿öµµ ÀÎ¼ö·Î ¹Ş¾Æ¾ß ÇÔ
+void BOMB_target(Tower _tower,Enemy _target) //Â½Ã‡Ã‡Ã Ã‡Ã‘ Ã…Â¸Â¿Ã¶ÂµÂµ Ã€ÃÂ¼Ã¶Â·Ã Â¹ÃÂ¾Ã†Â¾ÃŸ Ã‡Ã”
 {
     POINT Bomb_pos = _target.Get_Location();
     vector<BOOL> v = map.get_enemy_type();

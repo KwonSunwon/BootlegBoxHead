@@ -10,6 +10,7 @@
 // 오브젝트가 이동할 수 있는 구역
 #define MAP_FLOOR_TYPE1 200
 #define MAP_FLOOR_TYPE2 201
+#define MAP_FLOOR_TYPE3 202
 
 // 오브젝트가 이동할 수 없는 구역
 #define MAP_WALL_TYPE1 300
@@ -17,8 +18,8 @@
 #define MAP_WALL_TYPE3 302
 
 // 수정모드 선택
-#define MAP_PLAYER_SPAWN_POINT 400;
-#define MAP_ENEMY_SPAWN_POINT 401;
+#define MAP_PLAYER_SPAWN_POINT 400
+#define MAP_ENEMY_SPAWN_POINT 401
 #define MAP_REMOVE 402
 
 using namespace std;
@@ -55,6 +56,11 @@ public:
     void make_new_map(POINT);
     void tile_change(POINT, int);
     void enemy_type_change(vector<int>);
+
+    void set_player_spawn(POINT);
+    BOOL set_enemy_spawn(POINT);
+    void remove_spawn_point(POINT);
+
     int save(int);
 
     // test
