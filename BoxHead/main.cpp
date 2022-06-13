@@ -4,6 +4,13 @@
 #include "game_manager.h"
 #include "resource.h"
 
+//TODO
+/*
+타워 생성시에 위치 설정해주기
+적 이동 타이머 수정 및 적 스폰 위치 설정
+*/
+
+
 // map global
 Map map;
 int g_mapEditSelector;
@@ -169,7 +176,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             if (wParam == 'p' || wParam == 'P')
             {
                 spawn_count = 0;
+                p.Set_Location(map.get_player_spawn());
                 SetTimer(hWnd, ENEMY_TIMER, ENEMY_TIMELAB, Enemy_spawn);
+                //SetTimer(hWnd, MOB1_TIMER, MOB_TIMELAB, MOB1_Move);
+                SetTimer(hWnd, TOWER_TIMER, TOWER_TIMELAB, Tower_Oparate);
+                SetTimer(hWnd, BULLET_TIMER, BULLET_TIMELAB, Bullet_fly);
                 phase = PHASE_PLAY;
             }
         }

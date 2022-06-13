@@ -19,4 +19,16 @@
 #define LEFT 2
 #define RIGHT 3
 
+#define MOB_TIMELAB 450
+#define TOWER_TIMELAB 2000
+#define BULLET_TIMELAB 0.5
+
+#define MOB1_TIMER 800
+#define MOB2_TIMER 801
+#define MOB3_TIMER 802
+#define MOB4_TIMER 803
+#define BOSS_TIMER 804
+#define TOWER_TIMER 805
+#define BULLET_TIMER 806
+
 int Get_distance(POINT a, POINT b);
