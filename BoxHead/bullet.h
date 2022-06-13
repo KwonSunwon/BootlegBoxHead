@@ -13,17 +13,22 @@ private:
 	int type;
 	int damage;
 	int way;
+	int knockback;
 	POINT location;
 	Bullet* Llink;
 	Bullet* Rlink;
 public:
 	void Shot_bullet(int, int, POINT);
-	void Deliver_damage(Enemy);
+	void Deliver_damage(Enemy*);
 
 	void Set_Llink(Bullet*);
 	void Set_Rlink(Bullet*);
 	void Set_Type(int);
+	void Set_Location(POINT);
 
 	Bullet* Get_Rlink();
 	Bullet* Get_Llink();
+	int Get_way();
+	POINT Get_Location();
+	int Get_type();
 };

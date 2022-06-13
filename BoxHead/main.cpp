@@ -24,6 +24,7 @@ LPCTSTR lpszWindowName = L"Window Programming Lab";
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
 void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 void CALLBACK Tower_Oparate(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
+void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 void CALLBACK MOB1_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 void CALLBACK MOB2_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 void CALLBACK MOB3_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
@@ -73,11 +74,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
     HDC hdc, MemDC, PrintDC;
     HBITMAP BackBit, oldBackBit;
 
+    HBRUSH hBrush, oldBrush;
+
     HFONT hFont, oldFont;
-    POINT mouse_pos;
+    POINT mouse_pos, b_pos;
 
     vector<BOOL> v;
     Enemy* e_tmp;
+    Bullet* b_tmp;
 
     static RECT message_box, edit_box;
     static RECT rc;
@@ -261,6 +265,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 {
                     T[tower_count].Set_way(tower_way_set);
                     T[tower_count].Set_id(tower_id_set);
+
+                    tower_count++;
+
+                    building = FALSE;
                 }
             }
 
@@ -508,6 +516,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 StretchBlt(MemDC, T[i].Get_Location().x - OBJECT_X_SIZE / 2, T[i].Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, T[i].Get_Info().bmWidth, T[i].Get_Info().bmHeight, SRCCOPY);
             }
 
+            //총알 출력
+            b_tmp = B;
+
+            hBrush = CreateSolidBrush(RGB(255, 127, 0));
+            oldBrush = (HBRUSH)SelectObject(MemDC, hBrush);
+
+            while (b_tmp != NULL)
+            {
+                b_pos = b_tmp->Get_Location();
+
+                Rectangle(MemDC, b_pos.x - 3, b_pos.y - 3, b_pos.x + 3, b_pos.y + 3);
+
+                b_tmp = b_tmp->Get_Rlink();
+            }
+
+            SelectObject(MemDC, oldBrush);
+            DeleteObject(hBrush);
 
         }
 
@@ -833,6 +858,185 @@ void CALLBACK BOSS_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
 
         e_mob = e_mob->Get_link();
+    }
+}
+
+
+void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
+{
+    Bullet* tmp, *del;
+    Enemy* e_tmp;
+    POINT n_pos;
+    tmp = B;
+
+    while (tmp != NULL)
+    {
+        n_pos = tmp->Get_Location();
+
+        switch (tmp->Get_way())
+        {
+        case IDB_UP:
+            n_pos.y -= 2;
+            tmp->Set_Location(n_pos);
+            break;
+        case IDB_DOWN:
+            n_pos.y += 2;
+            tmp->Set_Location(n_pos);
+            break;
+        case IDB_RIGHT:
+            n_pos.x += 2;
+            tmp->Set_Location(n_pos);
+            break;
+        case IDB_LEFT:
+            n_pos.x -= 2;
+            tmp->Set_Location(n_pos);
+            break;
+        }
+
+        //적과 충돌판정
+        if (map.get_enemy_type()[0])
+        {
+            e_tmp = Mob1.link;
+
+            while (e_tmp != NULL)
+            {
+                if (n_pos.x > (e_tmp->Get_Location().x - OBJECT_X_SIZE / 2) && n_pos.x < (e_tmp->Get_Location().x + OBJECT_X_SIZE / 2) && n_pos.y >(e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2) && n_pos.y < (e_tmp->Get_Location().y + OBJECT_Y_SIZE / 2))
+                {
+                    tmp->Deliver_damage(e_tmp);
+
+                    if (tmp->Get_type() != SNIPE_BULLET)    //스나이퍼는 관통
+                    {
+                        tmp->Get_Llink()->Set_Rlink(tmp->Get_Rlink());
+                        tmp->Get_Rlink()->Set_Llink(tmp->Get_Llink());
+
+                        del = tmp;
+                        tmp = tmp->Get_Rlink();
+
+                        free(del);
+                    }
+                }
+
+                e_tmp = e_tmp->Get_link();
+            }
+        }
+
+        if (map.get_enemy_type()[1])
+        {
+            e_tmp = Mob2.link;
+
+            while (e_tmp != NULL)
+            {
+                if (n_pos.x > (e_tmp->Get_Location().x - OBJECT_X_SIZE / 2) && n_pos.x < (e_tmp->Get_Location().x + OBJECT_X_SIZE / 2) && n_pos.y >(e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2) && n_pos.y < (e_tmp->Get_Location().y + OBJECT_Y_SIZE / 2))
+                {
+                    tmp->Deliver_damage(e_tmp);
+
+                    if (tmp->Get_type() != SNIPE_BULLET)
+                    {
+                        tmp->Get_Llink()->Set_Rlink(tmp->Get_Rlink());
+                        tmp->Get_Rlink()->Set_Llink(tmp->Get_Llink());
+
+                        del = tmp;
+                        tmp = tmp->Get_Rlink();
+
+                        free(del);
+                    }
+                }
+
+                e_tmp = e_tmp->Get_link();
+            }
+        }
+
+        if (map.get_enemy_type()[2])
+        {
+            e_tmp = Mob3.link;
+
+            while (e_tmp != NULL)
+            {
+                if (n_pos.x > (e_tmp->Get_Location().x - OBJECT_X_SIZE / 2) && n_pos.x < (e_tmp->Get_Location().x + OBJECT_X_SIZE / 2) && n_pos.y >(e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2) && n_pos.y < (e_tmp->Get_Location().y + OBJECT_Y_SIZE / 2))
+                {
+                    tmp->Deliver_damage(e_tmp);
+
+                    if (tmp->Get_type() != SNIPE_BULLET)
+                    {
+                        tmp->Get_Llink()->Set_Rlink(tmp->Get_Rlink());
+                        tmp->Get_Rlink()->Set_Llink(tmp->Get_Llink());
+
+                        del = tmp;
+                        tmp = tmp->Get_Rlink();
+
+                        free(del);
+                    }
+                }
+
+                e_tmp = e_tmp->Get_link();
+            }
+        }
+
+        if (map.get_enemy_type()[3])
+        {
+            e_tmp = Mob4.link;
+
+            while (e_tmp != NULL)
+            {
+                if (n_pos.x > (e_tmp->Get_Location().x - OBJECT_X_SIZE / 2) && n_pos.x < (e_tmp->Get_Location().x + OBJECT_X_SIZE / 2) && n_pos.y >(e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2) && n_pos.y < (e_tmp->Get_Location().y + OBJECT_Y_SIZE / 2))
+                {
+                    tmp->Deliver_damage(e_tmp);
+
+                    if (tmp->Get_type() != SNIPE_BULLET)
+                    {
+                        tmp->Get_Llink()->Set_Rlink(tmp->Get_Rlink());
+                        tmp->Get_Rlink()->Set_Llink(tmp->Get_Llink());
+
+                        del = tmp;
+                        tmp = tmp->Get_Rlink();
+
+                        free(del);
+                    }
+                }
+
+                e_tmp = e_tmp->Get_link();
+            }
+        }
+
+        if (map.get_enemy_type()[4])
+        {
+            e_tmp = Boss.link;
+
+            while (e_tmp != NULL)
+            {
+                if (n_pos.x > (e_tmp->Get_Location().x - OBJECT_X_SIZE / 2) && n_pos.x < (e_tmp->Get_Location().x + OBJECT_X_SIZE / 2) && n_pos.y >(e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2) && n_pos.y < (e_tmp->Get_Location().y + OBJECT_Y_SIZE / 2))
+                {
+                    tmp->Deliver_damage(e_tmp);
+
+                    if (tmp->Get_type() != SNIPE_BULLET)
+                    {
+                        tmp->Get_Llink()->Set_Rlink(tmp->Get_Rlink());
+                        tmp->Get_Rlink()->Set_Llink(tmp->Get_Llink());
+
+                        del = tmp;
+                        tmp = tmp->Get_Rlink();
+
+                        free(del);
+                    }
+                }
+
+                e_tmp = e_tmp->Get_link();
+            }
+        }
+
+        //맵 밖으로 나가면 삭제
+        if (n_pos.x < 0 || n_pos.x > 1280 || n_pos.y < 0 || n_pos.y > 960)
+        {
+            tmp->Get_Llink()->Set_Rlink(tmp->Get_Rlink());
+            tmp->Get_Rlink()->Set_Llink(tmp->Get_Llink());
+
+            del = tmp;
+            tmp = tmp->Get_Rlink();
+
+            free(del);
+        }
+
+        tmp = tmp->Get_Rlink();
     }
 }
 

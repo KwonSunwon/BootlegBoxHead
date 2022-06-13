@@ -8,6 +8,11 @@ int Tower::Get_id()
 	return id;
 }
 
+int Tower::Get_way()
+{
+	return way;
+}
+
 void Tower::Heal_target(Player _target)
 {
 	int distance = Get_distance(_target.Get_Location(), location);
