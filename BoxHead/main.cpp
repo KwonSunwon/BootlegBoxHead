@@ -90,12 +90,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
     Enemy* e_tmp;
     Bullet* b_tmp;
 
-    static RECT message_box, edit_box;
+    static RECT message_box, edit_box, map1_box, map2_box, map3_box, map4_box;
     static RECT rc;
     static TCHAR name[10] = L"BoxLike";
     static TCHAR start_message[11] = L"Start Game";
-    static TCHAR Select[17] = L"Select Character";
+    static TCHAR Select[11] = L"Select Map";
     static TCHAR edit_button[11] = L"Map Editer";
+    static TCHAR map1_button[5] = L"Map1";
+    static TCHAR map2_button[5] = L"Map2";
+    static TCHAR map3_button[5] = L"Map3";
+    static TCHAR map4_button[11] = L"Custom Map";
 
     static HWND hDlg;
 
@@ -130,6 +134,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         edit_box.right = 600;
         edit_box.bottom = 360;
 
+        map1_box.left = 50; map1_box.top = 150; map1_box.right = 750; map1_box.bottom = 250;
+        map2_box.left = 50; map2_box.top = 275; map2_box.right = 750; map2_box.bottom = 375;
+        map3_box.left = 50; map3_box.top = 400; map3_box.right = 750; map3_box.bottom = 500;
+        map4_box.left = 50; map4_box.top = 525; map4_box.right = 750; map4_box.bottom = 625;
+
         Mob1.enemy_count = 0; Mob2.enemy_count = 0; Mob3.enemy_count = 0; Mob4.enemy_count = 0;
         Mob1.link = NULL; Mob2.link = NULL; Mob3.link = NULL; Mob4.link = NULL;
 
@@ -162,6 +171,121 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                     ShowWindow(hDlg, SW_SHOW);
                 }
                 InvalidateRect(hWnd, NULL, FALSE);
+            }
+        }
+
+        if (phase == PHASE_LOAD)
+        {
+            //map1 ���ý�
+            if (map1_box.left < mouse_pos.x && map1_box.top < mouse_pos.y && map1_box.right > mouse_pos.x && map1_box.bottom > mouse_pos.y)
+            {
+                //map �ҷ��� �ڿ�
+                spawn_count = 0;
+                p.Set_Location(map.get_player_spawn());
+                SetTimer(hWnd, ENEMY_TIMER, ENEMY_TIMELAB, Enemy_spawn);
+                SetTimer(hWnd, TOWER_TIMER, TOWER_TIMELAB, Tower_Oparate);
+                SetTimer(hWnd, BULLET_TIMER, BULLET_TIMELAB, Bullet_fly);
+
+                if (map.get_enemy_type()[0])
+                    SetTimer(hWnd, MOB1_TIMER, MOB_TIMELAB, MOB1_Move);
+
+                if (map.get_enemy_type()[1])
+                    SetTimer(hWnd, MOB2_TIMER, MOB_TIMELAB, MOB2_Move);
+
+                if (map.get_enemy_type()[2])
+                    SetTimer(hWnd, MOB3_TIMER, MOB_TIMELAB, MOB3_Move);
+
+                if (map.get_enemy_type()[3])
+                    SetTimer(hWnd, MOB4_TIMER, MOB_TIMELAB, MOB4_Move);
+
+                if (map.get_enemy_type()[4])
+                    SetTimer(hWnd, BOSS_TIMER, MOB_TIMELAB, BOSS_Move);
+
+                phase = PHASE_PLAY;
+            }
+
+            //map2 ���ý�
+            if (map2_box.left < mouse_pos.x && map2_box.top < mouse_pos.y && map2_box.right > mouse_pos.x && map2_box.bottom > mouse_pos.y)
+            {
+                //map �ҷ��� �ڿ�
+                spawn_count = 0;
+                p.Set_Location(map.get_player_spawn());
+                SetTimer(hWnd, ENEMY_TIMER, ENEMY_TIMELAB, Enemy_spawn);
+                SetTimer(hWnd, TOWER_TIMER, TOWER_TIMELAB, Tower_Oparate);
+                SetTimer(hWnd, BULLET_TIMER, BULLET_TIMELAB, Bullet_fly);
+
+                if (map.get_enemy_type()[0])
+                    SetTimer(hWnd, MOB1_TIMER, MOB_TIMELAB, MOB1_Move);
+
+                if (map.get_enemy_type()[1])
+                    SetTimer(hWnd, MOB2_TIMER, MOB_TIMELAB, MOB2_Move);
+
+                if (map.get_enemy_type()[2])
+                    SetTimer(hWnd, MOB3_TIMER, MOB_TIMELAB, MOB3_Move);
+
+                if (map.get_enemy_type()[3])
+                    SetTimer(hWnd, MOB4_TIMER, MOB_TIMELAB, MOB4_Move);
+
+                if (map.get_enemy_type()[4])
+                    SetTimer(hWnd, BOSS_TIMER, MOB_TIMELAB, BOSS_Move);
+
+                phase = PHASE_PLAY;
+            }
+
+            //map3 ���ý�
+            if (map3_box.left < mouse_pos.x && map3_box.top < mouse_pos.y && map3_box.right > mouse_pos.x && map3_box.bottom > mouse_pos.y)
+            {
+                //map �ҷ��� �ڿ�
+                spawn_count = 0;
+                p.Set_Location(map.get_player_spawn());
+                SetTimer(hWnd, ENEMY_TIMER, ENEMY_TIMELAB, Enemy_spawn);
+                SetTimer(hWnd, TOWER_TIMER, TOWER_TIMELAB, Tower_Oparate);
+                SetTimer(hWnd, BULLET_TIMER, BULLET_TIMELAB, Bullet_fly);
+
+                if (map.get_enemy_type()[0])
+                    SetTimer(hWnd, MOB1_TIMER, MOB_TIMELAB, MOB1_Move);
+
+                if (map.get_enemy_type()[1])
+                    SetTimer(hWnd, MOB2_TIMER, MOB_TIMELAB, MOB2_Move);
+
+                if (map.get_enemy_type()[2])
+                    SetTimer(hWnd, MOB3_TIMER, MOB_TIMELAB, MOB3_Move);
+
+                if (map.get_enemy_type()[3])
+                    SetTimer(hWnd, MOB4_TIMER, MOB_TIMELAB, MOB4_Move);
+
+                if (map.get_enemy_type()[4])
+                    SetTimer(hWnd, BOSS_TIMER, MOB_TIMELAB, BOSS_Move);
+
+                phase = PHASE_PLAY;
+            }
+
+            //custom map ���ý�
+            if (map4_box.left < mouse_pos.x && map4_box.top < mouse_pos.y && map4_box.right > mouse_pos.x && map4_box.bottom > mouse_pos.y)
+            {
+                //map �ҷ��� �ڿ�
+                spawn_count = 0;
+                p.Set_Location(map.get_player_spawn());
+                SetTimer(hWnd, ENEMY_TIMER, ENEMY_TIMELAB, Enemy_spawn);
+                SetTimer(hWnd, TOWER_TIMER, TOWER_TIMELAB, Tower_Oparate);
+                SetTimer(hWnd, BULLET_TIMER, BULLET_TIMELAB, Bullet_fly);
+
+                if (map.get_enemy_type()[0])
+                    SetTimer(hWnd, MOB1_TIMER, MOB_TIMELAB, MOB1_Move);
+
+                if (map.get_enemy_type()[1])
+                    SetTimer(hWnd, MOB2_TIMER, MOB_TIMELAB, MOB2_Move);
+
+                if (map.get_enemy_type()[2])
+                    SetTimer(hWnd, MOB3_TIMER, MOB_TIMELAB, MOB3_Move);
+
+                if (map.get_enemy_type()[3])
+                    SetTimer(hWnd, MOB4_TIMER, MOB_TIMELAB, MOB4_Move);
+
+                if (map.get_enemy_type()[4])
+                    SetTimer(hWnd, BOSS_TIMER, MOB_TIMELAB, BOSS_Move);
+
+                phase = PHASE_PLAY;
             }
         }
 
@@ -449,10 +573,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
         if (phase == PHASE_LOAD)
         {
-            hFont = CreateFont(60, 40, 0, 0, FW_BOLD, 0, 0, 0, NULL, 0, 0, 0, 0, NULL);
+            hFont = CreateFont(80, 60, 0, 0, FW_BOLD, 0, 0, 0, NULL, 0, 0, 0, 0, NULL);
             oldFont = (HFONT)SelectObject(MemDC, hFont);
 
             TextOut(MemDC, 25, 50, Select, lstrlen(Select));
+
+            SelectObject(MemDC, oldFont);
+            DeleteObject(hFont);
+
+            hFont = CreateFont(60, 40, 0, 0, FW_BOLD, 0, 0, 0, NULL, 0, 0, 0, 0, NULL);
+            oldFont = (HFONT)SelectObject(MemDC, hFont);
+
+            Rectangle(MemDC, map1_box.left, map1_box.top, map1_box.right, map1_box.bottom);
+            Rectangle(MemDC, map2_box.left, map2_box.top, map2_box.right, map2_box.bottom);
+            Rectangle(MemDC, map3_box.left, map3_box.top, map3_box.right, map3_box.bottom);
+            Rectangle(MemDC, map4_box.left, map4_box.top, map4_box.right, map4_box.bottom);
+
+            DrawText(MemDC, map1_button, lstrlen(map1_button), &map1_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            DrawText(MemDC, map2_button, lstrlen(map2_button), &map2_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            DrawText(MemDC, map3_button, lstrlen(map3_button), &map3_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            DrawText(MemDC, map4_button, lstrlen(map4_button), &map4_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
             SelectObject(MemDC, oldFont);
             DeleteObject(hFont);
