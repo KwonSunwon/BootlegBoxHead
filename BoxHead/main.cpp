@@ -8,12 +8,22 @@
 Map map;
 int g_mapEditSelector;
 
+//Object global
+Player p;
+int phase, spawn_count, difficulty;
+BOOL key_buffer[4];
+EnemyType Mob1, Mob2, Mob3, Mob4, Boss;
+Bullet* B;
+Tower T[MAX_TOWER_COUNT];
+int tower_count, tower_way_set;
+
 HINSTANCE g_hInst;
 LPCTSTR lpszClass = L"Window Class Name";
 LPCTSTR lpszWindowName = L"Window Programming Lab";
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
 void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
+void CALLBACK Tower_Oparate(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 void CALLBACK MOB1_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 void CALLBACK MOB2_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 void CALLBACK MOB3_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
@@ -56,12 +66,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
     return Message.wParam;
 }
 
-Player p;
-
-int phase, spawn_count, difficulty;
-BOOL key_buffer[4];
-
-EnemyType Mob1, Mob2, Mob3, Mob4, Boss;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
@@ -83,6 +87,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
     static BOOL LBClick;
     static BOOL RBClick;
+    static BOOL building;
     static POINT mouse;
 
     switch (iMessage)
@@ -109,6 +114,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         Mob1.enemy_count = 0; Mob2.enemy_count = 0; Mob3.enemy_count = 0; Mob4.enemy_count = 0;
         Mob1.link = NULL; Mob2.link = NULL; Mob3.link = NULL; Mob4.link = NULL;
 
+        tower_way_set = IDB_UP;
+
+        tower_count = 0;
+        building = FALSE;
         break;
 
     case WM_LBUTTONDOWN:
@@ -207,6 +216,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 }
             }
 
+            if (wParam == 't' || wParam == 'T')
+            {
+                building = TRUE;
+            }
+
+            if (wParam == 'r' || wParam == 'R')
+            {
+                if (building)
+                {
+
+                }
+            }
+
             InvalidateRect(hWnd, NULL, FALSE);
         }
         break;
@@ -230,16 +252,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 switch (p.Get_Weapon_id())
                 {
                 case PISTOL:
-                    p.Shot_Pistol(IDB_LEFT);
+                    p.Shot_Pistol(B,IDB_LEFT);
                     break;
                 case RIFLE:
-                    p.Shot_Rifle(IDB_LEFT);
+                    p.Shot_Rifle(B,IDB_LEFT);
                     break;
                 case SHOTGUN:
-                    p.Shot_Shotgun(IDB_LEFT);
+                    p.Shot_Shotgun(B,IDB_LEFT);
                     break;
                 case SNIPER:
-                    p.Shot_Sniper(IDB_LEFT);
+                    p.Shot_Sniper(B,IDB_LEFT);
                     break;
                 }
             }
@@ -249,16 +271,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 switch (p.Get_Weapon_id())
                 {
                 case PISTOL:
-                    p.Shot_Pistol(IDB_RIGHT);
+                    p.Shot_Pistol(B, IDB_RIGHT);
                     break;
                 case RIFLE:
-                    p.Shot_Rifle(IDB_RIGHT);
+                    p.Shot_Rifle(B, IDB_RIGHT);
                     break;
                 case SHOTGUN:
-                    p.Shot_Shotgun(IDB_RIGHT);
+                    p.Shot_Shotgun(B, IDB_RIGHT);
                     break;
                 case SNIPER:
-                    p.Shot_Sniper(IDB_RIGHT);
+                    p.Shot_Sniper(B, IDB_RIGHT);
                     break;
                 }
             }
@@ -268,16 +290,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 switch (p.Get_Weapon_id())
                 {
                 case PISTOL:
-                    p.Shot_Pistol(IDB_UP);
+                    p.Shot_Pistol(B, IDB_UP);
                     break;
                 case RIFLE:
-                    p.Shot_Rifle(IDB_UP);
+                    p.Shot_Rifle(B, IDB_UP);
                     break;
                 case SHOTGUN:
-                    p.Shot_Shotgun(IDB_UP);
+                    p.Shot_Shotgun(B, IDB_UP);
                     break;
                 case SNIPER:
-                    p.Shot_Sniper(IDB_UP);
+                    p.Shot_Sniper(B, IDB_UP);
                     break;
                 }
             }
@@ -287,16 +309,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 switch (p.Get_Weapon_id())
                 {
                 case PISTOL:
-                    p.Shot_Pistol(IDB_DOWN);
+                    p.Shot_Pistol(B, IDB_DOWN);
                     break;
                 case RIFLE:
-                    p.Shot_Rifle(IDB_DOWN);
+                    p.Shot_Rifle(B, IDB_DOWN);
                     break;
                 case SHOTGUN:
-                    p.Shot_Shotgun(IDB_DOWN);
+                    p.Shot_Shotgun(B, IDB_DOWN);
                     break;
                 case SNIPER:
-                    p.Shot_Sniper(IDB_DOWN);
+                    p.Shot_Sniper(B, IDB_DOWN);
                     break;
                 }
             }
@@ -637,6 +659,28 @@ void CALLBACK MOB4_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
     }
 }
 
+void CALLBACK Tower_Oparate(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
+{
+    for (int i = 0; i < tower_count;i++)
+    {
+        switch (T[i].Get_id())
+        {
+        case ID_HEAL_TOWER:
+            T[i].Heal_target(p);
+            break;
+        case ID_BOMB_TOWER:
+            //적을 정해야 하는데..
+            break;
+        case ID_SNIPE_TOWER:
+            T[i].Tower_Oparate(B);
+            break;
+        case ID_STD_TOWER:
+            T[i].Tower_Oparate(B);
+            break;
+        }
+    }
+}
+
 void CALLBACK BOSS_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
     POINT p_pos = p.Get_Location();
@@ -836,6 +880,7 @@ void BOMB_target(Tower _tower,Enemy _target) //실행한 타워도 인수로 받아야 함
 
     if (v[2])
     {
+        tmp = Mob3.link;
         while (tmp != NULL)
         {
             if (Get_distance(tmp->Get_Location(), _tower.Get_Location()) < BOMB_RANGE)
@@ -849,6 +894,7 @@ void BOMB_target(Tower _tower,Enemy _target) //실행한 타워도 인수로 받아야 함
 
     if (v[3])
     {
+        tmp = Mob4.link;
         while (tmp != NULL)
         {
             if (Get_distance(tmp->Get_Location(), _tower.Get_Location()) < BOMB_RANGE)
@@ -862,6 +908,8 @@ void BOMB_target(Tower _tower,Enemy _target) //실행한 타워도 인수로 받아야 함
 
     if (v[4])
     {
+        tmp = Boss.link;
+
         while (tmp != NULL)
         {
             if (Get_distance(tmp->Get_Location(), _tower.Get_Location()) < BOMB_RANGE)

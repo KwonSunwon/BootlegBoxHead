@@ -1,4 +1,5 @@
 #include "player.h"
+#include "bullet.h"
 
 void Player::Move_left() { location.x -= speed; }
 
@@ -15,63 +16,74 @@ void Player::Set_Weapon(int _weapon)
 
 int Player::Get_Weapon_id() { return weapon_id; }
 
-void Player::Shot_Pistol(int way)
+void Player::Shot_Pistol(Bullet* b, int _way)
 {
-	//총알을 생각을 못했네..
-	switch (way)
+	Bullet* newnode;
+	Bullet* tmp = b;
+	newnode = (Bullet*)malloc(sizeof(Bullet));
+
+	newnode->Shot_bullet(PISTOL_DAMAGE, _way, location);
+	newnode->Set_Rlink(NULL);
+	newnode->Set_Type(STD_BULLET);
+
+	while (tmp != NULL)
 	{
-	case IDB_LEFT:
-		break;
-	case IDB_RIGHT:
-		break;
-	case IDB_UP:
-		break;
-	case IDB_DOWN:
-		break;
+		tmp = tmp->Get_Rlink();
 	}
+
+	tmp->Set_Rlink(newnode); newnode->Set_Llink(tmp);
 }
 
-void Player::Shot_Rifle(int way)
+void Player::Shot_Rifle(Bullet* b, int _way)
 {
-	switch (way)
+	Bullet* newnode;
+	Bullet* tmp = b;
+	newnode = (Bullet*)malloc(sizeof(Bullet));
+
+	newnode->Shot_bullet(RIFLE_DAMAGE, _way, location);
+	newnode->Set_Rlink(NULL);
+	newnode->Set_Type(RIFLE_BULLET);
+
+	while (tmp != NULL)
 	{
-	case IDB_LEFT:
-		break;
-	case IDB_RIGHT:
-		break;
-	case IDB_UP:
-		break;
-	case IDB_DOWN:
-		break;
+		tmp = tmp->Get_Rlink();
 	}
+
+	tmp->Set_Rlink(newnode); newnode->Set_Llink(tmp);
 }
 
-void Player::Shot_Shotgun(int way)
+void Player::Shot_Shotgun(Bullet* b, int _way)
 {
-	switch (way)
+	Bullet* newnode;
+	Bullet* tmp = b;
+	newnode = (Bullet*)malloc(sizeof(Bullet));
+
+	newnode->Shot_bullet(SHOTGUN_DAMAGE, _way, location);
+	newnode->Set_Rlink(NULL);
+	newnode->Set_Type(SHOTGUN_BULLET);
+
+	while (tmp != NULL)
 	{
-	case IDB_LEFT:
-		break;
-	case IDB_RIGHT:
-		break;
-	case IDB_UP:
-		break;
-	case IDB_DOWN:
-		break;
+		tmp = tmp->Get_Rlink();
 	}
+
+	tmp->Set_Rlink(newnode); newnode->Set_Llink(tmp);
 }
 
-void Player::Shot_Sniper(int way)
+void Player::Shot_Sniper(Bullet* b, int _way)
 {
-	switch (way)
+	Bullet* newnode;
+	Bullet* tmp = b;
+	newnode = (Bullet*)malloc(sizeof(Bullet));
+
+	newnode->Shot_bullet(SNIPER_DAMAGE, _way, location);
+	newnode->Set_Rlink(NULL);
+	newnode->Set_Type(SNIPE_BULLET);
+
+	while (tmp != NULL)
 	{
-	case IDB_LEFT:
-		break;
-	case IDB_RIGHT:
-		break;
-	case IDB_UP:
-		break;
-	case IDB_DOWN:
-		break;
+		tmp = tmp->Get_Rlink();
 	}
+
+	tmp->Set_Rlink(newnode); newnode->Set_Llink(tmp);
 }
