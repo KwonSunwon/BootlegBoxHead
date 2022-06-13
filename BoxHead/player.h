@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "object.h"
+#include "bullet.h"
 
 #define PLAYER_STDHEALTH 100
 #define PLAYER_STDSPEED 10
@@ -10,6 +11,11 @@
 #define RIFLE 1071
 #define SHOTGUN 1072
 #define SNIPER 1073
+
+#define PISTOL_DAMAGE 15
+#define RIFLE_DAMAGE 25
+#define SHOTGUN_DAMAGE 40
+#define SNIPER_DAMAGE 90
 
 class Player : public Object
 {
@@ -25,8 +31,8 @@ public:
     void Set_Weapon(int);
     int Get_Weapon_id();
 
-    void Shot_Pistol(int);
-    void Shot_Rifle(int);
-    void Shot_Shotgun(int);
-    void Shot_Sniper(int);
+    void Shot_Pistol(Bullet* , int);
+    void Shot_Rifle(Bullet* ,int);
+    void Shot_Shotgun(Bullet* ,int);
+    void Shot_Sniper(Bullet* ,int);
 };

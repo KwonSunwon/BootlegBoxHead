@@ -1,15 +1,16 @@
 #include "map.h"
 #include "player.h"
+#include "enemy.h"
 #include "tower.h"
-
-int Get_distance(POINT a, POINT b)
-{
-	return fabs(sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y)));
-}
 
 int Tower::Get_id() 
 {
 	return id;
+}
+
+int Tower::Get_way()
+{
+	return way;
 }
 
 void Tower::Heal_target(Player _target)
@@ -22,18 +23,51 @@ void Tower::Heal_target(Player _target)
 	}
 }
 
-void Tower::Operate(Object _target) 
+void Tower::Tower_Oparate(Bullet* b)
 {
+
+	Bullet* tmp = b;
+	Bullet* newnode;
+
 	switch (id)
 	{
-	case HEAL_TOWER_ID:
-		//Heal_target();
+	case ID_SNIPE_TOWER:
+		newnode = (Bullet*)malloc(sizeof(Bullet));
+
+		newnode->Shot_bullet(SNIPER_DAMAGE, way, location);
+		newnode->Set_Rlink(NULL);
+		newnode->Set_Type(SNIPE_BULLET);
+
+		while (tmp != NULL)
+		{
+			tmp = tmp->Get_Rlink();
+		}
+
+		tmp->Set_Rlink(newnode); newnode->Set_Llink(tmp);
 		break;
-	case SNIPE_TOWER_ID:
-		break;
-	case BOMB_TOWER_ID:
-		break;
-	case STD_TOWER_ID:
+	case ID_STD_TOWER:
+		newnode = (Bullet*)malloc(sizeof(Bullet));
+
+		newnode->Shot_bullet(PISTOL_DAMAGE, way, location);
+		newnode->Set_Rlink(NULL);
+		newnode->Set_Type(STD_BULLET);
+
+		while (tmp != NULL)
+		{
+			tmp = tmp->Get_Rlink();
+		}
+
+		tmp->Set_Rlink(newnode); newnode->Set_Llink(tmp);
 		break;
 	}
+}
+
+void Tower::Set_way(int _way)
+{
+	way = _way;
+}
+
+void Tower::Set_id(int _id)
+{
+	id = _id;
 }
