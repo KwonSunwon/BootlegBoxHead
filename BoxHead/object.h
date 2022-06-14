@@ -2,7 +2,7 @@
 #include "stdafx.h"
 
 #define OBJECT_X_SIZE 32
-#define OBJECT_Y_SIZE 64
+#define OBJECT_Y_SIZE 32
 #define MAX_OBJECT_HEALTH 100
 
 #define IDB_LEFT 202

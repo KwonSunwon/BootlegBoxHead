@@ -12,7 +12,6 @@ int g_mapEditSelector;
 Player p;
 int phase, spawn_count, difficulty;
 BOOL key_buffer[4];
-EnemyType Mob1, Mob2, Mob3, Mob4, Boss;
 Tower T[MAX_TOWER_COUNT];
 int tower_count, tower_way_set, tower_id_set ,tower_pos_set;
 HBITMAP hBitmap_tmp;
@@ -20,6 +19,9 @@ Bullet shotgun[MAX_SHOTGUN], pistol[MAX_PISTOL], rifle[MAX_RIFLE], sniper;
 Bullet tower_rifle[MAX_TOWERRIFLE], tower_sniper;
 int shotgun_count, pistol_count, rifle_count, sniper_count;
 int tower_rifle_count, tower_sniper_count;
+
+Enemy Mob[ENEMY_MAXCOUNT];
+int enemy_count;
 
 POINT location_to_position(POINT _location);
 
@@ -29,16 +31,11 @@ LPCTSTR lpszWindowName = L"Window Programming Lab";
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
 void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
-void CALLBACK Tower_Oparate(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
+//void CALLBACK Tower_Oparate(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
-void CALLBACK MOB1_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
-void CALLBACK MOB2_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
-void CALLBACK MOB3_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
-void CALLBACK MOB4_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
-void CALLBACK BOSS_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
 void Player_move();
-void BOMB_target(Tower);
+//void BOMB_target(Tower);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow)
 {
@@ -154,15 +151,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         map4_box.right = 750;
         map4_box.bottom = 625;
 
-        Mob1.enemy_count = 0;
-        Mob2.enemy_count = 0;
-        Mob3.enemy_count = 0;
-        Mob4.enemy_count = 0;
-        Mob1.link = NULL;
-        Mob2.link = NULL;
-        Mob3.link = NULL;
-        Mob4.link = NULL;
-
         tower_way_set = IDB_UP;
         tower_id_set = ID_HEAL_TOWER;
 
@@ -172,6 +160,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         shotgun_count = 0; pistol_count = 0; rifle_count = 0; sniper_count = 0;
         tower_rifle_count = 0; tower_sniper_count = 0;
         tower_pos_set = IDB_UP;
+        enemy_count = 0;
 
         break;
 
@@ -220,21 +209,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 SetTimer(hWnd, BULLET_TIMER, BULLET_TIMELAB, Bullet_fly);
                 SetTimer(hWnd, ENEMY_TIMER, ENEMY_TIMELAB, Enemy_spawn);
 
-                if (map.get_enemy_type()[0])
-                    SetTimer(hWnd, MOB1_TIMER, MOB_TIMELAB, MOB1_Move);
-
-                if (map.get_enemy_type()[1])
-                    SetTimer(hWnd, MOB2_TIMER, MOB_TIMELAB, MOB2_Move);
-
-                if (map.get_enemy_type()[2])
-                    SetTimer(hWnd, MOB3_TIMER, MOB_TIMELAB, MOB3_Move);
-
-                if (map.get_enemy_type()[3])
-                    SetTimer(hWnd, MOB4_TIMER, MOB_TIMELAB, MOB4_Move);
-
-                if (map.get_enemy_type()[4])
-                    SetTimer(hWnd, BOSS_TIMER, MOB_TIMELAB, BOSS_Move);
-
                 /*
                 SetTimer(hWnd, TOWER_TIMER, TOWER_TIMELAB, Tower_Oparate);
                     */
@@ -254,21 +228,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
                 SetTimer(hWnd, BULLET_TIMER, BULLET_TIMELAB, Bullet_fly);
                 SetTimer(hWnd, ENEMY_TIMER, ENEMY_TIMELAB, Enemy_spawn);
-
-                if (map.get_enemy_type()[0])
-                    SetTimer(hWnd, MOB1_TIMER, MOB_TIMELAB, MOB1_Move);
-
-                if (map.get_enemy_type()[1])
-                    SetTimer(hWnd, MOB2_TIMER, MOB_TIMELAB, MOB2_Move);
-
-                if (map.get_enemy_type()[2])
-                    SetTimer(hWnd, MOB3_TIMER, MOB_TIMELAB, MOB3_Move);
-
-                if (map.get_enemy_type()[3])
-                    SetTimer(hWnd, MOB4_TIMER, MOB_TIMELAB, MOB4_Move);
-
-                if (map.get_enemy_type()[4])
-                    SetTimer(hWnd, BOSS_TIMER, MOB_TIMELAB, BOSS_Move);
 
                 /*
                 SetTimer(hWnd, TOWER_TIMER, TOWER_TIMELAB, Tower_Oparate);
@@ -290,21 +249,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
                 SetTimer(hWnd, BULLET_TIMER, BULLET_TIMELAB, Bullet_fly);
                 SetTimer(hWnd, ENEMY_TIMER, ENEMY_TIMELAB, Enemy_spawn);
-
-                if (map.get_enemy_type()[0])
-                    SetTimer(hWnd, MOB1_TIMER, MOB_TIMELAB, MOB1_Move);
-
-                if (map.get_enemy_type()[1])
-                    SetTimer(hWnd, MOB2_TIMER, MOB_TIMELAB, MOB2_Move);
-
-                if (map.get_enemy_type()[2])
-                    SetTimer(hWnd, MOB3_TIMER, MOB_TIMELAB, MOB3_Move);
-
-                if (map.get_enemy_type()[3])
-                    SetTimer(hWnd, MOB4_TIMER, MOB_TIMELAB, MOB4_Move);
-
-                if (map.get_enemy_type()[4])
-                    SetTimer(hWnd, BOSS_TIMER, MOB_TIMELAB, BOSS_Move);
 
                 /*
                 SetTimer(hWnd, TOWER_TIMER, TOWER_TIMELAB, Tower_Oparate);
@@ -337,20 +281,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 //SetTimer(hWnd, TOWER_TIMER, TOWER_TIMELAB, Tower_Oparate);
                 SetTimer(hWnd, BULLET_TIMER, BULLET_TIMELAB, Bullet_fly);
 
-                if (map.get_enemy_type()[0])
-                    SetTimer(hWnd, MOB1_TIMER, MOB_TIMELAB, MOB1_Move);
-
-                if (map.get_enemy_type()[1])
-                    SetTimer(hWnd, MOB2_TIMER, MOB_TIMELAB, MOB2_Move);
-
-                if (map.get_enemy_type()[2])
-                    SetTimer(hWnd, MOB3_TIMER, MOB_TIMELAB, MOB3_Move);
-
-                if (map.get_enemy_type()[3])
-                    SetTimer(hWnd, MOB4_TIMER, MOB_TIMELAB, MOB4_Move);
-
-                if (map.get_enemy_type()[4])
-                    SetTimer(hWnd, BOSS_TIMER, MOB_TIMELAB, BOSS_Move);
 
                 phase = PHASE_PLAY;
             }
@@ -531,6 +461,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 //     }
                 // }
             }
+
+            if (wParam == '1')
+            {
+                p.Set_Weapon(PISTOL);
+            }
+
+            if (wParam == '2')
+            {
+                p.Set_Weapon(SHOTGUN);
+            }
+
+            if (wParam == '3')
+            {
+                p.Set_Weapon(RIFLE);
+            }
+
+            if (wParam == '4')
+            {
+                p.Set_Weapon(SNIPER);
+            }
+
             /*
             if (wParam == 't' || wParam == 'T')
             {
@@ -872,83 +823,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             // Player_move();
 
             // print player
-            SelectObject(PrintDC, p.Get_Image());
-            StretchBlt(MemDC, p.Get_Location().x - OBJECT_X_SIZE / 2, p.Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, p.Get_Info().bmWidth, p.Get_Info().bmHeight, SRCCOPY);
-
+            //SelectObject(PrintDC, p.Get_Image());
+            //StretchBlt(MemDC, p.Get_Location().x - OBJECT_X_SIZE / 2, p.Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, p.Get_Info().bmWidth, p.Get_Info().bmHeight, SRCCOPY);
+            Rectangle(MemDC, p.Get_Location().x - OBJECT_X_SIZE / 2, p.Get_Location().y - OBJECT_Y_SIZE / 2, p.Get_Location().x + OBJECT_X_SIZE / 2, p.Get_Location().y + OBJECT_Y_SIZE / 2);
             
             // print enemy
-            v = map.get_enemy_type();
+           for (int i = 0; i < enemy_count; i++)
+           {
+               b_pos = Mob[i].Get_Location();
 
-            if (v[0]&& Mob1.enemy_count > 0)
-            {
-                 e_tmp = Mob1.link;
+               Rectangle(MemDC, b_pos.x - OBJECT_X_SIZE / 2, b_pos.y - OBJECT_Y_SIZE / 2, b_pos.x + OBJECT_X_SIZE / 2, b_pos.y + OBJECT_Y_SIZE / 2);
+           }
 
-                 SelectObject(PrintDC, e_tmp->Get_Image());
 
-                 while (e_tmp != NULL)
-                 {
-                     StretchBlt(MemDC, e_tmp->Get_Location().x - OBJECT_X_SIZE / 2, e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, e_tmp->Get_Info().bmWidth, e_tmp->Get_Info().bmHeight, SRCCOPY);
-
-                     e_tmp = e_tmp->Get_link();
-                 }
-            }
-
-            if (v[1] && Mob2.enemy_count > 0)
-            {
-                e_tmp = Mob2.link;
-
-                SelectObject(PrintDC, e_tmp->Get_Image());
-
-                while (e_tmp != NULL)
-                 {
-                     StretchBlt(MemDC, e_tmp->Get_Location().x - OBJECT_X_SIZE / 2, e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, e_tmp->Get_Info().bmWidth, e_tmp->Get_Info().bmHeight, SRCCOPY);
-
-                     e_tmp = e_tmp->Get_link();
-                 }
-             }
-
-             if (v[2] && Mob3.enemy_count > 0)
-             {
-                 e_tmp = Mob3.link;
-
-                 SelectObject(PrintDC, e_tmp->Get_Image());
-
-                while (e_tmp != NULL)
-                 {
-                     StretchBlt(MemDC, e_tmp->Get_Location().x - OBJECT_X_SIZE / 2, e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, e_tmp->Get_Info().bmWidth, e_tmp->Get_Info().bmHeight, SRCCOPY);
-
-                     e_tmp = e_tmp->Get_link();
-                 }
-             }
-
-             if (v[3] && Mob4.enemy_count > 0)
-             {
-                 e_tmp = Mob4.link;
-
-                 SelectObject(PrintDC, e_tmp->Get_Image());
-
-                 while (e_tmp != NULL)
-                 {
-                     StretchBlt(MemDC, e_tmp->Get_Location().x - OBJECT_X_SIZE / 2, e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, e_tmp->Get_Info().bmWidth, e_tmp->Get_Info().bmHeight, SRCCOPY);
-
-                     e_tmp = e_tmp->Get_link();
-                 }
-             }
-
-             if (v[4] && Boss.enemy_count > 0)
-             {
-                 e_tmp = Boss.link;
-
-                 SelectObject(PrintDC, e_tmp->Get_Image());
-
-                 while (e_tmp != NULL)
-                 {
-                    StretchBlt(MemDC, e_tmp->Get_Location().x - OBJECT_X_SIZE / 2, e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, e_tmp->Get_Info().bmWidth, e_tmp->Get_Info().bmHeight, SRCCOPY);
-
-                     e_tmp = e_tmp->Get_link();
-                 }
-             }
-             
              // print tower
             /*if (building)
             {
@@ -1046,114 +933,80 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
 void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
-    spawn_count++;
-    Enemy *tmp;
-    int all_mob_amount = Mob1.enemy_count + Mob2.enemy_count + Mob3.enemy_count + Mob4.enemy_count;
+    int selec;
+    vector<BOOL> v = map.get_enemy_type();
+    POINT p_pos, e_pos;
 
-    if (spawn_count % ENEMY_SPAWN == 0)
+    if (enemy_count < ENEMY_MAXCOUNT)
     {
-        if (all_mob_amount < ENEMY_MAXCOUNT)
-        {
-            Enemy *newnode = (Enemy *)malloc(sizeof(Enemy));
-            vector<BOOL> v = map.get_enemy_type();
-
-            int select;
-
-            hBitmap_tmp = (HBITMAP)LoadImage(g_hInst, TEXT("tmp_t.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-
-            while (1)
-            {
-                
-                select = rand() % 5;
-                if (v[0] && select == 0)
-                {
-                    tmp = Mob1.link;
-
-                    newnode->Set_link(NULL);
-
-                    newnode->Init_enemy(MOB1);
-
-                    newnode->Set_Location(map.get_enemy_spawn()[0]);
-
-                    newnode->Set_Image(hBitmap_tmp);
-
-                    Mob1.enemy_count++;
-                    break;
-                }
-
-                if (v[1] && select == 1)
-                {
-                    tmp = Mob2.link;
-
-                    newnode->Set_link(NULL);
-
-                    newnode->Init_enemy(MOB2);
-
-                    newnode->Set_Location(map.get_enemy_spawn()[0]);
-
-                    newnode->Set_Image(hBitmap_tmp);
-
-                    Mob2.enemy_count++;
-                    break;
-                }
-
-                if (v[2] && select == 2)
-                {
-                    tmp = Mob3.link;
-
-                    newnode->Set_link(NULL);
-
-                    newnode->Init_enemy(MOB3);
-
-                    newnode->Set_Location(map.get_enemy_spawn()[0]);
-
-                    newnode->Set_Image(hBitmap_tmp);
-
-                    Mob3.enemy_count++;
-                    break;
-                }
-
-                if (v[3] && select == 3)
-                {
-                    tmp = Mob4.link;
-
-                    newnode->Set_link(NULL);
-
-                    newnode->Init_enemy(MOB4);
-
-                    newnode->Set_Location(map.get_enemy_spawn()[0]);
-
-                    newnode->Set_Image(hBitmap_tmp);
-
-                    Mob4.enemy_count++;
-                    break;
-                }
-
-                if (v[4] && select == 4)
-                {
-                    tmp = Boss.link;
-
-                    newnode->Set_link(NULL);
-
-                    newnode->Init_enemy(BOSS);
-
-                    newnode->Set_Location(map.get_enemy_spawn()[0]);
-
-                    newnode->Set_Image(hBitmap_tmp);
-
-                    Boss.enemy_count++;
-                    break;
-                }
-            }
-
-            while (tmp != NULL)
-                tmp = tmp->Get_link();
-
-            tmp = newnode;
-        }
+        spawn_count++;
     }
 
-    DeleteObject(hBitmap_tmp);
+    if (spawn_count % ENEMY_SPAWN == 0 && enemy_count < ENEMY_MAXCOUNT)
+    {
+        selec = rand() % 5;
+
+        printf("spawner on\n");
+        
+        while (1)
+        {
+            if (v[0] && selec == 0)
+            {
+                Mob[enemy_count].Init_enemy(MOB1);
+                printf("Mob1 spawn\n");
+                break;
+            }
+
+            if (v[1] && selec == 1)
+            {
+                Mob[enemy_count].Init_enemy(MOB2);
+                printf("Mob2 spawn\n");
+                break;
+            }
+
+            if (v[2] && selec == 2)
+            {
+                Mob[enemy_count].Init_enemy(MOB3);
+                printf("Mob3 spawn\n");
+                break;
+            }
+
+            if (v[3] && selec == 3)
+            {
+                Mob[enemy_count].Init_enemy(MOB4);
+                printf("Mob4 spawn\n");
+                break;
+            }
+
+            if (v[4] && selec == 4)
+            {
+                Mob[enemy_count].Init_enemy(BOSS);
+                printf("Boss spawn\n");
+                break;
+            }
+        }
+
+        Mob[enemy_count].Set_Location(map.get_enemy_spawn()[0]);
+
+        enemy_count++;
+       
+    }
+
+    p_pos = p.Get_Location();
+
+    for (int i = 0; i < enemy_count; i++)
+    {
+        e_pos = Mob[i].Get_Location();
+
+        if (p_pos.x > e_pos.x) Mob[i].Move_right();
+
+        if (p_pos.x < e_pos.x) Mob[i].Move_left();
+
+        if (p_pos.y > e_pos.y) Mob[i].Move_down();
+
+        if (p_pos.y < e_pos.y) Mob[i].Move_up();
+    }
+
 }
 
 void Player_move()
@@ -1178,148 +1031,6 @@ void Player_move()
         p.Move_right();
     }
 }
-
-void CALLBACK MOB1_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
-{
-    POINT p_pos = p.Get_Location();
-    POINT e_pos;
-    Enemy *e_mob = Mob1.link;
-
-    while (e_mob != NULL)
-    {
-        e_pos = e_mob->Get_Location();
-
-        if (p_pos.y > e_pos.y)
-        {
-            e_mob->Move_down();
-        }
-
-        if (p_pos.y < e_pos.y)
-        {
-            e_mob->Move_up();
-        }
-
-        if (p_pos.x > e_pos.x)
-        {
-            e_mob->Move_right();
-        }
-
-        if (p_pos.x < e_pos.x)
-        {
-            e_mob->Move_left();
-        }
-
-        e_mob = e_mob->Get_link();
-    }
-}
-
-void CALLBACK MOB2_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
-{
-    POINT p_pos = p.Get_Location();
-    POINT e_pos;
-    Enemy *e_mob = Mob2.link;
-
-    while (e_mob != NULL)
-    {
-
-        e_pos = e_mob->Get_Location();
-
-        if (p_pos.y > e_pos.y)
-        {
-            e_mob->Move_down();
-        }
-
-        if (p_pos.y < e_pos.y)
-        {
-            e_mob->Move_up();
-        }
-
-        if (p_pos.x > e_pos.x)
-        {
-            e_mob->Move_right();
-        }
-
-        if (p_pos.x < e_pos.x)
-        {
-            e_mob->Move_left();
-        }
-
-        e_mob = e_mob->Get_link();
-    }
-}
-
-void CALLBACK MOB3_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
-{
-    POINT p_pos = p.Get_Location();
-    POINT e_pos;
-    Enemy *e_mob = Mob3.link;
-
-    while (e_mob != NULL)
-    {
-
-        e_pos = e_mob->Get_Location();
-
-        if (p_pos.y > e_pos.y)
-        {
-            e_mob->Move_down();
-        }
-
-        if (p_pos.y < e_pos.y)
-        {
-            e_mob->Move_up();
-        }
-
-        if (p_pos.x > e_pos.x)
-        {
-            e_mob->Move_right();
-        }
-
-        if (p_pos.x < e_pos.x)
-        {
-            e_mob->Move_left();
-        }
-
-        e_mob = e_mob->Get_link();
-    }
-}
-
-void CALLBACK MOB4_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
-{
-    POINT p_pos = p.Get_Location();
-    POINT e_pos;
-    Enemy *e_mob = Mob4.link;
-
-    while (e_mob != NULL)
-    {
-        if (e_mob->Get_id() == MOB4)
-        {
-            e_pos = e_mob->Get_Location();
-
-            if (p_pos.y > e_pos.y)
-            {
-                e_mob->Move_down();
-            }
-
-            if (p_pos.y < e_pos.y)
-            {
-                e_mob->Move_up();
-            }
-
-            if (p_pos.x > e_pos.x)
-            {
-                e_mob->Move_right();
-            }
-
-            if (p_pos.x < e_pos.x)
-            {
-                e_mob->Move_left();
-            }
-        }
-
-        e_mob = e_mob->Get_link();
-    }
-}
-
 /*
 void CALLBACK Tower_Oparate(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
@@ -1352,44 +1063,9 @@ void CALLBACK Tower_Oparate(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime
 }
 */
 
-void CALLBACK BOSS_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
-{
-    POINT p_pos = p.Get_Location();
-    POINT e_pos;
-    Enemy *e_mob = Boss.link;
-
-    while (e_mob != NULL)
-    {
-
-        e_pos = e_mob->Get_Location();
-
-        if (p_pos.y > e_pos.y)
-        {
-            e_mob->Move_down();
-        }
-
-        if (p_pos.y < e_pos.y)
-        {
-            e_mob->Move_up();
-        }
-
-        if (p_pos.x > e_pos.x)
-        {
-            e_mob->Move_right();
-        }
-
-        if (p_pos.x < e_pos.x)
-        {
-            e_mob->Move_left();
-        }
-
-        e_mob = e_mob->Get_link();
-    }
-}
-
 void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
-    POINT b_pos;
+    POINT b_pos, e_pos;
 
     for (int i = 0; i < pistol_count; i++)
     {
@@ -1405,6 +1081,33 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
             }
 
             pistol_count--;
+        }
+
+        for (int e = 0; e < enemy_count; e++)
+        {
+            e_pos = Mob[e].Get_Location();
+
+            if (b_pos.x > (e_pos.x - OBJECT_X_SIZE / 2) && b_pos.x < (e_pos.x + OBJECT_X_SIZE / 2) && b_pos.y >(e_pos.y - OBJECT_Y_SIZE / 2) && b_pos.y < (e_pos.y + OBJECT_Y_SIZE / 2))
+            {
+                pistol[i].Deliver_damage(Mob[e]);
+
+                for (int j = i; j < pistol_count - 1; j++)
+                {
+                    pistol[j] = pistol[j + 1];
+                }
+
+                if (Mob[e].Get_Health() < 0)
+                {
+                    for (int j = e; j < enemy_count - 1; j++)
+                    {
+                        Mob[j] = Mob[j + 1];
+                    }
+
+                    enemy_count--;
+                }
+
+                pistol_count--;
+            }
         }
     }
 
@@ -1423,6 +1126,33 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
             shotgun_count--;
         }
+
+        for (int e = 0; e < enemy_count; e++)
+        {
+            e_pos = Mob[e].Get_Location();
+
+            if (b_pos.x > (e_pos.x - OBJECT_X_SIZE / 2) && b_pos.x < (e_pos.x + OBJECT_X_SIZE / 2) && b_pos.y >(e_pos.y - OBJECT_Y_SIZE / 2) && b_pos.y < (e_pos.y + OBJECT_Y_SIZE / 2))
+            {
+                shotgun[i].Deliver_damage(Mob[e]);
+
+                for (int j = i; j < shotgun_count - 1; j++)
+                {
+                    shotgun[j] = shotgun[j + 1];
+                }
+
+                if (Mob[e].Get_Health() < 0)
+                {
+                    for (int j = e; j < enemy_count - 1; j++)
+                    {
+                        Mob[j] = Mob[j + 1];
+                    }
+
+                    enemy_count--;
+                }
+
+                shotgun_count--;
+            }
+        }
     }
 
     for (int i = 0; i < rifle_count; i++)
@@ -1440,24 +1170,33 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
             rifle_count--;
         }
-    }
 
-    for (int i = 0; i < tower_rifle_count; i++)
-    {
-        tower_rifle[i].Move();
-
-        b_pos = tower_rifle[i].Get_Location();
-
-        if (b_pos.x < 0 || b_pos.y < 0 || b_pos.x > 1280 || b_pos.y > 980)
+        for (int e = 0; e < enemy_count; e++)
         {
-            for (int j = i; j < tower_rifle_count - 1; j++)
-            {
-                tower_rifle[j] = tower_rifle[j + 1];
-            }
+            e_pos = Mob[e].Get_Location();
 
-            tower_rifle_count--;
+            if (b_pos.x > (e_pos.x - OBJECT_X_SIZE / 2) && b_pos.x < (e_pos.x + OBJECT_X_SIZE / 2) && b_pos.y >(e_pos.y - OBJECT_Y_SIZE / 2) && b_pos.y < (e_pos.y + OBJECT_Y_SIZE / 2))
+            {
+                rifle[i].Deliver_damage(Mob[e]);
+
+                for (int j = i; j < pistol_count - 1; j++)
+                {
+                    rifle[j] = rifle[j + 1];
+                }
+
+                if (Mob[e].Get_Health() < 0)
+                {
+                    for (int j = e; j < enemy_count - 1; j++)
+                    {
+                        Mob[j] = Mob[j + 1];
+                    }
+
+                    enemy_count--;
+                }
+
+                rifle_count--;
+            }
         }
-        
     }
 
     if (sniper_count == MAX_SNIPER)
@@ -1470,19 +1209,30 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
         {
             sniper_count--;
         }
-    }
 
-    if (tower_sniper_count == MAX_SNIPER)
-    {
-        tower_sniper.Move();
-
-        b_pos = tower_sniper.Get_Location();
-
-        if (b_pos.x < 0 || b_pos.y < 0 || b_pos.x > 1280 || b_pos.y > 980)
+        for (int e = 0; e < enemy_count; e++)
         {
-            tower_sniper_count--;
+            e_pos = Mob[e].Get_Location();
+
+            if (b_pos.x > (e_pos.x - OBJECT_X_SIZE / 2) && b_pos.x < (e_pos.x + OBJECT_X_SIZE / 2) && b_pos.y >(e_pos.y - OBJECT_Y_SIZE / 2) && b_pos.y < (e_pos.y + OBJECT_Y_SIZE / 2))
+            {
+                sniper.Deliver_damage(Mob[e]);
+
+                if (Mob[e].Get_Health() < 0)
+                {
+                    for (int j = e; j < enemy_count - 1; j++)
+                    {
+                        Mob[j] = Mob[j + 1];
+                    }
+
+                    enemy_count--;
+                }
+
+                sniper_count--;
+            }
         }
     }
+
 
     InvalidateRect(hWnd, NULL, FALSE);
 }
@@ -1617,7 +1367,7 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
     }
     return 0;
 }
-
+/*
 void BOMB_target(Tower _tower)
 {
     POINT Bomb_pos;
@@ -1704,6 +1454,7 @@ void BOMB_target(Tower _tower)
         }
     }
 }
+*/
 
 int Get_distance(POINT a, POINT b)
 {

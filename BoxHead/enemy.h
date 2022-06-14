@@ -6,8 +6,8 @@
 
 #define ENEMY_TIMER 404
 #define ENEMY_TIMELAB 100
-#define ENEMY_SPAWN 300
-#define ENEMY_MAXCOUNT 100
+#define ENEMY_SPAWN 10
+#define ENEMY_MAXCOUNT 500
 
 //id 값
 #define MOB1 1001
@@ -40,7 +40,6 @@
 class Enemy : public Object
 {
 private:
-    Enemy* link;
     int id; //몬스터 종류 구별을 위한 아이디
 public:
 
@@ -49,17 +48,8 @@ public:
     void Move_up();
     void Move_down();
 
-    void Set_link(Enemy*);
-    Enemy* Get_link();
-
     void Set_id(int);
     int Get_id();
 
     void Init_enemy(int);
 };
-
-typedef struct _EnemyType
-{
-    Enemy* link;
-    int enemy_count;
-} EnemyType;
