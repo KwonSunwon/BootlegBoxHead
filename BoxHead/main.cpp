@@ -102,7 +102,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
     RECT ClientRT = {0, 0, 1280, 960};
 
-    static TCHAR lpstrFile[200], lpstrFileTitle[200] = L"";
+    static TCHAR lpstrFile[MAX_PATH], lpstrFileTitle[MAX_PATH] = L"";
     static TCHAR filter[100] = L"¸ÊÆÄÀÏ(*.map)\0*.map\0";
     OPENFILENAME OFN;
 
@@ -296,7 +296,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
                 if (GetOpenFileName(&OFN) != 0)
                 {
-                    map.load(200);
+                    map.load(OFN);
                 }
 
                 spawn_count = 0;
@@ -1242,7 +1242,7 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
     HBITMAP hBit;
     HWND hButton;
-    static HWND hCheck[4];
+    static HWND hCheck[5];
 
     static POINT size;
     static int mapId;
@@ -1252,7 +1252,7 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
     {
     case WM_INITDIALOG:
         g_mapEditSelector = MAP_NONE;
-        for (int i = 0; i < 4; ++i)
+        for (int i = 0; i < 5; ++i)
             typeSelector.push_back(FALSE);
 
         size = {20, 15};
@@ -1283,6 +1283,7 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
         hCheck[1] = GetDlgItem(hDlg, IDC_TYPE2);
         hCheck[2] = GetDlgItem(hDlg, IDC_TYPE3);
         hCheck[3] = GetDlgItem(hDlg, IDC_TYPE4);
+        hCheck[4] = GetDlgItem(hDlg, IDC_TYPE5);
         break;
 
     case WM_COMMAND:
@@ -1341,12 +1342,15 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
         case IDC_TYPE4:
             typeSelector[3] = 1 - typeSelector[3];
             break;
+        case IDC_TYPE5:
+            typeSelector[4] = 1 - typeSelector[4];
+            break;
 
         case IDC_LOAD:
             mapId = GetDlgItemInt(hDlg, IDC_INPUT, NULL, TRUE);
             map.load(mapId);
             typeSelector = map.get_enemy_type();
-            for (int i = 0; i < 4; ++i)
+            for (int i = 0; i < 5; ++i)
                 SendMessage(hCheck[i], BM_SETCHECK, typeSelector[i], 0);
             SendMessage(hWnd, WM_COMMAND, 0, 0);
             break;
