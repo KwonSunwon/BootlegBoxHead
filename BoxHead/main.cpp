@@ -6,8 +6,6 @@
 
 //TODO
 /*
-Å¸¿ö »ý¼º½Ã¿¡ À§Ä¡ ¼³Á¤ÇØÁÖ±â
-Àû ÀÌµ¿ Å¸ÀÌ¸Ó ¼öÁ¤ ¹× Àû ½ºÆù À§Ä¡ ¼³Á¤
 */
 
 
@@ -39,7 +37,7 @@ void CALLBACK MOB4_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 void CALLBACK BOSS_Move(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
 void Player_move();
-void BOMB_target(Tower,Enemy);
+void BOMB_target(Tower);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow)
 {
@@ -559,11 +557,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             hFont = CreateFont(50, 30, 0, 0, FW_BOLD, 0, 0, 0, NULL, 0, 0, 0, 0, NULL);
             oldFont = (HFONT)SelectObject(MemDC, hFont);
 
-            //start ¸Þ´º ¹öÆ°
             Rectangle(MemDC, message_box.left, message_box.top, message_box.right, message_box.bottom);
             DrawText(MemDC, start_message, lstrlen(start_message), &message_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
-            //¸Ê ¿¡µðÆ® ¹öÆ°
             Rectangle(MemDC, edit_box.left, edit_box.top, edit_box.right, edit_box.bottom);
             DrawText(MemDC, edit_button, lstrlen(edit_button), &edit_box, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
@@ -600,16 +596,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
         if (phase == PHASE_PLAY)
         {
-            // ¸Ê Ãâ·Â
             map.draw(MemDC);
 
-            //ÇÃ·¹ÀÌ¾î Ãâ·Â
             Player_move();
 
             SelectObject(PrintDC, p.Get_Image());
             StretchBlt(MemDC, p.Get_Location().x - OBJECT_X_SIZE / 2, p.Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, p.Get_Info().bmWidth, p.Get_Info().bmHeight, SRCCOPY);
 
-            //Àû Ãâ·Â
             v = map.get_enemy_type();
 
             if (v[0])
@@ -682,7 +675,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 }
             }
 
-            //Å¸¿ö Ãâ·Â
+           
             for (int i = 0; i < tower_count; i++)
             {
                 SelectObject(PrintDC, T[i].Get_Image());
@@ -690,7 +683,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 StretchBlt(MemDC, T[i].Get_Location().x - OBJECT_X_SIZE / 2, T[i].Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, T[i].Get_Info().bmWidth, T[i].Get_Info().bmHeight, SRCCOPY);
             }
 
-            //ÃÑ¾Ë Ãâ·Â
             b_tmp = B;
 
             hBrush = CreateSolidBrush(RGB(255, 127, 0));
@@ -750,12 +742,13 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
                 selec = rand() % 4;
                 if (v[0] && selec == 0)
                 {
-                    printf("¸÷ 1 ½ºÆù\n");
                     tmp = Mob1.link;
 
                     newnode->Set_link(NULL);
 
                     newnode->Init_enemy(MOB1);
+
+                    newnode->Set_Location(map.get_enemy_spawn()[0]);
 
                     Mob1.enemy_count++;
                     break;
@@ -763,12 +756,13 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
                 if (v[1] && selec == 1)
                 {
-                    printf("¸÷ 2 ½ºÆù\n");
                     tmp = Mob2.link;
 
                     newnode->Set_link(NULL);
 
                     newnode->Init_enemy(MOB2);
+
+                    newnode->Set_Location(map.get_enemy_spawn()[0]);
 
                     Mob2.enemy_count++;
                     break;
@@ -776,12 +770,13 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
                 if (v[2] && selec == 2)
                 {
-                    printf("¸÷ 3 ½ºÆù\n");
                     tmp = Mob3.link;
 
                     newnode->Set_link(NULL);
 
                     newnode->Init_enemy(MOB3);
+
+                    newnode->Set_Location(map.get_enemy_spawn()[0]);
 
                     Mob3.enemy_count++;
                     break;
@@ -789,12 +784,13 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
                 if (v[3] && selec == 3)
                 {
-                    printf("¸÷ 4 ½ºÆù\n");
                     tmp = Mob4.link;
 
                     newnode->Set_link(NULL);
 
                     newnode->Init_enemy(MOB4);
+
+                    newnode->Set_Location(map.get_enemy_spawn()[0]);
 
                     Mob4.enemy_count++;
                     break;
@@ -987,7 +983,7 @@ void CALLBACK Tower_Oparate(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime
             T[i].Heal_target(p);
             break;
         case ID_BOMB_TOWER:
-            //ÀûÀ» Á¤ÇØ¾ß ÇÏ´Âµ¥..
+            BOMB_target(T[i]);
             break;
         case ID_SNIPE_TOWER:
             T[i].Tower_Oparate(B);
@@ -1067,7 +1063,7 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
             break;
         }
 
-        //Àû°ú Ãæµ¹ÆÇÁ¤
+        //enemy hit check
         if (map.get_enemy_type()[0])
         {
             e_tmp = Mob1.link;
@@ -1078,7 +1074,7 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
                 {
                     tmp->Deliver_damage(e_tmp);
 
-                    if (tmp->Get_type() != SNIPE_BULLET)    //½º³ªÀÌÆÛ´Â °üÅë
+                    if (tmp->Get_type() != SNIPE_BULLET)    //sniper penetrate enemy
                     {
                         tmp->Get_Llink()->Set_Rlink(tmp->Get_Rlink());
                         tmp->Get_Rlink()->Set_Llink(tmp->Get_Llink());
@@ -1198,7 +1194,6 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
             }
         }
 
-        //¸Ê ¹ÛÀ¸·Î ³ª°¡¸é »èÁ¦
         if (n_pos.x < 0 || n_pos.x > 1280 || n_pos.y < 0 || n_pos.y > 960)
         {
             tmp->Get_Llink()->Set_Rlink(tmp->Get_Rlink());
@@ -1341,13 +1336,11 @@ BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-void BOMB_target(Tower _tower,Enemy _target) //½ÇÇàÇÑ Å¸¿öµµ ÀÎ¼ö·Î ¹Þ¾Æ¾ß ÇÔ
+void BOMB_target(Tower _tower)
 {
-    POINT Bomb_pos = _target.Get_Location();
+    POINT Bomb_pos;
     vector<BOOL> v = map.get_enemy_type();
     Enemy* tmp;
-
-    _target.Get_Damage(BOMB_DAMAGE);
 
     if (v[0])
     {
@@ -1355,6 +1348,8 @@ void BOMB_target(Tower _tower,Enemy _target) //½ÇÇàÇÑ Å¸¿öµµ ÀÎ¼�
 
         while (tmp != NULL)
         {
+            Bomb_pos = tmp->Get_Location();
+
             if (Get_distance(tmp->Get_Location(), _tower.Get_Location()) < BOMB_RANGE)
             {
                 tmp->Get_Damage(BOMB_SPLASH);
@@ -1370,6 +1365,8 @@ void BOMB_target(Tower _tower,Enemy _target) //½ÇÇàÇÑ Å¸¿öµµ ÀÎ¼�
 
         while (tmp != NULL)
         {
+            Bomb_pos = tmp->Get_Location();
+
             if (Get_distance(tmp->Get_Location(), _tower.Get_Location()) < BOMB_RANGE)
             {
                 tmp->Get_Damage(BOMB_SPLASH);
@@ -1384,6 +1381,7 @@ void BOMB_target(Tower _tower,Enemy _target) //½ÇÇàÇÑ Å¸¿öµµ ÀÎ¼�
         tmp = Mob3.link;
         while (tmp != NULL)
         {
+            Bomb_pos = tmp->Get_Location();
             if (Get_distance(tmp->Get_Location(), _tower.Get_Location()) < BOMB_RANGE)
             {
                 tmp->Get_Damage(BOMB_SPLASH);
@@ -1398,6 +1396,7 @@ void BOMB_target(Tower _tower,Enemy _target) //½ÇÇàÇÑ Å¸¿öµµ ÀÎ¼�
         tmp = Mob4.link;
         while (tmp != NULL)
         {
+            Bomb_pos = tmp->Get_Location();
             if (Get_distance(tmp->Get_Location(), _tower.Get_Location()) < BOMB_RANGE)
             {
                 tmp->Get_Damage(BOMB_SPLASH);
@@ -1413,6 +1412,7 @@ void BOMB_target(Tower _tower,Enemy _target) //½ÇÇàÇÑ Å¸¿öµµ ÀÎ¼�
 
         while (tmp != NULL)
         {
+            Bomb_pos = tmp->Get_Location();
             if (Get_distance(tmp->Get_Location(), _tower.Get_Location()) < BOMB_RANGE)
             {
                 tmp->Get_Damage(BOMB_SPLASH);
