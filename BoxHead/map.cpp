@@ -467,40 +467,8 @@ int Map::save(int _id)
 // test func
 void Map::test_print_file()
 {
-    cout << id << "\n";
-    cout << count.x << ", " << count.y << "\n";
-    cout << playerSpawn.x << ", " << playerSpawn.y << "\n";
-    for (int i = 0; i < enemySpawn.size(); ++i)
-        cout << enemySpawn[i].x << ", " << enemySpawn[i].y << "\n";
-    for (int i = 0; i < 5; ++i)
-        cout << spawnEnemyType[i] << "\n";
-    for (int i = 0; i < count.y; ++i)
-    {
-        for (int j = 0; j < count.x; ++j)
-        {
-            cout << map[i][j] << ", ";
-        }
-        cout << "\n";
-    }
 }
 
 void Map::test_out_content()
 {
-    isEditMode = TRUE;
-    id = 200;
-    count = {6, 4};
-    playerSpawn = {3, 3};
-    enemySpawn.push_back({1, 1});
-    enemySpawn.push_back({2, 2});
-    enemySpawn.push_back({3, 3});
-    enemySpawn.push_back({4, 5});
-    for (int i = 0; i < 5; ++i)
-        spawnEnemyType[i] = TRUE;
-    map.clear();
-    map.resize(count.y);
-    for (int i = 0; i < count.y; ++i)
-    {
-        for (int j = 0; j < count.x; ++j)
-            map[i].push_back(MAP_FLOOR_TYPE1);
-    }
 }

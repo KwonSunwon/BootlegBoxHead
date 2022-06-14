@@ -33,6 +33,7 @@
 #define IDC_SAVE                        1015
 #define IDC_EDIT1                       1015
 #define IDC_INPUT                       1015
+#define IDC_TYPE5                       1016
 
 // Next default values for new objects
 // 
