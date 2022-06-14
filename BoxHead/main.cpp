@@ -21,6 +21,8 @@ Bullet tower_rifle[MAX_TOWERRIFLE], tower_sniper;
 int shotgun_count, pistol_count, rifle_count, sniper_count;
 int tower_rifle_count, tower_sniper_count;
 
+POINT location_to_position(POINT _location);
+
 HINSTANCE g_hInst;
 LPCTSTR lpszClass = L"Window Class Name";
 LPCTSTR lpszWindowName = L"Window Programming Lab";
@@ -108,6 +110,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
     static TCHAR lpstrFile[MAX_PATH], lpstrFileTitle[MAX_PATH] = L"";
     static TCHAR filter[100] = L"¸ÊÆÄÀÏ(*.map)\0*.map\0";
     OPENFILENAME OFN;
+
+    RECT tempRect;
 
     switch (iMessage)
     {
@@ -279,8 +283,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 // map ï¿½Ò·ï¿½ï¿½ï¿½ ï¿½Ú¿ï¿½
                 map.load(300);
                 spawn_count = 0;
-                p.Set_Location(map.get_player_spawn()); 
-                
+                p.Set_Location(map.get_player_spawn());
+
                 hBitmap_tmp = (HBITMAP)LoadImage(g_hInst, TEXT("tmp_p.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
                 p.Set_Image(hBitmap_tmp);
                 p.Set_Weapon(PISTOL);
@@ -388,27 +392,143 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         {
             if (wParam == 'w' || wParam == 'W')
             {
-                        key_buffer[UP] = TRUE;
+                key_buffer[UP] = TRUE;
+
+                RECT playerRect = p.Get_Rect();
+
+                POINT Virtual_pos = p.Get_Location();
+                Virtual_pos.y -= (OBJECT_Y_SIZE / 2);
+                Virtual_pos.y -= p.Get_Speed();
+
+                POINT position = location_to_position(Virtual_pos);
+
+                position.x -= 1;
+                for (int i = 0; i < 3; ++i)
+                {
+                    RECT mapRect = map.get_tile_rect(position);
+                    if (IntersectRect(&tempRect, &playerRect, &mapRect) && (map.get_tile_type(position) >= 300 && map.get_tile_type(position) < 400))
+                        key_buffer[UP] = FALSE;
+                    position.x++;
+                }
+
+                // if (Virtual_pos.y - p.Get_Speed() > 0)
+                // {
+                //     Virtual_pos.y -= p.Get_Speed();
+
+                //     if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE3)
+                //     {
+                //         key_buffer[UP] = TRUE;
+                //     }
+                // }
             }
 
             if (wParam == 's' || wParam == 'S')
             {
-                
-                        key_buffer[DOWN] = TRUE;
-                   
+                key_buffer[DOWN] = TRUE;
+
+                RECT playerRect = p.Get_Rect();
+
+                POINT Virtual_pos = p.Get_Location();
+                Virtual_pos.y += (OBJECT_Y_SIZE / 2);
+                Virtual_pos.y += p.Get_Speed();
+
+                POINT position = location_to_position(Virtual_pos);
+
+                position.x -= 1;
+                for (int i = 0; i < 3; ++i)
+                {
+                    RECT mapRect = map.get_tile_rect(position);
+                    std::cout << map.get_tile_type(position) << "\n";
+
+                    if (IntersectRect(&tempRect, &playerRect, &mapRect) && (map.get_tile_type(position) >= 300 && map.get_tile_type(position) < 400))
+                    {
+                        key_buffer[DOWN] = FALSE;
+                    }
+                    position.x++;
+                }
+
+                // POINT Virtual_pos = p.Get_Location();
+
+                // if (Virtual_pos.y + p.Get_Speed() < 1280)
+                // {
+                //     Virtual_pos.y += p.Get_Speed();
+
+                //     if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE3)
+                //     {
+                //         key_buffer[DOWN] = TRUE;
+                //     }
+                // }
             }
 
             if (wParam == 'a' || wParam == 'A')
             {
-                
-                        key_buffer[LEFT] = TRUE;
+                key_buffer[LEFT] = TRUE;
+                RECT playerRect = p.Get_Rect();
+
+                POINT Virtual_pos = p.Get_Location();
+                Virtual_pos.x -= (OBJECT_X_SIZE / 2);
+                Virtual_pos.x -= p.Get_Speed();
+
+                POINT position = location_to_position(Virtual_pos);
+
+                position.y -= 1;
+                for (int i = 0; i < 3; ++i)
+                {
+                    RECT mapRect = map.get_tile_rect(position);
+                    if (IntersectRect(&tempRect, &playerRect, &mapRect) && (map.get_tile_type(position) >= 300 && map.get_tile_type(position) < 400))
+                    {
+                        key_buffer[LEFT] = FALSE;
+                    }
+                    position.y++;
+                }
+
+                // POINT Virtual_pos = p.Get_Location();
+
+                // if (Virtual_pos.x - p.Get_Speed() > 0)
+                // {
+                //     Virtual_pos.x -= p.Get_Speed();
+
+                //     if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE3)
+                //     {
+                //         key_buffer[LEFT] = TRUE;
+                //     }
+                // }
             }
 
             if (wParam == 'd' || wParam == 'D')
             {
-               
-                        key_buffer[RIGHT] = TRUE;
-               
+                key_buffer[RIGHT] = TRUE;
+
+                RECT playerRect = p.Get_Rect();
+
+                POINT Virtual_pos = p.Get_Location();
+                Virtual_pos.x += (OBJECT_X_SIZE / 2);
+                Virtual_pos.x += p.Get_Speed();
+
+                POINT position = location_to_position(Virtual_pos);
+
+                position.y -= 1;
+                for (int i = 0; i < 3; ++i)
+                {
+                    RECT mapRect = map.get_tile_rect(position);
+                    if (IntersectRect(&tempRect, &playerRect, &mapRect) && (map.get_tile_type(position) >= 300 && map.get_tile_type(position) < 400))
+                    {
+                        key_buffer[RIGHT] = FALSE;
+                    }
+                    position.y++;
+                }
+
+                // POINT Virtual_pos = p.Get_Location();
+
+                // if (Virtual_pos.x + p.Get_Speed() < 960)
+                // {
+                //     Virtual_pos.x += p.Get_Speed();
+
+                //     if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE3)
+                //     {
+                //         key_buffer[RIGHT] = TRUE;
+                //     }
+                // }
             }
 
             if (wParam == 't' || wParam == 'T')
@@ -499,6 +619,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 }
             }
 
+            Player_move();
+            Player_move();
+            InvalidateRect(hWnd, NULL, FALSE);
         }
         break;
 
@@ -745,7 +868,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             // print map
             map.draw(MemDC);
 
-            Player_move();
+            // Player_move();
 
             // print player
             SelectObject(PrintDC, p.Get_Image());
@@ -864,7 +987,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
                  StretchBlt(MemDC, T[i].Get_Location().x - OBJECT_X_SIZE / 2, T[i].Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, T[i].Get_Info().bmWidth, T[i].Get_Info().bmHeight, SRCCOPY);
              }
-             
+             */
+
+             // print bullet
+             b_tmp = B;
 
              // print bullet
             hBrush = CreateSolidBrush(RGB(255, 127, 0));
@@ -906,7 +1032,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         BitBlt(hdc, 0, 0, rc.right, rc.bottom, MemDC, 0, 0, SRCCOPY);
 
         SelectObject(MemDC, oldBackBit);
-        DeleteDC(MemDC); DeleteDC(PrintDC);
+        DeleteDC(MemDC);
+        DeleteDC(PrintDC);
         DeleteObject(BackBit);
         break;
 
@@ -1290,12 +1417,23 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
         b_pos = tower_rifle[i].Get_Location();
 
-        if (b_pos.x < 0 || b_pos.y < 0 || b_pos.x > 1280 || b_pos.y > 980)
-        {
-            for (int j = i; j < tower_rifle_count - 1; j++)
+            while (e_tmp != NULL)
             {
-                tower_rifle[j] = tower_rifle[j + 1];
-            }
+                if (n_pos.x > (e_tmp->Get_Location().x - OBJECT_X_SIZE / 2) && n_pos.x < (e_tmp->Get_Location().x + OBJECT_X_SIZE / 2) && n_pos.y > (e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2) && n_pos.y < (e_tmp->Get_Location().y + OBJECT_Y_SIZE / 2))
+                {
+                    tmp->Deliver_damage(e_tmp);
+
+                    if (tmp->Get_type() != SNIPE_BULLET)
+                    {
+                        tmp->Get_Llink()->Set_Rlink(tmp->Get_Rlink());
+                        tmp->Get_Rlink()->Set_Llink(tmp->Get_Llink());
+
+                        del = tmp;
+                        tmp = tmp->Get_Rlink();
+
+                        free(del);
+                    }
+                }
 
             tower_rifle_count--;
         }
@@ -1549,4 +1687,13 @@ void BOMB_target(Tower _tower)
 int Get_distance(POINT a, POINT b)
 {
     return fabs(sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y)));
+}
+
+POINT location_to_position(POINT _location)
+{
+    POINT temp = {
+        _location.x / TILE_SIZE,
+        _location.y / TILE_SIZE,
+    };
+    return temp;
 }

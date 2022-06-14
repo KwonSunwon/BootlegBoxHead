@@ -51,6 +51,17 @@ BITMAP Object::Get_Info()
     return info;
 }
 
+RECT Object::Get_Rect()
+{
+    RECT temp = {
+        location.x -= (OBJECT_X_SIZE / 2),
+        location.y -= (OBJECT_Y_SIZE / 2),
+        location.x += (OBJECT_X_SIZE / 2),
+        location.y += (OBJECT_Y_SIZE / 2),
+    };
+    return temp;
+}
+
 void Object::Set_Location(POINT _location)
 {
     location.x = _location.y * TILE_SIZE;

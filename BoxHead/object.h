@@ -10,7 +10,7 @@
 #define IDB_UP 204
 #define IDB_DOWN 205
 
-class Object 
+class Object
 {
 protected:
     POINT location;
@@ -19,8 +19,8 @@ protected:
     int speed;
     HBITMAP image;
     BITMAP info;
-public:
 
+public:
     void Move_left() {}
     void Move_right() {}
     void Move_up() {}
@@ -40,6 +40,8 @@ public:
     POINT Get_Position();
     HBITMAP Get_Image();
     BITMAP Get_Info();
+
+    RECT Get_Rect();
 
     void Get_Heal(int);
     void Get_Damage(int);

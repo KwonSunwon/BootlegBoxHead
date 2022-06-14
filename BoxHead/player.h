@@ -4,7 +4,7 @@
 #include "bullet.h"
 
 #define PLAYER_STDHEALTH 100
-#define PLAYER_STDSPEED 10
+#define PLAYER_STDSPEED 2
 #define PLAYER_STDATTACK 5
 
 #define PISTOL 1070
@@ -21,11 +21,11 @@ class Player : public Object
 {
 private:
     int weapon_id;
-public:
 
-    void Move_left(); 
+public:
+    void Move_left();
     void Move_right();
-    void Move_up(); 
+    void Move_up();
     void Move_down();
 
     void Set_Weapon(int);
