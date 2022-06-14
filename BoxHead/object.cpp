@@ -31,6 +31,16 @@ POINT Object::Get_Location()
     return location;
 }
 
+POINT Object::Get_Position()
+{
+    POINT pos;
+
+    pos.x = location.x / TILE_SIZE;
+    pos.y = location.y / TILE_SIZE;
+
+    return pos;
+}
+
 HBITMAP Object::Get_Image()
 {
     return image;

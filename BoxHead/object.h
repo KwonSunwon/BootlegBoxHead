@@ -37,6 +37,7 @@ public:
     int Get_Attack();
     int Get_Speed();
     POINT Get_Location();
+    POINT Get_Position();
     HBITMAP Get_Image();
     BITMAP Get_Info();
 
