@@ -42,6 +42,7 @@ public:
     void draw(HDC);
 
     int load(int);
+    int load(OPENFILENAME);
 
     int get_tile_type(POINT);
     POINT get_player_spawn();
