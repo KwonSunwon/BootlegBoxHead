@@ -4,6 +4,7 @@
 void Object::Set_Image(HBITMAP Bitmap) 
 {
     image = Bitmap;
+    GetObject(image, sizeof(BITMAP), &info);
 }
 
 void Object::Set_Info() 

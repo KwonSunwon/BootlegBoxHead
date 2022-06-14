@@ -16,6 +16,7 @@ EnemyType Mob1, Mob2, Mob3, Mob4, Boss;
 Bullet *B;
 Tower T[MAX_TOWER_COUNT];
 int tower_count, tower_way_set, tower_id_set;
+HBITMAP hBitmap_tmp;
 
 HINSTANCE g_hInst;
 LPCTSTR lpszClass = L"Window Class Name";
@@ -200,6 +201,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 map.load(100);
                 spawn_count = 0;
                 p.Set_Location(map.get_player_spawn());
+
+                hBitmap_tmp = (HBITMAP)LoadImage(g_hInst, TEXT("tmp_p.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+                p.Set_Image(hBitmap_tmp);
+
+                /*
                 SetTimer(hWnd, ENEMY_TIMER, ENEMY_TIMELAB, Enemy_spawn);
                 SetTimer(hWnd, TOWER_TIMER, TOWER_TIMELAB, Tower_Oparate);
                 SetTimer(hWnd, BULLET_TIMER, BULLET_TIMELAB, Bullet_fly);
@@ -218,7 +224,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
                 if (map.get_enemy_type()[4])
                     SetTimer(hWnd, BOSS_TIMER, MOB_TIMELAB, BOSS_Move);
-
+                    */
                 phase = PHASE_PLAY;
             }
 
@@ -229,6 +235,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 map.load(200);
                 spawn_count = 0;
                 p.Set_Location(map.get_player_spawn());
+                hBitmap_tmp = (HBITMAP)LoadImage(g_hInst, TEXT("tmp_p.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+                p.Set_Image(hBitmap_tmp);
+                /*
                 SetTimer(hWnd, ENEMY_TIMER, ENEMY_TIMELAB, Enemy_spawn);
                 SetTimer(hWnd, TOWER_TIMER, TOWER_TIMELAB, Tower_Oparate);
                 SetTimer(hWnd, BULLET_TIMER, BULLET_TIMELAB, Bullet_fly);
@@ -247,7 +256,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
                 if (map.get_enemy_type()[4])
                     SetTimer(hWnd, BOSS_TIMER, MOB_TIMELAB, BOSS_Move);
-
+                    */
                 phase = PHASE_PLAY;
             }
 
@@ -257,26 +266,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 // map �ҷ��� �ڿ�
                 map.load(300);
                 spawn_count = 0;
-                p.Set_Location(map.get_player_spawn());
-                SetTimer(hWnd, ENEMY_TIMER, ENEMY_TIMELAB, Enemy_spawn);
-                SetTimer(hWnd, TOWER_TIMER, TOWER_TIMELAB, Tower_Oparate);
-                SetTimer(hWnd, BULLET_TIMER, BULLET_TIMELAB, Bullet_fly);
+                p.Set_Location(map.get_player_spawn()); 
+                
+                hBitmap_tmp = (HBITMAP)LoadImage(g_hInst, TEXT("tmp_p.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+                p.Set_Image(hBitmap_tmp);
+                /*
+                 SetTimer(hWnd, ENEMY_TIMER, ENEMY_TIMELAB, Enemy_spawn);
+                 SetTimer(hWnd, TOWER_TIMER, TOWER_TIMELAB, Tower_Oparate);
+                 SetTimer(hWnd, BULLET_TIMER, BULLET_TIMELAB, Bullet_fly);
 
-                if (map.get_enemy_type()[0])
-                    SetTimer(hWnd, MOB1_TIMER, MOB_TIMELAB, MOB1_Move);
+                 if (map.get_enemy_type()[0])
+                     SetTimer(hWnd, MOB1_TIMER, MOB_TIMELAB, MOB1_Move);
 
-                if (map.get_enemy_type()[1])
-                    SetTimer(hWnd, MOB2_TIMER, MOB_TIMELAB, MOB2_Move);
+                 if (map.get_enemy_type()[1])
+                     SetTimer(hWnd, MOB2_TIMER, MOB_TIMELAB, MOB2_Move);
 
-                if (map.get_enemy_type()[2])
-                    SetTimer(hWnd, MOB3_TIMER, MOB_TIMELAB, MOB3_Move);
+                 if (map.get_enemy_type()[2])
+                     SetTimer(hWnd, MOB3_TIMER, MOB_TIMELAB, MOB3_Move);
 
-                if (map.get_enemy_type()[3])
-                    SetTimer(hWnd, MOB4_TIMER, MOB_TIMELAB, MOB4_Move);
+                 if (map.get_enemy_type()[3])
+                     SetTimer(hWnd, MOB4_TIMER, MOB_TIMELAB, MOB4_Move);
 
-                if (map.get_enemy_type()[4])
-                    SetTimer(hWnd, BOSS_TIMER, MOB_TIMELAB, BOSS_Move);
-
+                 if (map.get_enemy_type()[4])
+                     SetTimer(hWnd, BOSS_TIMER, MOB_TIMELAB, BOSS_Move);
+                     */
                 phase = PHASE_PLAY;
             }
 
@@ -362,11 +375,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 POINT Virtual_pos = p.Get_Location();
 
                 Virtual_pos.y -= p.Get_Speed();
+                key_buffer[UP] = TRUE;
 
-                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
-                {
-                    key_buffer[UP] = TRUE;
-                }
             }
 
             if (wParam == 's' || wParam == 'S')
@@ -374,11 +384,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 POINT Virtual_pos = p.Get_Location();
 
                 Virtual_pos.y += p.Get_Speed();
+                key_buffer[DOWN] = TRUE;
 
-                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
-                {
-                    key_buffer[DOWN] = TRUE;
-                }
             }
 
             if (wParam == 'a' || wParam == 'A')
@@ -387,10 +394,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
                 Virtual_pos.x -= p.Get_Speed();
 
-                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
-                {
-                    key_buffer[LEFT] = TRUE;
-                }
+                key_buffer[LEFT] = TRUE;
             }
 
             if (wParam == 'd' || wParam == 'D')
@@ -398,11 +402,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 POINT Virtual_pos = p.Get_Location();
 
                 Virtual_pos.x += p.Get_Speed();
+                key_buffer[RIGHT] = TRUE;
 
-                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2)
-                {
-                    key_buffer[RIGHT] = TRUE;
-                }
             }
 
             if (wParam == 't' || wParam == 'T')
@@ -630,110 +631,112 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             // print map
             map.draw(MemDC);
 
-            // Player_move();
+            Player_move();
 
-            // // print player
-            // SelectObject(PrintDC, p.Get_Image());
-            // StretchBlt(MemDC, p.Get_Location().x - OBJECT_X_SIZE / 2, p.Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, p.Get_Info().bmWidth, p.Get_Info().bmHeight, SRCCOPY);
+            // print player
+            SelectObject(PrintDC, p.Get_Image());
+            StretchBlt(MemDC, p.Get_Location().x - OBJECT_X_SIZE / 2, p.Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, p.Get_Info().bmWidth, p.Get_Info().bmHeight, SRCCOPY);
 
-            // // print enemy
-            // v = map.get_enemy_type();
+            /*
+            // print enemy
+            v = map.get_enemy_type();
 
-            // if (v[0])
-            // {
-            //     e_tmp = Mob1.link;
+            if (v[0])
+            {
+                 e_tmp = Mob1.link;
 
-            //     SelectObject(PrintDC, e_tmp->Get_Image());
+                 SelectObject(PrintDC, e_tmp->Get_Image());
 
-            //     while (e_tmp != NULL)
-            //     {
-            //         StretchBlt(MemDC, e_tmp->Get_Location().x - OBJECT_X_SIZE / 2, e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, e_tmp->Get_Info().bmWidth, e_tmp->Get_Info().bmHeight, SRCCOPY);
+                 while (e_tmp != NULL)
+                 {
+                     StretchBlt(MemDC, e_tmp->Get_Location().x - OBJECT_X_SIZE / 2, e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, e_tmp->Get_Info().bmWidth, e_tmp->Get_Info().bmHeight, SRCCOPY);
 
-            //         e_tmp = e_tmp->Get_link();
-            //     }
-            // }
+                     e_tmp = e_tmp->Get_link();
+                 }
+            }
 
-            // if (v[1])
-            // {
-            //     e_tmp = Mob2.link;
+            if (v[1])
+            {
+                e_tmp = Mob2.link;
 
-            //     SelectObject(PrintDC, e_tmp->Get_Image());
+                SelectObject(PrintDC, e_tmp->Get_Image());
 
-            //     while (e_tmp != NULL)
-            //     {
-            //         StretchBlt(MemDC, e_tmp->Get_Location().x - OBJECT_X_SIZE / 2, e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, e_tmp->Get_Info().bmWidth, e_tmp->Get_Info().bmHeight, SRCCOPY);
+                while (e_tmp != NULL)
+                 {
+                     StretchBlt(MemDC, e_tmp->Get_Location().x - OBJECT_X_SIZE / 2, e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, e_tmp->Get_Info().bmWidth, e_tmp->Get_Info().bmHeight, SRCCOPY);
 
-            //         e_tmp = e_tmp->Get_link();
-            //     }
-            // }
+                     e_tmp = e_tmp->Get_link();
+                 }
+             }
 
-            // if (v[2])
-            // {
-            //     e_tmp = Mob3.link;
+             if (v[2])
+             {
+                 e_tmp = Mob3.link;
 
-            //     SelectObject(PrintDC, e_tmp->Get_Image());
+                 SelectObject(PrintDC, e_tmp->Get_Image());
 
-            //     while (e_tmp != NULL)
-            //     {
-            //         StretchBlt(MemDC, e_tmp->Get_Location().x - OBJECT_X_SIZE / 2, e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, e_tmp->Get_Info().bmWidth, e_tmp->Get_Info().bmHeight, SRCCOPY);
+                while (e_tmp != NULL)
+                 {
+                     StretchBlt(MemDC, e_tmp->Get_Location().x - OBJECT_X_SIZE / 2, e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, e_tmp->Get_Info().bmWidth, e_tmp->Get_Info().bmHeight, SRCCOPY);
 
-            //         e_tmp = e_tmp->Get_link();
-            //     }
-            // }
+                     e_tmp = e_tmp->Get_link();
+                 }
+             }
 
-            // if (v[3])
-            // {
-            //     e_tmp = Mob4.link;
+             if (v[3])
+             {
+                 e_tmp = Mob4.link;
 
-            //     SelectObject(PrintDC, e_tmp->Get_Image());
+                 SelectObject(PrintDC, e_tmp->Get_Image());
 
-            //     while (e_tmp != NULL)
-            //     {
-            //         StretchBlt(MemDC, e_tmp->Get_Location().x - OBJECT_X_SIZE / 2, e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, e_tmp->Get_Info().bmWidth, e_tmp->Get_Info().bmHeight, SRCCOPY);
+                 while (e_tmp != NULL)
+                 {
+                     StretchBlt(MemDC, e_tmp->Get_Location().x - OBJECT_X_SIZE / 2, e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, e_tmp->Get_Info().bmWidth, e_tmp->Get_Info().bmHeight, SRCCOPY);
 
-            //         e_tmp = e_tmp->Get_link();
-            //     }
-            // }
+                     e_tmp = e_tmp->Get_link();
+                 }
+             }
 
-            // if (v[4])
-            // {
-            //     e_tmp = Boss.link;
+             if (v[4])
+             {
+                 e_tmp = Boss.link;
 
-            //     SelectObject(PrintDC, e_tmp->Get_Image());
+                 SelectObject(PrintDC, e_tmp->Get_Image());
 
-            //     while (e_tmp != NULL)
-            //     {
-            //         StretchBlt(MemDC, e_tmp->Get_Location().x - OBJECT_X_SIZE / 2, e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, e_tmp->Get_Info().bmWidth, e_tmp->Get_Info().bmHeight, SRCCOPY);
+                 while (e_tmp != NULL)
+                 {
+                    StretchBlt(MemDC, e_tmp->Get_Location().x - OBJECT_X_SIZE / 2, e_tmp->Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, e_tmp->Get_Info().bmWidth, e_tmp->Get_Info().bmHeight, SRCCOPY);
 
-            //         e_tmp = e_tmp->Get_link();
-            //     }
-            // }
+                     e_tmp = e_tmp->Get_link();
+                 }
+             }
 
-            // // print tower
-            // for (int i = 0; i < tower_count; i++)
-            // {
-            //     SelectObject(PrintDC, T[i].Get_Image());
+             // print tower
+             for (int i = 0; i < tower_count; i++)
+             {
+                 SelectObject(PrintDC, T[i].Get_Image());
 
-            //     StretchBlt(MemDC, T[i].Get_Location().x - OBJECT_X_SIZE / 2, T[i].Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, T[i].Get_Info().bmWidth, T[i].Get_Info().bmHeight, SRCCOPY);
-            // }
+                 StretchBlt(MemDC, T[i].Get_Location().x - OBJECT_X_SIZE / 2, T[i].Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, T[i].Get_Info().bmWidth, T[i].Get_Info().bmHeight, SRCCOPY);
+             }
+             */
 
-            // // print bullet
-            // b_tmp = B;
+             // print bullet
+             b_tmp = B;
 
-            // hBrush = CreateSolidBrush(RGB(255, 127, 0));
-            // oldBrush = (HBRUSH)SelectObject(MemDC, hBrush);
+             hBrush = CreateSolidBrush(RGB(255, 127, 0));
+             oldBrush = (HBRUSH)SelectObject(MemDC, hBrush);
 
-            // while (b_tmp != NULL)
-            // {
-            //     b_pos = b_tmp->Get_Location();
+             while (b_tmp != NULL)
+             {
+                b_pos = b_tmp->Get_Location();
 
-            //     Rectangle(MemDC, b_pos.x - 3, b_pos.y - 3, b_pos.x + 3, b_pos.y + 3);
+                 Rectangle(MemDC, b_pos.x - 3, b_pos.y - 3, b_pos.x + 3, b_pos.y + 3);
 
-            //     b_tmp = b_tmp->Get_Rlink();
-            // }
+                 b_tmp = b_tmp->Get_Rlink();
+             }
 
-            // SelectObject(MemDC, oldBrush);
-            // DeleteObject(hBrush);
+             SelectObject(MemDC, oldBrush);
+             DeleteObject(hBrush);
         }
 
         if (phase == PHASE_EDIT)
@@ -744,7 +747,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         BitBlt(hdc, 0, 0, rc.right, rc.bottom, MemDC, 0, 0, SRCCOPY);
 
         SelectObject(MemDC, oldBackBit);
-        DeleteDC(MemDC);
+        DeleteDC(MemDC); DeleteDC(PrintDC);
         DeleteObject(BackBit);
         break;
 
