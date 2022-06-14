@@ -156,12 +156,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             if (message_box.left < mouse_pos.x && message_box.top < mouse_pos.y && message_box.right > mouse_pos.x && message_box.bottom > mouse_pos.y)
             {
                 phase = PHASE_LOAD;
+                printf("start button clicked\n");
                 InvalidateRect(hWnd, NULL, FALSE);
             }
 
             if (edit_box.left < mouse_pos.x && edit_box.top < mouse_pos.y && edit_box.right > mouse_pos.x && edit_box.bottom > mouse_pos.y)
             {
                 phase = PHASE_EDIT;
+                printf("edit button clicked\n");
                 map.on_editMode();
                 if (!IsWindow(hDlg))
                 {
@@ -172,7 +174,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             }
         }
 
-        if (phase == PHASE_LOAD)
+        else if (phase == PHASE_LOAD)
         {
             //map1 ���ý�
             if (map1_box.left < mouse_pos.x && map1_box.top < mouse_pos.y && map1_box.right > mouse_pos.x && map1_box.bottom > mouse_pos.y)
@@ -287,7 +289,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             }
         }
 
-        if (phase == PHASE_EDIT)
+        else if (phase == PHASE_EDIT)
         {
             mouse_pos.x = mouse_pos.x / TILE_SIZE;
             mouse_pos.y = mouse_pos.y / TILE_SIZE;
@@ -316,20 +318,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_CHAR:
-        if (phase == PHASE_LOAD)
-        {
-            if (wParam == 'p' || wParam == 'P')
-            {
-                spawn_count = 0;
-                p.Set_Location(map.get_player_spawn());
-                SetTimer(hWnd, ENEMY_TIMER, ENEMY_TIMELAB, Enemy_spawn);
-                //SetTimer(hWnd, MOB1_TIMER, MOB_TIMELAB, MOB1_Move);
-                SetTimer(hWnd, TOWER_TIMER, TOWER_TIMELAB, Tower_Oparate);
-                SetTimer(hWnd, BULLET_TIMER, BULLET_TIMELAB, Bullet_fly);
-                phase = PHASE_PLAY;
-            }
-        }
-
         if (phase == PHASE_PLAY)
         {
             if (wParam == 'w' || wParam == 'W')
@@ -569,6 +557,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
         if (phase == PHASE_LOAD)
         {
+            printf("print load phase\n");
+
             hFont = CreateFont(80, 60, 0, 0, FW_BOLD, 0, 0, 0, NULL, 0, 0, 0, 0, NULL);
             oldFont = (HFONT)SelectObject(MemDC, hFont);
 
@@ -596,13 +586,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
         if (phase == PHASE_PLAY)
         {
+            //print map
             map.draw(MemDC);
 
             Player_move();
 
+            //print player
             SelectObject(PrintDC, p.Get_Image());
             StretchBlt(MemDC, p.Get_Location().x - OBJECT_X_SIZE / 2, p.Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, p.Get_Info().bmWidth, p.Get_Info().bmHeight, SRCCOPY);
 
+            //print enemy
             v = map.get_enemy_type();
 
             if (v[0])
@@ -675,7 +668,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 }
             }
 
-           
+           //print tower
             for (int i = 0; i < tower_count; i++)
             {
                 SelectObject(PrintDC, T[i].Get_Image());
@@ -683,6 +676,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 StretchBlt(MemDC, T[i].Get_Location().x - OBJECT_X_SIZE / 2, T[i].Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, T[i].Get_Info().bmWidth, T[i].Get_Info().bmHeight, SRCCOPY);
             }
 
+            //print bullet
             b_tmp = B;
 
             hBrush = CreateSolidBrush(RGB(255, 127, 0));
