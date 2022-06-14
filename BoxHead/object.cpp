@@ -1,37 +1,35 @@
 #include "object.h"
 
-
-void Object::Set_Image(HBITMAP Bitmap) 
+void Object::Set_Image(HBITMAP Bitmap)
 {
     image = Bitmap;
     GetObject(image, sizeof(BITMAP), &info);
 }
 
-void Object::Set_Info() 
+void Object::Set_Info()
 {
     GetObject(image, sizeof(BITMAP), &info);
 }
 
-int Object::Get_Health() 
+int Object::Get_Health()
 {
     return health;
 }
 
-int Object::Get_Attack() 
+int Object::Get_Attack()
 {
     return attack;
 }
 
-int Object::Get_Speed() 
+int Object::Get_Speed()
 {
     return speed;
 }
 
-POINT Object::Get_Location() 
+POINT Object::Get_Location()
 {
     return location;
 }
-
 
 HBITMAP Object::Get_Image()
 {
@@ -43,17 +41,18 @@ BITMAP Object::Get_Info()
     return info;
 }
 
-void Object::Set_Location(POINT _location ) 
+void Object::Set_Location(POINT _location)
 {
-    location = _location;
+    location.x = _location.y * TILE_SIZE;
+    location.y = _location.x * TILE_SIZE;
 }
 
-void Object::Set_Health(int _health) 
+void Object::Set_Health(int _health)
 {
     health = _health;
 }
 
-void Object::Set_Attack(int _attack) 
+void Object::Set_Attack(int _attack)
 {
     attack = _attack;
 }

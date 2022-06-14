@@ -286,7 +286,7 @@ int Map::load(OPENFILENAME OFN)
 
 int Map::get_tile_type(POINT _pos)
 {
-    if (_pos.x > count.x || _pos.y > count.y)
+    if (_pos.x > count.x || _pos.y > count.y || _pos.x < 0 || _pos.y < 0)
     {
         // ¸Ê Å©±â ¹üÀ§ ¹þ¾î³­ ÁÂÇ¥
         return -1;

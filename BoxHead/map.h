@@ -2,8 +2,6 @@
 
 #include "stdafx.h"
 
-#define TILE_SIZE 64
-
 // 움직일 수 없는 구역, 화면 상에 그려지지 않지만 맵의 경계선 역할
 #define MAP_NONE 100
 

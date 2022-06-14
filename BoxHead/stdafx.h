@@ -33,4 +33,6 @@
 #define TOWER_TIMER 805
 #define BULLET_TIMER 806
 
+#define TILE_SIZE 64
+
 int Get_distance(POINT a, POINT b);
