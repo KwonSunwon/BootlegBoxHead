@@ -374,13 +374,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             {
                 POINT Virtual_pos = p.Get_Location();
 
-                Virtual_pos.y -= p.Get_Speed();
-
-                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE3)
+                if (Virtual_pos.y - p.Get_Speed() > 0)
                 {
-                    key_buffer[UP] = TRUE;
+                    Virtual_pos.y -= p.Get_Speed();
+
+                    if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE3)
+                    {
+                        key_buffer[UP] = TRUE;
+                    }
                 }
-                
 
             }
 
@@ -388,24 +390,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             {
                 POINT Virtual_pos = p.Get_Location();
 
-                Virtual_pos.y += p.Get_Speed();
-                
-                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE3)
+                if (Virtual_pos.y + p.Get_Speed() < 1280)
                 {
-                    key_buffer[DOWN] = TRUE;
-                }
+                    Virtual_pos.y += p.Get_Speed();
 
+                    if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE3)
+                    {
+                        key_buffer[DOWN] = TRUE;
+                    }
+                }
             }
 
             if (wParam == 'a' || wParam == 'A')
             {
                 POINT Virtual_pos = p.Get_Location();
 
-                Virtual_pos.x -= p.Get_Speed();
-
-                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE3)
+                if (Virtual_pos.x - p.Get_Speed() > 0)
                 {
-                    key_buffer[LEFT] = TRUE;
+                    Virtual_pos.x -= p.Get_Speed();
+
+                    if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE3)
+                    {
+                        key_buffer[LEFT] = TRUE;
+                    }
                 }
             }
 
@@ -413,13 +420,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             {
                 POINT Virtual_pos = p.Get_Location();
 
-                Virtual_pos.x += p.Get_Speed();
-                
-                if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE3)
+                if (Virtual_pos.x + p.Get_Speed() < 960)
                 {
-                    key_buffer[RIGHT] = TRUE;
-                }
+                    Virtual_pos.x += p.Get_Speed();
 
+                    if (map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE1 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE2 || map.get_tile_type(Virtual_pos) == MAP_FLOOR_TYPE3)
+                    {
+                        key_buffer[RIGHT] = TRUE;
+                    }
+                }
             }
 
             if (wParam == 't' || wParam == 'T')
