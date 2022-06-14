@@ -62,7 +62,5 @@ public:
 
     int save(int);
 
-    // test
-    void test_print_file();
-    void test_out_content();
+    RECT get_tile_rect(POINT);
 };

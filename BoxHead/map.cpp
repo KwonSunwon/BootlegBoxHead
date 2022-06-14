@@ -464,11 +464,13 @@ int Map::save(int _id)
     return id;
 }
 
-// test func
-void Map::test_print_file()
+RECT Map::get_tile_rect(POINT pt)
 {
-}
-
-void Map::test_out_content()
-{
+    RECT temp = {
+        pt.x * TILE_SIZE,
+        pt.y * TILE_SIZE,
+        (pt.x + 1) * TILE_SIZE,
+        (pt.y + 1) * TILE_SIZE,
+    };
+    return temp;
 }
