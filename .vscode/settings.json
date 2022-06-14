@@ -1,7 +1,20 @@
 {
   "files.associations": {
-    "vector": "cpp"
-  },
-  "cSpell.words": ["Editer", "newnode", "STDHEALTH", "STDSPEED"],
+    "vector": "cpp",
+    "atomic": "cpp",
+    "ios": "cpp",
+    "system_error": "cpp",
+    "xiosbase": "cpp",
+    "xstring": "cpp"
+},
+  "cSpell.words": [
+    "Editer",
+    "newnode",
+    "Oparate",
+    "ptsz",
+    "STDHEALTH",
+    "STDSPEED",
+    "ttos"
+],
   "C_Cpp.errorSquiggles": "Disabled"
 }

@@ -2,6 +2,13 @@
 
 using namespace std;
 
+string _ttos(wstring value)
+{
+    string temp;
+    temp.assign(value.begin(), value.end());
+    return temp;
+}
+
 Map::Map()
 {
     id = -1;
@@ -83,7 +90,7 @@ void Map::draw(HDC hdc)
             }
             else if (map[i][j] == MAP_WALL_TYPE2)
             {
-                img.Load(TEXT("Wall2.bmp"));
+                img.Load(TEXT("Wall3.bmp"));
                 if (img.IsNull())
                     continue;
                 width = img.GetWidth();
@@ -93,7 +100,7 @@ void Map::draw(HDC hdc)
             }
             else if (map[i][j] == MAP_WALL_TYPE3)
             {
-                img.Load(TEXT("Wall3.bmp"));
+                img.Load(TEXT("Wall2.bmp"));
                 if (img.IsNull())
                     continue;
                 width = img.GetWidth();
@@ -148,7 +155,7 @@ int Map::load(int _id)
 {
     string fileName;
 
-    fileName = to_string(_id) + ".txt";
+    fileName = to_string(_id) + ".map";
     ifstream mapFile;
     mapFile.open(fileName, ios_base::in);
 
@@ -163,6 +170,72 @@ int Map::load(int _id)
             // 잘못된 id
             return -1;
         }
+        mapFile >> in;
+        count.x = stoi(in);
+        mapFile >> in;
+        count.y = stoi(in);
+
+        mapFile >> in;
+        playerSpawn.x = stoi(in);
+        mapFile >> in;
+        playerSpawn.y = stoi(in);
+
+        mapFile >> in;
+        enemySpawn.clear();
+        int enemySpawnSize = stoi(in);
+        for (int i = 0; i < enemySpawnSize; ++i)
+        {
+            POINT temp;
+            mapFile >> in;
+            temp.x = stoi(in);
+            mapFile >> in;
+            temp.y = stoi(in);
+            enemySpawn.push_back(temp);
+        }
+        for (int i = 0; i < 5; ++i)
+        {
+            mapFile >> in;
+            spawnEnemyType[i] = stoi(in);
+        }
+
+        map.clear();
+        map.resize(count.y);
+        for (int i = 0; i < count.y; ++i)
+        {
+            for (int j = 0; j < count.x; ++j)
+            {
+                mapFile >> in;
+                map[i].push_back(stoi(in));
+            }
+        }
+    }
+    else
+    {
+        // 파일이 존재하지 않음
+        return -1;
+    }
+    mapFile.close();
+    return id;
+}
+
+int Map::load(OPENFILENAME OFN)
+{
+    string fileName;
+
+    fileName = _ttos(OFN.lpstrFile);
+    cout << fileName << "\n";
+    ifstream mapFile;
+    mapFile.open(fileName, ios_base::in);
+
+    string in;
+
+    if (mapFile.is_open())
+    {
+        mapFile >> in;
+        id = stoi(in);
+
+        cout << id << "/n";
+
         mapFile >> in;
         count.x = stoi(in);
         mapFile >> in;
@@ -354,7 +427,7 @@ int Map::save(int _id)
 
     id = _id;
 
-    fileName = to_string(id) + ".txt";
+    fileName = to_string(id) + ".map";
     ofstream newMapFile;
     newMapFile.open(fileName, ios_base::out);
     if (newMapFile.is_open())
