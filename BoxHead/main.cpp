@@ -880,35 +880,56 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
              // print bullet
 
              // print bullet
-            hBrush = CreateSolidBrush(RGB(255, 127, 0));
-            oldBrush = (HBRUSH)SelectObject(MemDC, hBrush);
+           
 
             for (int i = 0; i < pistol_count; i++)
             {
+                hBrush = CreateSolidBrush(RGB(255, 127, 0));
+                oldBrush = (HBRUSH)SelectObject(MemDC, hBrush);
+
                 b_pos = pistol[i].Get_Location();
                 Rectangle(MemDC, b_pos.x - 3, b_pos.y - 3, b_pos.x + 3, b_pos.y + 3);
+
+                SelectObject(MemDC, oldBrush);
+                DeleteObject(hBrush);
             }
 
             for (int i = 0; i < shotgun_count; i++)
             {
+                hBrush = CreateSolidBrush(RGB(255, 0, 0));
+                oldBrush = (HBRUSH)SelectObject(MemDC, hBrush);
+
                 b_pos = shotgun[i].Get_Location();
                 Rectangle(MemDC, b_pos.x - 3, b_pos.y - 3, b_pos.x + 3, b_pos.y + 3);
+               
+                SelectObject(MemDC, oldBrush);
+                DeleteObject(hBrush);
             }
 
             for (int i = 0; i < rifle_count; i++)
             {
+                hBrush = CreateSolidBrush(RGB(0, 0, 255));
+                oldBrush = (HBRUSH)SelectObject(MemDC, hBrush);
+
                 b_pos = rifle[i].Get_Location();
                 Rectangle(MemDC, b_pos.x - 3, b_pos.y - 3, b_pos.x + 3, b_pos.y + 3);
+
+                SelectObject(MemDC, oldBrush);
+                DeleteObject(hBrush);
             }
 
             if (sniper_count == MAX_SNIPER)
             {
+                hBrush = CreateSolidBrush(RGB(0, 255, 0));
+                oldBrush = (HBRUSH)SelectObject(MemDC, hBrush);
+
                 b_pos = sniper.Get_Location();
                 Rectangle(MemDC, b_pos.x - 3, b_pos.y - 3, b_pos.x + 3, b_pos.y + 3);
+
+                SelectObject(MemDC, oldBrush);
+                DeleteObject(hBrush);
             }
 
-             SelectObject(MemDC, oldBrush);
-             DeleteObject(hBrush);
         }
 
         if (phase == PHASE_EDIT)
