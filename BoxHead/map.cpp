@@ -286,6 +286,11 @@ int Map::load(OPENFILENAME OFN)
 
 int Map::get_tile_type(POINT _pos)
 {
+    if (_pos.x > count.x || _pos.y > count.y)
+    {
+        // ¸Ê Å©±â ¹üÀ§ ¹ş¾î³­ ÁÂÇ¥
+        return -1;
+    }
     return map[_pos.y][_pos.x];
 }
 POINT Map::get_player_spawn()
