@@ -879,7 +879,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             // print enemy
             v = map.get_enemy_type();
 
-            if (v[0])
+            if (v[0]&& Mob1.enemy_count > 0)
             {
                  e_tmp = Mob1.link;
 
@@ -893,7 +893,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                  }
             }
 
-            if (v[1])
+            if (v[1] && Mob2.enemy_count > 0)
             {
                 e_tmp = Mob2.link;
 
@@ -907,7 +907,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                  }
              }
 
-             if (v[2])
+             if (v[2] && Mob3.enemy_count > 0)
              {
                  e_tmp = Mob3.link;
 
@@ -921,7 +921,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                  }
              }
 
-             if (v[3])
+             if (v[3] && Mob4.enemy_count > 0)
              {
                  e_tmp = Mob4.link;
 
@@ -935,7 +935,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                  }
              }
 
-             if (v[4])
+             if (v[4] && Boss.enemy_count > 0)
              {
                  e_tmp = Boss.link;
 
@@ -1064,7 +1064,7 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
             while (1)
             {
                 
-                select = rand() % 4;
+                select = rand() % 5;
                 if (v[0] && select == 0)
                 {
                     tmp = Mob1.link;
@@ -1126,6 +1126,22 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
                     newnode->Set_Image(hBitmap_tmp);
 
                     Mob4.enemy_count++;
+                    break;
+                }
+
+                if (v[4] && select == 4)
+                {
+                    tmp = Boss.link;
+
+                    newnode->Set_link(NULL);
+
+                    newnode->Init_enemy(BOSS);
+
+                    newnode->Set_Location(map.get_enemy_spawn()[0]);
+
+                    newnode->Set_Image(hBitmap_tmp);
+
+                    Boss.enemy_count++;
                     break;
                 }
             }
