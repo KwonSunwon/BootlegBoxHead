@@ -31,8 +31,4 @@ public:
     void Set_Weapon(int);
     int Get_Weapon_id();
 
-    void Shot_Pistol(Bullet* , int);
-    void Shot_Rifle(Bullet* ,int);
-    void Shot_Shotgun(Bullet* ,int);
-    void Shot_Sniper(Bullet* ,int);
 };

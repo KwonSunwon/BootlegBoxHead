@@ -40,48 +40,30 @@ void Bullet::Deliver_damage(Enemy* _target)
 	}
 }
 
-void Bullet::Set_Llink(Bullet* prev)
-{
-	Llink = prev;
-}
-
-void Bullet::Set_Rlink(Bullet* next)
-{
-	Rlink = next;
-}
-
-void Bullet::Set_Type(int _type)
-{
-	type = _type;
-
-	switch (_type)
-	{
-	case STD_BULLET:
-		knockback = 5;
-		break;
-	case SNIPE_BULLET:
-		knockback = 10;
-		break;
-	case SHOTGUN_BULLET:
-		knockback = 25;
-		break;
-	case RIFLE_BULLET:
-		knockback = 2;
-		break;
-	}
-}
-
 void Bullet::Set_Location(POINT _location)
 {
 	location = _location;
 }
 
-Bullet* Bullet::Get_Rlink() { return Rlink; }
-
-Bullet* Bullet::Get_Llink() { return Llink; }
-
 int Bullet::Get_way() { return way; }
 
 POINT Bullet::Get_Location() { return location; }
 
-int Bullet::Get_type() { return type; }
+void Bullet::Move()
+{
+	switch (way)
+	{
+	case IDB_UP:
+		location.y -= BULLET_SPEED;
+		break;
+	case IDB_DOWN:
+		location.y += BULLET_SPEED;
+		break;
+	case IDB_LEFT:
+		location.x -= BULLET_SPEED;
+		break;
+	case IDB_RIGHT:
+		location.x += BULLET_SPEED;
+		break;
+	}
+}

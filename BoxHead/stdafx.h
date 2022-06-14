@@ -23,7 +23,7 @@
 
 #define MOB_TIMELAB 450
 #define TOWER_TIMELAB 2000
-#define BULLET_TIMELAB 0.5
+#define BULLET_TIMELAB 10
 
 #define MOB1_TIMER 800
 #define MOB2_TIMER 801
