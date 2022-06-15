@@ -965,12 +965,13 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
     if (spawn_count % ENEMY_SPAWN == 0 && enemy_count < ENEMY_MAXCOUNT)
     {
-        selec = rand() % 5;
 
         printf("spawner on\n");
         
         while (1)
         {
+            selec = rand() % 5;
+
             if (v[0] && selec == 0)
             {
                 Mob[enemy_count].Init_enemy(MOB1);
@@ -1249,7 +1250,6 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
                     enemy_count--;
                 }
 
-                sniper_count--;
             }
         }
     }
