@@ -599,7 +599,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                     if (pistol_count < MAX_PISTOL)
                     {
                         pistol[pistol_count].Shot_bullet(PISTOL_DAMAGE, IDB_LEFT, p.Get_Location());
-
+                        pistol[pistol_count].Set_knockback(5);
                         pistol_count++;
                     }
                     break;
@@ -607,7 +607,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                     if (rifle_count < MAX_RIFLE)
                     {
                         rifle[rifle_count].Shot_bullet(RIFLE_DAMAGE, IDB_LEFT, p.Get_Location());
-
+                        rifle[rifle_count].Set_knockback(3);
                         rifle_count++;
                     }
                     break;
@@ -615,7 +615,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                     if (shotgun_count < MAX_SHOTGUN)
                     {
                         shotgun[shotgun_count].Shot_bullet(SHOTGUN_DAMAGE, IDB_LEFT, p.Get_Location());
-
+                        shotgun[shotgun_count].Set_knockback(15);
                         shotgun_count++;
                     }
                     break;
@@ -623,7 +623,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                     if (sniper_count < MAX_SNIPER)
                     {
                         sniper.Shot_bullet(SNIPER_DAMAGE, IDB_LEFT, p.Get_Location());
-
+                        sniper.Set_knockback(15);
                         sniper_count++;
                     }
                     break;
@@ -638,7 +638,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                     if (pistol_count < MAX_PISTOL)
                     {
                         pistol[pistol_count].Shot_bullet(PISTOL_DAMAGE, IDB_RIGHT, p.Get_Location());
-
+                        pistol[pistol_count].Set_knockback(5);
                         pistol_count++;
                     }
                     break;
@@ -646,7 +646,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                     if (rifle_count < MAX_RIFLE)
                     {
                         rifle[rifle_count].Shot_bullet(RIFLE_DAMAGE, IDB_RIGHT, p.Get_Location());
-
+                        rifle[rifle_count].Set_knockback(3);
                         rifle_count++;
                     }
                     break;
@@ -654,7 +654,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                     if (shotgun_count < MAX_SHOTGUN)
                     {
                         shotgun[shotgun_count].Shot_bullet(SHOTGUN_DAMAGE, IDB_RIGHT, p.Get_Location());
-
+                        shotgun[shotgun_count].Set_knockback(15);
                         shotgun_count++;
                     }
                     break;
@@ -662,7 +662,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                     if (sniper_count < MAX_SNIPER)
                     {
                         sniper.Shot_bullet(SNIPER_DAMAGE, IDB_RIGHT, p.Get_Location());
-
+                        sniper.Set_knockback(15);
                         sniper_count++;
                     }
                     break;
@@ -677,7 +677,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                     if (pistol_count < MAX_PISTOL)
                     {
                         pistol[pistol_count].Shot_bullet(PISTOL_DAMAGE, IDB_UP, p.Get_Location());
-
+                        pistol[pistol_count].Set_knockback(5);
                         pistol_count++;
                     }
                     break;
@@ -685,7 +685,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                     if (rifle_count < MAX_RIFLE)
                     {
                         rifle[rifle_count].Shot_bullet(RIFLE_DAMAGE, IDB_UP, p.Get_Location());
-
+                        rifle[rifle_count].Set_knockback(3);
                         rifle_count++;
                     }
                     break;
@@ -693,7 +693,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                     if (shotgun_count < MAX_SHOTGUN)
                     {
                         shotgun[shotgun_count].Shot_bullet(SHOTGUN_DAMAGE, IDB_UP, p.Get_Location());
-
+                        shotgun[shotgun_count].Set_knockback(15);
                         shotgun_count++;
                     }
                     break;
@@ -701,7 +701,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                     if (sniper_count < MAX_SNIPER)
                     {
                         sniper.Shot_bullet(SNIPER_DAMAGE, IDB_UP, p.Get_Location());
-
+                        sniper.Set_knockback(15);
                         sniper_count++;
                     }
                     break;
@@ -716,7 +716,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                     if (pistol_count < MAX_PISTOL)
                     {
                         pistol[pistol_count].Shot_bullet(PISTOL_DAMAGE, IDB_DOWN, p.Get_Location());
-
+                        pistol[pistol_count].Set_knockback(5);
                         pistol_count++;
                     }
                     break;
@@ -724,7 +724,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                     if (rifle_count < MAX_RIFLE)
                     {
                         rifle[rifle_count].Shot_bullet(RIFLE_DAMAGE, IDB_DOWN, p.Get_Location());
-
+                        rifle[rifle_count].Set_knockback(3);
                         rifle_count++;
                     }
                     break;
@@ -732,7 +732,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                     if (shotgun_count < MAX_SHOTGUN)
                     {
                         shotgun[shotgun_count].Shot_bullet(SHOTGUN_DAMAGE, IDB_DOWN, p.Get_Location());
-
+                        shotgun[shotgun_count].Set_knockback(15);
                         shotgun_count++;
                     }
                     break;
@@ -740,7 +740,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                     if (sniper_count < MAX_SNIPER)
                     {
                         sniper.Shot_bullet(SNIPER_DAMAGE, IDB_DOWN, p.Get_Location());
-
+                        sniper.Set_knockback(15);
                         sniper_count++;
                     }
                     break;
@@ -1111,7 +1111,7 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
             if (b_pos.x > (e_pos.x - OBJECT_X_SIZE / 2) && b_pos.x < (e_pos.x + OBJECT_X_SIZE / 2) && b_pos.y >(e_pos.y - OBJECT_Y_SIZE / 2) && b_pos.y < (e_pos.y + OBJECT_Y_SIZE / 2))
             {
-                pistol[i].Deliver_damage(Mob[e]);
+                pistol[i].Deliver_damage(&Mob[e]);
 
                 for (int j = i; j < pistol_count - 1; j++)
                 {
@@ -1155,7 +1155,7 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
             if (b_pos.x > (e_pos.x - OBJECT_X_SIZE / 2) && b_pos.x < (e_pos.x + OBJECT_X_SIZE / 2) && b_pos.y >(e_pos.y - OBJECT_Y_SIZE / 2) && b_pos.y < (e_pos.y + OBJECT_Y_SIZE / 2))
             {
-                shotgun[i].Deliver_damage(Mob[e]);
+                shotgun[i].Deliver_damage(&Mob[e]);
 
                 for (int j = i; j < shotgun_count - 1; j++)
                 {
@@ -1199,7 +1199,7 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
             if (b_pos.x > (e_pos.x - OBJECT_X_SIZE / 2) && b_pos.x < (e_pos.x + OBJECT_X_SIZE / 2) && b_pos.y >(e_pos.y - OBJECT_Y_SIZE / 2) && b_pos.y < (e_pos.y + OBJECT_Y_SIZE / 2))
             {
-                rifle[i].Deliver_damage(Mob[e]);
+                rifle[i].Deliver_damage(&Mob[e]);
 
                 for (int j = i; j < pistol_count - 1; j++)
                 {
@@ -1238,7 +1238,7 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
             if (b_pos.x > (e_pos.x - OBJECT_X_SIZE / 2) && b_pos.x < (e_pos.x + OBJECT_X_SIZE / 2) && b_pos.y >(e_pos.y - OBJECT_Y_SIZE / 2) && b_pos.y < (e_pos.y + OBJECT_Y_SIZE / 2))
             {
-                sniper.Deliver_damage(Mob[e]);
+                sniper.Deliver_damage(&Mob[e]);
 
                 if (Mob[e].Get_Health() < 0)
                 {

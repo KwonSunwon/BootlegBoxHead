@@ -20,7 +20,7 @@ private:
 	POINT location;
 public:
 	void Shot_bullet(int, int, POINT);
-	void Deliver_damage(Enemy);
+	void Deliver_damage(Enemy* );
 
 	void Set_Location(POINT);
 
@@ -28,4 +28,6 @@ public:
 	POINT Get_Location();
 
 	void Move();
+
+	void Set_knockback(int);
 };
