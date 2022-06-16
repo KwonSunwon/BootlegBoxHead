@@ -165,15 +165,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         tower_sniper_count = 0;
         tower_pos_set = IDB_UP;
         enemy_count = 0;
-
-        p_bitmap = (HBITMAP)LoadImage(g_hInst, TEXT("player.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-        mob1_bitmap = (HBITMAP)LoadImage(g_hInst, TEXT("Monster1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-        mob2_bitmap = (HBITMAP)LoadImage(g_hInst, TEXT("Monster2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-        mob3_bitmap = (HBITMAP)LoadImage(g_hInst, TEXT("Monster3.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-        mob4_bitmap = (HBITMAP)LoadImage(g_hInst, TEXT("Monster4.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-        boss_bitmap = (HBITMAP)LoadImage(g_hInst, TEXT("Boss.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-
-
         break;
 
     case WM_LBUTTONDOWN:
@@ -961,12 +952,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_DESTROY:
-        DeleteObject(p_bitmap);
-        DeleteObject(mob1_bitmap);
-        DeleteObject(mob2_bitmap);
-        DeleteObject(mob3_bitmap);
-        DeleteObject(mob4_bitmap);
-        DeleteObject(boss_bitmap);
+        
         PostQuitMessage(0);
         return 0;
     }
