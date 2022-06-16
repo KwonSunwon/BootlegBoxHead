@@ -166,14 +166,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         tower_pos_set = IDB_UP;
         enemy_count = 0;
 
-        p_bitmap = (HBITMAP)LoadImage(g_hInst, TEXT("player.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-        mob1_bitmap = (HBITMAP)LoadImage(g_hInst, TEXT("Monster1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-        mob2_bitmap = (HBITMAP)LoadImage(g_hInst, TEXT("Monster2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-        mob3_bitmap = (HBITMAP)LoadImage(g_hInst, TEXT("Monster3.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-        mob4_bitmap = (HBITMAP)LoadImage(g_hInst, TEXT("Monster4.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-        boss_bitmap = (HBITMAP)LoadImage(g_hInst, TEXT("Boss.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-
-
         break;
 
     case WM_LBUTTONDOWN:
@@ -290,6 +282,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 phase = PHASE_PLAY;
             }
 
+<<<<<<< HEAD
             if (phase == PHASE_PLAY)
             {
                 spawn_count = 0;
@@ -304,6 +297,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 SetTimer(hWnd, ENEMY_TIMER, ENEMY_TIMELAB, Enemy_spawn);
                 // SetTimer(hWnd, TOWER_TIMER, TOWER_TIMELAB, Tower_Oparate);
             }
+=======
+            DeleteObject(hBitmap_tmp);
+>>>>>>> parent of 31f556d (x)
 
             InvalidateRect(hWnd, NULL, FALSE);
         }
@@ -961,12 +957,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_DESTROY:
-        DeleteObject(p_bitmap);
-        DeleteObject(mob1_bitmap);
-        DeleteObject(mob2_bitmap);
-        DeleteObject(mob3_bitmap);
-        DeleteObject(mob4_bitmap);
-        DeleteObject(boss_bitmap);
         PostQuitMessage(0);
         return 0;
     }
@@ -1144,8 +1134,6 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
                 if (Mob[e].Get_Health() < 0)
                 {
-                    printf("%d\n", Mob[e].Get_Health());
-
                     for (int j = e; j < enemy_count - 1; j++)
                     {
                         Mob[j] = Mob[j + 1];
@@ -1185,13 +1173,11 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
                 for (int j = i; j < shotgun_count - 1; j++)
                 {
-                    printf("%d\n", Mob[e].Get_Health());
                     shotgun[j] = shotgun[j + 1];
                 }
 
                 if (Mob[e].Get_Health() < 0)
                 {
-                    printf("%d\n", Mob[e].Get_Health());
                     for (int j = e; j < enemy_count - 1; j++)
                     {
                         Mob[j] = Mob[j + 1];
@@ -1236,7 +1222,6 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
                 if (Mob[e].Get_Health() < 0)
                 {
-                    printf("%d\n", Mob[e].Get_Health());
                     for (int j = e; j < enemy_count - 1; j++)
                     {
                         Mob[j] = Mob[j + 1];
