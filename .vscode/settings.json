@@ -6,15 +6,16 @@
     "system_error": "cpp",
     "xiosbase": "cpp",
     "xstring": "cpp"
-},
+  },
   "cSpell.words": [
     "Editer",
+    "msimg",
     "newnode",
     "Oparate",
     "ptsz",
     "STDHEALTH",
     "STDSPEED",
     "ttos"
-],
+  ],
   "C_Cpp.errorSquiggles": "Disabled"
 }

@@ -14,6 +14,13 @@
 #define IDB_WALL                        108
 #define IDB_FLORR3                      109
 #define IDB_FLOOR3                      109
+#define IDB_BOSS                        112
+#define IDB_MONSTER1                    113
+#define IDB_MONSTER2                    114
+#define IDB_MONSTER3                    115
+#define IDB_MONSTER4                    116
+#define IDB_BITMAP7                     117
+#define IDB_PLAYER                      117
 #define IDC_FLOOR2                      1001
 #define IDC_FLOOR3                      1002
 #define IDC_PLAYER                      1003
@@ -39,7 +46,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        112
+#define _APS_NEXT_RESOURCE_VALUE        118
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1016
 #define _APS_NEXT_SYMED_VALUE           101

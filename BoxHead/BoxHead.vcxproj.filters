@@ -90,5 +90,23 @@
     <Image Include="wall3.bmp">
       <Filter>리소스 파일</Filter>
     </Image>
+    <Image Include="Boss.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Monster1.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Monster2.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Monster3.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Monster4.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="player.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
   </ItemGroup>
 </Project>

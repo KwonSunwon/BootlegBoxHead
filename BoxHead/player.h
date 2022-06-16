@@ -30,5 +30,4 @@ public:
 
     void Set_Weapon(int);
     int Get_Weapon_id();
-
 };

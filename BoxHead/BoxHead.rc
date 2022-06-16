@@ -128,6 +128,18 @@ IDB_WALL                BITMAP                  "Wall.bmp"
 
 IDB_FLOOR3              BITMAP                  "Floor3.bmp"
 
+IDB_BOSS                BITMAP                  "Boss.bmp"
+
+IDB_MONSTER1            BITMAP                  "Monster1.bmp"
+
+IDB_MONSTER2            BITMAP                  "Monster2.bmp"
+
+IDB_MONSTER3            BITMAP                  "Monster3.bmp"
+
+IDB_MONSTER4            BITMAP                  "Monster4.bmp"
+
+IDB_PLAYER              BITMAP                  "player.bmp"
+
 #endif    // 한국어(대한민국) resources
 /////////////////////////////////////////////////////////////////////////////
 

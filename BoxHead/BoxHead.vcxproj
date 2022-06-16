@@ -176,9 +176,15 @@
     <ResourceCompile Include="BoxHead.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Boss.bmp" />
     <Image Include="Floor1.bmp" />
     <Image Include="Floor2.bmp" />
     <Image Include="Floor3.bmp" />
+    <Image Include="Monster1.bmp" />
+    <Image Include="Monster2.bmp" />
+    <Image Include="Monster3.bmp" />
+    <Image Include="Monster4.bmp" />
+    <Image Include="player.bmp" />
     <Image Include="Wall.bmp" />
     <Image Include="wall2.bmp" />
     <Image Include="wall3.bmp" />
