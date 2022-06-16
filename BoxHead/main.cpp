@@ -14,7 +14,7 @@ int phase, spawn_count, difficulty;
 BOOL key_buffer[4];
 Tower T[MAX_TOWER_COUNT];
 int tower_count, tower_way_set, tower_id_set ,tower_pos_set;
-HBITMAP hBitmap_tmp;
+HBITMAP p_bitmap, mob1_bitmap, mob2_bitmap, mob3_bitmap, mob4_bitmap, boss_bitmap;
 Bullet shotgun[MAX_SHOTGUN], pistol[MAX_PISTOL], rifle[MAX_RIFLE], sniper;
 Bullet tower_rifle[MAX_TOWERRIFLE], tower_sniper;
 int shotgun_count, pistol_count, rifle_count, sniper_count;
@@ -162,6 +162,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         tower_pos_set = IDB_UP;
         enemy_count = 0;
 
+        p_bitmap = (HBITMAP)LoadImage(g_hInst, TEXT("player.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+        mob1_bitmap = (HBITMAP)LoadImage(g_hInst, TEXT("Monster1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+        mob2_bitmap = (HBITMAP)LoadImage(g_hInst, TEXT("Monster2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+        mob3_bitmap = (HBITMAP)LoadImage(g_hInst, TEXT("Monster3.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+        mob4_bitmap = (HBITMAP)LoadImage(g_hInst, TEXT("Monster4.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+        boss_bitmap = (HBITMAP)LoadImage(g_hInst, TEXT("Boss.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+
+
         break;
 
     case WM_LBUTTONDOWN:
@@ -202,8 +210,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 spawn_count = 0;
                 p.Set_Location(map.get_player_spawn());
 
-                hBitmap_tmp = (HBITMAP)LoadImage(g_hInst, TEXT("tmp_p.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-                p.Set_Image(hBitmap_tmp);
+                p.Set_Image(p_bitmap);
                 p.Set_Weapon(PISTOL);
 
                 SetTimer(hWnd, BULLET_TIMER, BULLET_TIMELAB, Bullet_fly);
@@ -222,8 +229,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 map.load(200);
                 spawn_count = 0;
                 p.Set_Location(map.get_player_spawn());
-                hBitmap_tmp = (HBITMAP)LoadImage(g_hInst, TEXT("tmp_p.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-                p.Set_Image(hBitmap_tmp);
+             
+                p.Set_Image(p_bitmap);
                 p.Set_Weapon(PISTOL);
 
                 SetTimer(hWnd, BULLET_TIMER, BULLET_TIMELAB, Bullet_fly);
@@ -243,8 +250,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 spawn_count = 0;
                 p.Set_Location(map.get_player_spawn());
 
-                hBitmap_tmp = (HBITMAP)LoadImage(g_hInst, TEXT("tmp_p.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-                p.Set_Image(hBitmap_tmp);
+                p.Set_Image(p_bitmap);
                 p.Set_Weapon(PISTOL);
 
                 SetTimer(hWnd, BULLET_TIMER, BULLET_TIMELAB, Bullet_fly);
@@ -284,8 +290,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
                 phase = PHASE_PLAY;
             }
-
-            DeleteObject(hBitmap_tmp);
 
             InvalidateRect(hWnd, NULL, FALSE);
         }
@@ -823,16 +827,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             // Player_move();
 
             // print player
-            //SelectObject(PrintDC, p.Get_Image());
-            //StretchBlt(MemDC, p.Get_Location().x - OBJECT_X_SIZE / 2, p.Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, p.Get_Info().bmWidth, p.Get_Info().bmHeight, SRCCOPY);
-            Rectangle(MemDC, p.Get_Location().x - OBJECT_X_SIZE / 2, p.Get_Location().y - OBJECT_Y_SIZE / 2, p.Get_Location().x + OBJECT_X_SIZE / 2, p.Get_Location().y + OBJECT_Y_SIZE / 2);
+            SelectObject(PrintDC, p.Get_Image());
+            StretchBlt(MemDC, p.Get_Location().x - OBJECT_X_SIZE / 2, p.Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, p.Get_Info().bmWidth, p.Get_Info().bmHeight, SRCCOPY);
             
             // print enemy
            for (int i = 0; i < enemy_count; i++)
            {
                b_pos = Mob[i].Get_Location();
 
-               Rectangle(MemDC, b_pos.x - OBJECT_X_SIZE / 2, b_pos.y - OBJECT_Y_SIZE / 2, b_pos.x + OBJECT_X_SIZE / 2, b_pos.y + OBJECT_Y_SIZE / 2);
+               SelectObject(PrintDC, Mob[i].Get_Image());
+               StretchBlt(MemDC, Mob[i].Get_Location().x - OBJECT_X_SIZE / 2, Mob[i].Get_Location().y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE, PrintDC, 0, 0, Mob[i].Get_Info().bmWidth, Mob[i].Get_Info().bmHeight, SRCCOPY);
+               
            }
 
 
@@ -946,6 +951,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_DESTROY:
+        DeleteObject(p_bitmap);
+        DeleteObject(mob1_bitmap);
+        DeleteObject(mob2_bitmap);
+        DeleteObject(mob3_bitmap);
+        DeleteObject(mob4_bitmap);
+        DeleteObject(boss_bitmap);
         PostQuitMessage(0);
         return 0;
     }
@@ -975,6 +986,7 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
             if (v[0] && selec == 0)
             {
                 Mob[enemy_count].Init_enemy(MOB1);
+                Mob[enemy_count].Set_Image(mob1_bitmap);
                 printf("Mob1 spawn\n");
                 break;
             }
@@ -982,6 +994,7 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
             if (v[1] && selec == 1)
             {
                 Mob[enemy_count].Init_enemy(MOB2);
+                Mob[enemy_count].Set_Image(mob2_bitmap);
                 printf("Mob2 spawn\n");
                 break;
             }
@@ -989,6 +1002,7 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
             if (v[2] && selec == 2)
             {
                 Mob[enemy_count].Init_enemy(MOB3);
+                Mob[enemy_count].Set_Image(mob3_bitmap);
                 printf("Mob3 spawn\n");
                 break;
             }
@@ -996,6 +1010,7 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
             if (v[3] && selec == 3)
             {
                 Mob[enemy_count].Init_enemy(MOB4);
+                Mob[enemy_count].Set_Image(mob4_bitmap);
                 printf("Mob4 spawn\n");
                 break;
             }
@@ -1003,6 +1018,7 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
             if (v[4] && selec == 4)
             {
                 Mob[enemy_count].Init_enemy(BOSS);
+                Mob[enemy_count].Set_Image(boss_bitmap);
                 printf("Boss spawn\n");
                 break;
             }
@@ -1120,6 +1136,8 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
                 if (Mob[e].Get_Health() < 0)
                 {
+                    printf("%d\n", Mob[e].Get_Health());
+
                     for (int j = e; j < enemy_count - 1; j++)
                     {
                         Mob[j] = Mob[j + 1];
@@ -1159,11 +1177,13 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
                 for (int j = i; j < shotgun_count - 1; j++)
                 {
+                    printf("%d\n", Mob[e].Get_Health());
                     shotgun[j] = shotgun[j + 1];
                 }
 
                 if (Mob[e].Get_Health() < 0)
                 {
+                    printf("%d\n", Mob[e].Get_Health());
                     for (int j = e; j < enemy_count - 1; j++)
                     {
                         Mob[j] = Mob[j + 1];
@@ -1208,6 +1228,7 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
                 if (Mob[e].Get_Health() < 0)
                 {
+                    printf("%d\n", Mob[e].Get_Health());
                     for (int j = e; j < enemy_count - 1; j++)
                     {
                         Mob[j] = Mob[j + 1];
