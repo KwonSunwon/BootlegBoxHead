@@ -51,6 +51,15 @@ BITMAP Object::Get_Info()
     return info;
 }
 
+void Object::draw(HDC hdc)
+{
+    HDC mdc = CreateCompatibleDC(hdc);
+    SelectObject(mdc, image);
+    TransparentBlt(hdc, location.x - OBJECT_X_SIZE / 2, location.y - OBJECT_Y_SIZE / 2, OBJECT_X_SIZE, OBJECT_Y_SIZE,
+                   mdc, 0, 0, OBJECT_X_SIZE, OBJECT_Y_SIZE, RGB(255, 255, 255));
+    DeleteDC(mdc);
+}
+
 RECT Object::Get_Rect()
 {
     RECT temp = {

@@ -26,6 +26,8 @@ public:
     void Move_up() {}
     void Move_down() {}
 
+    void draw(HDC);
+
     void Set_Image(HBITMAP);
     void Set_Info();
     void Set_Location(POINT);

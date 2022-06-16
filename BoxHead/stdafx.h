@@ -2,6 +2,8 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
+#pragma comment(lib, "msimg32.lib")
+
 #include <iostream>
 #include <tchar.h>
 #include <windows.h>
