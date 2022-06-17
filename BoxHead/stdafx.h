@@ -15,6 +15,8 @@
 #include <time.h>
 #include <cstdlib>
 
+#define RENDER 10
+
 #define PHASE_MENU 0
 #define PHASE_LOAD 1
 #define PHASE_PLAY 2

@@ -17,6 +17,9 @@
 #define SHOTGUN_DAMAGE 40
 #define SNIPER_DAMAGE 90
 
+#define PLAYER_MOVE 10000
+#define PLAYER_TIMER 10
+
 class Player : public Object
 {
 private:

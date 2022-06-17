@@ -440,6 +440,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 // }
             }
 
+            Player_move();
+            Player_move();
+
             if (wParam == '1')
             {
                 p.Set_Weapon(PISTOL);
@@ -549,8 +552,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 }
             }
             */
-            Player_move();
-            Player_move();
             InvalidateRect(hWnd, NULL, FALSE);
         }
         break;
