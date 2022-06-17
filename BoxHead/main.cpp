@@ -7,6 +7,7 @@
 // map global
 Map map;
 int g_mapEditSelector;
+int mapId;
 
 // Object global
 Player p;
@@ -33,7 +34,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 // void CALLBACK Tower_Oparate(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
+
 BOOL CALLBACK MapEditProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK CustomProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
 void Player_move();
 // void BOMB_target(Tower);
 
@@ -227,19 +230,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             {
                 // map �ҷ��� �ڿ�
 
-                memset(&OFN, 0, sizeof(OPENFILENAME));
-                OFN.lStructSize = sizeof(OPENFILENAME);
-                OFN.hwndOwner = hWnd;
-                OFN.lpstrFilter = filter;
-                OFN.lpstrFile = lpstrFile;
-                OFN.lpstrFileTitle = lpstrFileTitle;
-                OFN.nMaxFile = 256;
-                OFN.lpstrInitialDir = L".";
+                // memset(&OFN, 0, sizeof(OPENFILENAME));
+                // OFN.lStructSize = sizeof(OPENFILENAME);
+                // OFN.hwndOwner = hWnd;
+                // OFN.lpstrFilter = filter;
+                // OFN.lpstrFile = lpstrFile;
+                // OFN.lpstrFileTitle = lpstrFileTitle;
+                // OFN.nMaxFile = 256;
+                // OFN.lpstrInitialDir = L".";
 
-                if (GetOpenFileName(&OFN) != 0)
-                {
-                    map.load(OFN);
-                }
+                // if (GetOpenFileName(&OFN) != 0)
+                // {
+                //     map.load(OFN);
+                // }
+
+                mapId = -1;
+                DialogBox(g_hInst, MAKEINTRESOURCE(IDD_CUSTOM), hWnd, (DLGPROC)CustomProc);
+                map.load(mapId);
 
                 phase = PHASE_PLAY;
             }
@@ -274,7 +281,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
             {
                 if (map.set_enemy_spawn(mouse_pos) == 4)
                 {
-                    // ??û ½ºÆù ??§Ä¡ 4°³ ÃÊ°ú ÁöÁ¤ ºÒ°¡´É
                 }
             }
             else if (g_mapEditSelector == MAP_REMOVE)
@@ -988,6 +994,7 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
             }
         }
 
+        srand(time(NULL));
         int pos = map.get_enemy_spawn().size();
         Mob[enemy_count].Set_Location(map.get_enemy_spawn()[rand() % pos]);
 
@@ -1457,6 +1464,34 @@ void BOMB_target(Tower _tower)
     }
 }
 */
+
+BOOL CALLBACK CustomProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
+{
+    HWND hWnd = GetParent(hDlg);
+
+    switch (iMsg)
+    {
+    case WM_INITDIALOG:
+        break;
+
+    case WM_COMMAND:
+        switch (LOWORD(wParam))
+        {
+        case IDOK: // Save
+            mapId = -1;
+            mapId = GetDlgItemInt(hDlg, IDC_EDIT1, NULL, TRUE);
+            if (mapId != -1)
+                EndDialog(hDlg, 0);
+            break;
+        }
+        break;
+
+    case WM_CLOSE:
+        EndDialog(hDlg, 0);
+        break;
+    }
+    return 0;
+}
 
 int Get_distance(POINT a, POINT b)
 {

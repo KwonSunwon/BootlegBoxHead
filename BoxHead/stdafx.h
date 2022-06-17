@@ -12,6 +12,8 @@
 #include <string>
 #include <atlImage.h>
 #include <math.h>
+#include <time.h>
+#include <cstdlib>
 
 #define PHASE_MENU 0
 #define PHASE_LOAD 1

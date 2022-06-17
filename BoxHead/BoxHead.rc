@@ -80,6 +80,16 @@ BEGIN
     CONTROL         "Boss",IDC_TYPE5,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,85,148,31,10
 END
 
+IDD_CUSTOM DIALOGEX 0, 0, 149, 40
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_EDIT1,7,19,80,14,ES_AUTOHSCROLL
+    LTEXT           "ID 입력(숫자만 입력)",IDC_CUSTOM,7,6,69,8
+    DEFPUSHBUTTON   "확인",IDOK,92,19,50,14
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -96,6 +106,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 169
     END
+
+    IDD_CUSTOM, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 142
+        TOPMARGIN, 6
+        BOTTOMMARGIN, 33
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -106,6 +124,11 @@ END
 //
 
 IDD_MAPEDIT AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_CUSTOM AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
