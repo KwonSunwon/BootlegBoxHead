@@ -15,29 +15,7 @@ void Bullet::Deliver_damage(Enemy* _target)
 	
 	_target->Get_Damage(damage);
 
-	switch (way)
-	{
-	case IDB_UP:
-		e_pos.y -= knockback;
-
-		_target->Set_Location(e_pos);
-		break;
-	case IDB_DOWN:
-		e_pos.y += knockback;
-
-		_target->Set_Location(e_pos);
-		break;
-	case IDB_LEFT:
-		e_pos.x -= knockback;
-
-		_target->Set_Location(e_pos);
-		break;
-	case IDB_RIGHT:
-		e_pos.x += knockback;
-
-		_target->Set_Location(e_pos);
-		break;
-	}
+	_target->knock(knockback, way);
 }
 
 void Bullet::Set_Location(POINT _location)

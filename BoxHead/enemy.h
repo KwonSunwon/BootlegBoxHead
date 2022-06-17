@@ -52,4 +52,5 @@ public:
     int Get_id();
 
     void Init_enemy(int);
+    void knock(int,int);
 };

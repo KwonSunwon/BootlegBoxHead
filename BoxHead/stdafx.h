@@ -23,7 +23,7 @@
 #define LEFT 2
 #define RIGHT 3
 
-#define MOB_TIMELAB 450
+#define MOB_TIMELAB 350
 #define TOWER_TIMELAB 2000
 #define BULLET_TIMELAB 10
 
