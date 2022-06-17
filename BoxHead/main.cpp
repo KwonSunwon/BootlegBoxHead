@@ -189,6 +189,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                 phase = PHASE_EDIT;
                 printf("edit button clicked\n");
                 map.on_editMode();
+
                 if (!IsWindow(hDlg))
                 {
                     hDlg = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_MAPEDIT), hWnd, (DLGPROC)MapEditProc);
@@ -725,10 +726,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
                     break;
                 }
             }
+            InvalidateRect(hWnd, NULL, FALSE);
+
         }
-
-        InvalidateRect(hWnd, NULL, FALSE);
-
         break;
 
     case WM_PAINT:
@@ -920,6 +920,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
         DeleteDC(MemDC);
         DeleteDC(PrintDC);
         DeleteObject(BackBit);
+
+        if (p.Get_Health() < 0)
+        {
+            KillTimer(hWnd, ENEMY_TIMER);
+            KillTimer(hWnd, BULLET_TIMER);
+        }
+
         break;
 
     case WM_DESTROY:
@@ -1019,6 +1026,12 @@ void CALLBACK Enemy_spawn(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
         if (p_pos.y < e_pos.y)
             Mob[i].Move_up();
+
+        if (p_pos.x < (e_pos.x - OBJECT_X_SIZE / 2) && p_pos.x >(e_pos.x + OBJECT_X_SIZE / 2) && p_pos.y < (e_pos.y - OBJECT_Y_SIZE / 2) && p_pos.y > (e_pos.y + OBJECT_Y_SIZE / 2))
+        {
+            printf("피격당함\n");
+            p.Get_Damage(Mob[i].Get_Attack());
+        }
     }
 }
 
@@ -1043,6 +1056,7 @@ void Player_move()
     {
         p.Move_right();
     }
+
 }
 /*
 void CALLBACK Tower_Oparate(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
@@ -1111,6 +1125,7 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
                 if (Mob[e].Get_Health() < 0)
                 {
+                    printf("p %d", Mob[e].Get_Health());
                     for (int j = e; j < enemy_count - 1; j++)
                     {
                         Mob[j] = Mob[j + 1];
@@ -1155,6 +1170,7 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
                 if (Mob[e].Get_Health() < 0)
                 {
+                    printf("s %d", Mob[e].Get_Health());
                     for (int j = e; j < enemy_count - 1; j++)
                     {
                         Mob[j] = Mob[j + 1];
@@ -1199,6 +1215,7 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
                 if (Mob[e].Get_Health() < 0)
                 {
+                    printf("r %d", Mob[e].Get_Health());
                     for (int j = e; j < enemy_count - 1; j++)
                     {
                         Mob[j] = Mob[j + 1];
@@ -1233,6 +1250,7 @@ void CALLBACK Bullet_fly(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 
                 if (Mob[e].Get_Health() < 0)
                 {
+                    printf("s %d", Mob[e].Get_Health());
                     for (int j = e; j < enemy_count - 1; j++)
                     {
                         Mob[j] = Mob[j + 1];

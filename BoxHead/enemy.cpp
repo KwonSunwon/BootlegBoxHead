@@ -8,6 +8,25 @@ void Enemy::Move_down() { location.y += speed; }
 void Enemy::Set_id(int _id) { id = _id; }
 int Enemy::Get_id() { return id; }
 
+void Enemy::knock(int _knock, int _way) 
+{
+    switch (_way)
+    {
+    case IDB_UP:
+        location.y -= _knock;
+        break;
+    case IDB_DOWN:
+        location.y += _knock;
+        break;
+    case IDB_LEFT:
+        location.x -= _knock;
+        break;
+    case IDB_RIGHT:
+        location.x += _knock;
+        break;
+    }
+}
+
 void Enemy::Init_enemy(int _id)
 {
     switch (_id)
